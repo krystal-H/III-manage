@@ -1,0 +1,36 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "createTime":1571123476520,
+        "developerId":1233,
+        "pushState":0,
+        "pushWay":0,
+        "updateTime":1571123478177,
+        "urlConfId":79
+      },
+      {
+        "createTime":1571123476520,
+        "developerId":1232,
+        "pushState":1,
+        "pushWay":1,
+        "updateTime":1571123478177,
+        "urlConfId":80
+      }
+    ],
+    "pager":{
+      "totalRows": 20,
+      "pageRows": 1,
+      "pageIndex": 2,
+      "paged": false,
+      "defaultPageRows": 20,
+      "totalPages": 2,
+      "pageEndRow": 19,
+      "currPageRows": 1,
+      "pageStartRow": 0,
+      "hasPrevPage": false,
+      "hasNextPage": true
+    }
+  }
+}

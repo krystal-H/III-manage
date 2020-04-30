@@ -1,0 +1,35 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "labelId":1,
+        "labelName":"zlbsk",
+        "labelTypeName":"mxhbv"
+      },
+      {
+        "labelId":2,
+        "labelName":"zlbsk2",
+        "labelTypeName":"mxhbv2"
+      },
+      {
+        "labelId":3,
+        "labelName":"zlbsk3",
+        "labelTypeName":"mxhbv3"
+      },
+      {
+        "labelId":4,
+        "labelName":"zlbsk4",
+        "labelTypeName":"mxhbv4"
+      }
+    ],
+    "pager":{
+      "currPageRows":748,
+      "hasNextPage":110,
+      "hasPrevPage":392,
+      "pageRows":261,
+      "totalPages":201,
+      "totalRows":748
+    }
+  }
+}

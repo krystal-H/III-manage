@@ -1,0 +1,17 @@
+{
+  "code": 0,
+  "data": {
+    "apiId": "自定义方法ID1",
+    "apiName": "hsujp",
+    "apiUrl": "jtlea",
+    "productId": 1234,
+    "createDate": "2019-08-23 06:15:14",
+    "developerName": "liujiafu",
+    "productName": "LED灯",
+    "reportFormsType": 4,
+    "ruleType": 2,
+    "property": "workMode1",
+    "dataType": 3,
+    "status": 0
+  }
+}

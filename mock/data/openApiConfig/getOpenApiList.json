@@ -1,0 +1,26 @@
+{
+	"code": 0,
+	"data": {
+		"pager": {
+			"totalRows": 241,
+			"pageRows": 11,
+			"pageIndex": 1,
+			"paged": false,
+			"defaultPageRows": 20,
+			"totalPages": 22,
+			"currPageRows": 11,
+			"pageStartRow": 0,
+			"pageEndRow": 10,
+			"hasPrevPage": false,
+			"hasNextPage": true
+		},
+		"list": [{
+			"configId": 9999,
+			"userName": "aa",
+			"configApiNameList": "设备的绑定用户等数据",
+			"labelNameList": "标签名称1, 标签名称2",
+			"createTime": 151200154500,
+			"configStatus": 0
+		}]
+	}
+}

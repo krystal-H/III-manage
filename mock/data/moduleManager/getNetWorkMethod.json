@@ -1,0 +1,25 @@
+{
+  "code": 0,
+  "data": {
+    "dataDimension": [
+      {
+        "dimensionName": "维度名称1",
+        "dimensionDesc": "维度名称备注"
+      },
+      {
+        "dimensionName": "维度名称2",
+        "dimensionDesc": "维度名称备注"
+      }
+    ],
+    "dataIndex": [
+      {
+        "indexName": "指标名称1",
+        "indexDesc": "指标名称备注"
+      },
+      {
+        "indexName": "指标名称2",
+        "indexDesc": "指标名称备注"
+      }
+    ]
+  }
+}

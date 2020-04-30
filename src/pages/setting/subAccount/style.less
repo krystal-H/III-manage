@@ -1,0 +1,74 @@
+.sub-account {
+
+  .sub-account-content {
+    padding: 24px;
+    background: white;
+  }
+
+  .action {
+    font-size: 16px;
+
+    span {
+      cursor: pointer;
+      color: #1890ff;
+    }
+  }
+}
+
+.sub-account-modal {
+  .account-info {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 20px;
+  }
+
+  .account-info-item {
+    height: 40px;
+
+    .label {
+      width: 70px;
+      line-height: 40px;
+      padding-right: 10px;
+      text-align: right;
+      display: inline-block;
+    }
+
+    .ant-form-item {
+      display: inline-block;
+    }
+
+    .account-info-input {
+      width: 240px;
+      display: inline-block;
+      padding: 4px 11px;
+      box-sizing: border-box;
+      border: 1px solid transparent;
+    }
+
+    // .account-info-input:hover {
+    //   cursor: pointer;
+    //   border: 1px solid #d9d9d9;
+    //   border-radius: 4px;
+    // }
+  }
+
+  .account-auth {
+    .account-auth-wrapper {
+      border: solid 1px #dedede;
+    }
+
+    .account-auth-tab {
+      min-height: 200px;
+      padding: 0 10px;
+      border: solid 1px #dedede;
+      box-sizing: border-box;
+    }
+
+    .ant-tabs-tabpane {
+      height: 220px;
+      overflow-y: auto;
+      padding: 0 10px;
+    }
+  }
+}

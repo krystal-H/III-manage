@@ -1,0 +1,22 @@
+{
+	"code": 0,
+	"data": [{
+		"icon": {},
+		"url": {},
+		"groupName": "数据服务",
+		"isDispaly": true,
+		"menus": [{
+			"menuid": 230,
+			"icon": "icon-sys",
+			"menuname": "数据统计",
+			"url": "swkns",
+			"menus": [{
+				"menuid": 231,
+				"icon": "icon-nav",
+				"menuname": "设备用户统计",
+				"url": "gmtem",
+				"menus": {}
+			}]
+		}]
+	}]
+}

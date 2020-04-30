@@ -1,0 +1,88 @@
+.product-categroy{
+    margin-top: 10px;
+    padding-top: 30px;
+    font-size: 0;
+    min-height: 600px;
+    text-align: center;
+    overflow: auto;
+    background: white;
+    
+    .line-vertical{
+        height: 20px;
+        width: 2px;
+        display: block;
+        margin: 0 auto;
+        border-left: solid 2px #e8e8e8;
+    }
+
+    .line-horizontal{
+        height: 2px;
+        display: block;
+        margin: 0 27px;
+        border-bottom: solid 2px #e8e8e8;
+        &.bottom{
+            position: absolute;
+            bottom: 0;
+            margin: 0;
+            &.left{
+                left: 50%;
+            }
+            &.right{
+                right: 50%;
+            }
+        }
+    }
+
+    .list-category{
+        overflow: hidden;
+        display: inline-block;
+        position: relative;
+
+        .list-item{
+            display: inline-block;
+            vertical-align: top;
+            margin: 0 10px;
+    
+            .list-name{
+                width: 36px;
+                line-height: 24px;
+                font-size: 16px;
+                padding: 2px;
+                word-break: break-all;
+                border: 1px solid #cfcccc;
+                &:hover{
+                    cursor: pointer;
+                    color: white;
+                    background: #1890ff;
+                    .list-num{
+                        color: white;
+                    }
+                }
+
+                .list-num{
+                    font-size: 12px;
+                    color: #dedede;
+                    white-space: nowrap;
+                }
+            }
+            &.active{
+                .list-name{
+                    color: white;
+                    background: #1890ff;
+                }
+                &:after{
+                    width: 2px;
+                    height: 200px;
+                    content: "";
+                    display: table;
+                    margin: 0 auto;
+                    border-left: solid 2px #e8e8e8;
+                }
+            }
+        }
+    }
+
+    
+    
+    
+}

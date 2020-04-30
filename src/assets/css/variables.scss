@@ -1,0 +1,36 @@
+// 样式变量统一管理
+
+/*主题色*/
+$themeColor:#2F78FF;
+
+/*警告色：带有警告或者重要提示的*/
+$warning_colour: #ea4d2e;
+
+/*侧边栏宽度*/
+$menuWidth: 60px;
+
+/*页面header的高度和背景色*/
+$headerHeight:52px;
+$headerBgColor:rgba(49,56,77,1);
+
+/*页面标题字体大小*/
+$titleFontSize:20px;
+
+/*内容的字体大小*/
+$columnTitleFontSize: 16px;
+$columnContentFontSize: 14px;
+$columnExplainFontSize: 12px;
+
+/*字体颜色*/
+$fontColor: rgba(0,0,0,0.85);
+$grayFontColor: rgba(0,0,0,0.65);
+
+/*元素间隔*/
+$gap:24px;
+$borderRadius:3px;
+
+$bodyBgColor:rgba(240,242,245,1);
+$sectionBgColor:rgba(255,255,255,1);
+$borderColor:rgba(217,217,217,1);
+$border:1px solid $themeColor;
+$border_Gray:1px solid $borderColor;

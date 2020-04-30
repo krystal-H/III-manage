@@ -1,0 +1,22 @@
+.loading_box{
+    position: absolute;
+    z-index: 9999;
+    height: 100%;
+    width: 100%;
+    background: rgba(0,0,0,0.5);
+    text-align: center;
+    vertical-align: middle;
+    .img_box{
+        
+        position: relative;
+        top: 50%;
+        .img{
+            font-size: 40px;
+            vertical-align: middle;
+        }
+        .test{
+            margin-left: 20px;
+            vertical-align: middle;
+        }
+    }
+}

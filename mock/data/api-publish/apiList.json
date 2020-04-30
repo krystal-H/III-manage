@@ -1,0 +1,37 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "releaseId": 344,
+        "apiName": "hsujp",
+        "apiUrl": "jtlea",
+        "apiDesc": "nlund",
+        "dataType": "1",
+        "releaseTime": "11-11-11",
+        "status": 1,
+        "requestType": "GET",
+        "releaseVersion": "vhhnv"
+      },
+      {
+        "releaseId": 345,
+        "apiName": "hsujp",
+        "apiUrl": "jtlea",
+        "apiDesc": "nlund",
+        "dataType": "1",
+        "releaseTime": "11-11-11",
+        "status": 1,
+        "requestType": "GET",
+        "releaseVersion": "vhhnv"
+      }
+    ],
+    "pager": {
+      "totalRows": 2,
+      "pageRows": 1,
+      "hasPrevPage": false,
+      "hasNextPage": true,
+      "totalPages": 2,
+      "currPageRows": 1
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "apiId": "自定义方法ID1",
+        "apiName": "hsujp",
+        "apiUrl": "jtlea",
+        "productId": 1234,
+        "createDate": "2019-08-23 06:15:14",
+        "developerName": "liujiafu",
+        "reportFormsType": 4,
+        "ruleType": 2,
+        "property": "workMode1",
+        "dataType": 3,
+        "status": 0
+      },
+      {
+        "apiId": "自定义方法ID2",
+        "apiName": "hsujp",
+        "apiUrl": "jtlea",
+        "productId": 1234,
+        "createDate": "2019-08-23 06:15:14",
+        "developerName": "liujiafu",
+        "reportFormsType": 4,
+        "ruleType": 2,
+        "property": "workMode2",
+        "dataType": 3,
+        "status": 0
+      }
+    ],
+    "pager": {
+      "totalRows": 2,
+      "pageRows": 1,
+      "pageIndex": 1,
+      "paged": false,
+      "defaultPageRows": 20,
+      "totalPages": 2,
+      "pageEndRow": 19,
+      "currPageRows": 1,
+      "pageStartRow": 0,
+      "hasPrevPage": false,
+      "hasNextPage": true
+    }
+  }
+}

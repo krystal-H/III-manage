@@ -1,0 +1,32 @@
+{
+  "code": 0,
+  "data": [
+    {
+      "labelKey": "位置区域",
+      "labelValueList": [
+        {
+          "labelValue": "中国-广东-深圳",
+          "labelId": 1
+        }
+      ]
+    },
+    {
+      "labelKey": "位置区域2",
+      "labelValueList": [
+        {
+          "labelValue": "中国-广东-广州",
+          "labelId": 2
+        }
+      ]
+	},
+	{
+		"labelKey": "位置区域23",
+		"labelValueList": [
+		  {
+			"labelValue": "中国-广东-广州",
+			"labelId": 44
+		  }
+		]
+	  }
+  ]
+}

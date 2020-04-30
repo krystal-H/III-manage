@@ -1,0 +1,10 @@
+export const SET_SUB_ACCOUNT_LIST = "subAccount/SET_SUB_ACCOUNT_LIST";
+export const SET_SUB_ACCOUNT_DETAIL = "subAccount/SET_SUB_ACCOUNT_DETAIL";
+export const SET_ROLE_LIST = "subAccount/SET_ROLE_LIST";
+export const MODIFY_SUB_ACCOUNT_DETAIL = "subAccount/MODIFY_SUB_ACCOUNT_DETAIL";
+export const SET_SUB_ACCOUNT_ROLE_AUTH = "subAccount/SET_SUB_ACCOUNT_ROLE_AUTH";
+
+export const OPEN_SUB_ACCOUNT_MODAL = "subAccount/OPEN_SUB_ACCOUNT_MODAL";
+export const CLOSE_SUB_ACCOUNT_MODAL = "subAccount/CLOSE_SUB_ACCOUNT_MODAL";
+export const OPEN_SUB_ACCOUNT_VIEW = "subAccount/OPEN_SUB_ACCOUNT_VIEW";
+export const CLOSE_SUB_ACCOUNT_VIEW = "subAccount/CLOSE_SUB_ACCOUNT_VIEW";

@@ -1,0 +1,278 @@
+.LocationDataModel_bottomCard {
+  margin-top: 10px;
+
+  // .ant-table table {
+  //   table-layout: fixed;
+  // }
+
+  // .ant-table-thead>tr>th,
+  // .ant-table-tbody>tr>td {
+  //   text-align: center;
+  //   white-space: nowrap;
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  // }
+}
+
+.LocationDataModel_topCard {
+  .modelSearch,
+  .modelCreate {
+    margin-left: 20px;
+  }
+}
+
+.location-data {
+  background: #f0f0f0;
+
+  .location-detail {
+    margin-top: 10px;
+  }
+
+  // 管理位置数据模型页面样式
+  .het-list {
+    margin: 0;
+    padding: 20px 20px;
+
+    h2 {
+      font-size: 20px;
+      color: #333;
+    }
+
+    .btn-back {
+      width: 75px;
+      float: right;
+      font-size: 14px;
+    }
+
+    .form-item {
+      margin-top: 30px;
+
+      input,
+      textarea {
+        width: 400px;
+        margin-left: 20px;
+        display: inline-block;
+      }
+
+      textarea {
+        height: 100px;
+        vertical-align: top;
+      }
+
+      .label {
+        width: 150px;
+        font-size: 16px;
+        text-align: right;
+        line-height: 32px;
+        display: inline-block;
+
+        span {
+          width: 150px;
+          text-align: right;
+          display: inline-block;
+
+          .dot {
+            padding: 0 10px;
+            display: inline-block;
+            color: #ff0000;
+          }
+        }
+      }
+    }
+  }
+
+  .data-model {
+    max-width: 100%;
+    max-height: 650px;
+    margin-top: 20px;
+    padding: 50px 20px 50px 20px;
+    overflow-x: auto;
+    overflow-y: auto;
+    white-space: nowrap;
+    z-index: 0;
+    position: relative;
+
+    .data-model-item {
+      width: 156px;
+      display: inline-block;
+      border: solid 1px #eee;
+      position: relative;
+      text-align: center;
+      vertical-align: top;
+      margin-left: 66px;
+      background: white;
+
+      h2 {
+        width: 100%;
+        position: absolute;
+        top: -35px;
+        line-height: 35px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      &.add {
+        border: none;
+        line-height: 43px;
+        text-align: left;
+      }
+
+      .title {
+        width: 100%;
+        padding: 10px 0;
+        color: #0099cc;
+        background: #eee;
+
+        p {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          padding: 0 5px;
+          margin: 0;
+        }
+      }
+
+      ul {
+        z-index: 999;
+        padding: 10px 0;
+        position: relative;
+        list-style: none;
+
+        li {
+          width: 140px;
+          height: 40px;
+          line-height: 40px;
+          margin: 10px auto 0;
+          border: solid 1px #eee;
+          box-sizing: border-box;
+          position: relative;
+
+          &.add {
+            color: #999;
+            cursor: pointer;
+          }
+
+          .edit {
+            display: none;
+            position: absolute;
+            right: 10px;
+            top: 13px;
+            color: white;
+            cursor: pointer;
+          }
+
+          &:hover {
+            .edit {
+              color: #27a9e3;
+              display: block;
+            }
+          }
+
+          &.active {
+            color: white;
+            background: #0099cc;
+
+            .edit {
+              color: white;
+            }
+          }
+        }
+      }
+
+      .svg {
+        width: 240px;
+        // height: 100%;
+        position: absolute;
+        z-index: 998;
+        top: 80px;
+        left: 150px;
+
+        polyline {
+          fill: white;
+          stroke: #0099cc;
+          stroke-width: 2;
+          shape-rendering: crispEdges;
+        }
+
+        line {
+          shape-rendering: crispEdges;
+        }
+      }
+
+      .footer {
+        width: 100%;
+        height: 42px;
+        position: absolute;
+        bottom: -49px;
+        left: 0;
+        margin: 0;
+
+        a.edit,
+        a.delete {
+          line-height: 42px;
+          margin: 0 10px;
+        }
+      }
+    }
+  }
+
+  .footer {
+    width: 400px;
+    margin: 40px 0 0 160px;
+
+    button {
+      margin: 10px 0 0 10px;
+      padding: 8px 30px;
+      line-height: 0;
+      display: inline-block;
+      border: none;
+      border-radius: 4px;
+      border: 1px solid #27a9e3;
+    }
+
+    .btn-cancel {
+      color: #27a9e3;
+      background-color: #fff;
+    }
+  }
+}
+
+.data-model {
+  .footer {
+    width: 400px;
+    margin: 40px 0 0 160px;
+
+    button {
+      margin: 10px 0 0 10px;
+      padding: 0 30px;
+      display: inline-block;
+      border: none;
+      border-radius: 4px;
+      border: 1px solid #27a9e3;
+    }
+  }
+
+  .ant-checkbox-wrapper {
+    width: 45px;
+  }
+}
+
+.labeltable{
+  margin: 24px 0 16px;
+  width: 100%;
+  th,td{
+      padding: 16px;
+      text-align: left;
+  }
+  thead,tr{
+      border-bottom: 1px solid #E9E9E9;
+  }
+  thead{
+      th{
+          font-weight: 500;
+      }
+      background-color: #FAFAFA;
+  }
+
+
+}
+

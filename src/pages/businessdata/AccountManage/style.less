@@ -1,0 +1,117 @@
+.account-manage {
+  overflow: hidden;
+
+  .account-content {
+    padding: 24px;
+    background: white;
+
+    h2 {
+      font-size: 18px;
+    }
+
+    &.info {
+      padding: 0;
+      margin: 24px;
+      height: 170px;
+      position: relative;
+    }
+
+    &.sub {
+      padding: 0 24px 24px 24px;
+    }
+
+    .btn-ok,
+    .btn-cancel{
+        margin: 0 10px;
+    }
+  }
+
+  .btn-back {
+    top: 24px;
+    right: 24px;
+    position: absolute;
+  }
+
+  .account-info-wrap {
+    background: white;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .account-info {
+    height: 180px;
+    width: 100%;
+    color: #999999;
+    font-size: 16px;
+    z-index: 99;
+    overflow: hidden;
+    position: absolute;
+    transition: height 0.5s ease-in;
+
+    &.active {
+      height: 312px;
+
+      // .account-info-detail {
+      //   margin-top: -312px;
+      // }
+    }
+
+    .account-info-detail {
+      padding: 20px;
+      position: relative;
+      margin-bottom: 10px;
+      margin-top: 0;
+      background: #f2f2f2;
+      transition: margin-top .8s ease-out;
+    }
+
+    .account-info-short {
+      padding: 20px;
+      position: relative;
+      background: #f2f2f2;
+    }
+
+    .account-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      .label {
+        width: 100px;
+        display: inline-block;
+        text-align: right;
+        margin-right: 15px;
+      }
+
+      .reset {
+        cursor: pointer;
+        color: #1890ff;
+        margin-left: 10px;
+      }
+    }
+
+    .edit,
+    .slide-up {
+      cursor: pointer;
+      color: #1890ff;
+      position: absolute;
+    }
+
+    .slide-up {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .edit {
+      top: 20px;
+      right: 20px;
+    }
+  }
+
+  .action {
+    font-size: 16px;
+    span {
+      cursor: pointer;
+      color: #1890ff;
+    }
+  }
+}

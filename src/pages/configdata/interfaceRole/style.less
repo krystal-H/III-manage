@@ -1,0 +1,74 @@
+.interface-role {
+  .interface-role-content {
+    min-width: 900px;
+    padding: 24px;
+    background: white;
+
+    .interface-role-auth {
+      margin-top: 10px;
+    }
+
+    .auth-key {
+      margin-left: 20px;
+    }
+  }
+
+  .action {
+    span {
+      cursor: pointer;
+      color: #1890ff;
+    }
+  }
+
+  .btn-back{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1;
+  }
+  
+  .tree-transfer{
+      max-width: 1100px;
+      display: flex;
+      position: relative;
+      justify-content: space-between;
+      
+      .tree-transfer-wraper{
+        display: inline-block;
+        width: 48%;
+        height: 500px;
+        padding: 5px;
+        border: solid 1px #dedede;
+        overflow: auto;
+        box-sizing: border-box;
+        position: relative;
+        .ant-empty{
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          height: 200px;
+          width: 200px;
+          margin: -100px 0 0 -100px;
+        }
+      }
+
+      .tree-transfer-tab{
+        width: 48%;
+        height: 40px;
+        padding: 0 10px;
+        top: -40px;
+        right: 0;
+        position: absolute;
+        font-size: 14px;
+        color: #333;
+        box-sizing: border-box;
+
+        .btn-clear{
+          float: right;
+          cursor: pointer;
+          color: #1890ff;
+        }
+      }
+      
+  }
+}

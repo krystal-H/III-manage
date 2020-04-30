@@ -1,0 +1,24 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parser": "@typescript-eslint/parser", // 指定解析器
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  // "extends": "eslint:recommended", // 启用默认的核心规则，新手慎用
+  "rules": {
+    "eqeqeq": "warn",
+    "indent": "off",
+    "quotes": "off", // ["error", "double"]
+    "semi": "off",//["error", "always"],
+    "no-console": "off"
+  }
+}

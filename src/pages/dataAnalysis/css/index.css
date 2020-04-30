@@ -1,0 +1,228 @@
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+.page-interval {
+  display: block;
+  width: 100%;
+  height: 10px;
+  line-height: 0;
+  font-size: 0;
+  overflow: hidden;
+}
+.page-blue {
+  color: #0084ff;
+}
+.page-int-2em {
+  padding: 0 1em;
+}
+.page-int-1em {
+  padding: 0 0.5em;
+}
+.page-int-05em {
+  padding: 0 0.25em;
+}
+.page-link-small {
+  padding: 0;
+  margin: 0 10px;
+  color: #888888;
+}
+.page-link-small.selected {
+  color: #1890ff;
+}
+.page-ml {
+  margin-left: 6px;
+}
+.page-ml-large {
+  margin-left: 12px;
+}
+.page-btn-link {
+  padding: 0;
+  height: auto;
+}
+.page-card-small > .ant-card-body {
+  padding: 10px 24px;
+}
+.page-card-qa {
+  width: 360px;
+}
+.page-card-qa b {
+  color: #0084ff;
+}
+.page-card-qa p:last-child {
+  margin-bottom: 0;
+}
+.page-dashed {
+  display: block;
+  height: 0;
+  font-size: 0;
+  line-height: 0;
+  border-bottom: 1px dashed #999999;
+}
+.page-solid {
+  display: block;
+  height: 0;
+  font-size: 0;
+  line-height: 0;
+  border-bottom: 1px dashed #999999;
+  border-bottom-style: solid;
+}
+.page-tabs-right {
+  margin-top: 50px;
+}
+.page-tabs-right.page-tabs-right-oneLine {
+  margin-top: 0;
+}
+.page-tabs-right.page-tabs-right-oneLine::after {
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+}
+.page-tabs-right::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -50px;
+  bottom: -40px;
+  width: 0px;
+  height: auto;
+  border-left: 1px solid #e8e8e8;
+}
+.page-tabs-right .page-tabs .page-card-small {
+  border: 0 none;
+  cursor: auto;
+}
+@media screen and (max-width: 1500px) {
+  .page-tabs .page-card-small > .ant-card-body .ant-statistic-title {
+    font-size: 13px;
+  }
+}
+@media screen and (max-width: 1340px) {
+  .page-tabs .page-card-small > .ant-card-body .ant-statistic-title {
+    font-size: 12px;
+  }
+}
+.page-tabs {
+  padding: 15px 0;
+}
+.page-tabs.page-tabs-nopt {
+  padding-top: 0;
+}
+.page-tabs.page-tabs-nopb {
+  padding-bottom: 0;
+}
+.page-tabs .page-card-small {
+  cursor: pointer;
+  margin-top: 1px;
+}
+.page-tabs .page-card-small.page-card-avtive {
+  margin-top: 0;
+  border-width: 2px;
+  border-color: #1890ff;
+}
+.page-tabs .page-card-small > .ant-card-body {
+  padding: 10px;
+}
+.page-tabs .ant-statistic-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #666666;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.page-tabs .ant-statistic-content {
+  text-align: center;
+}
+.page-tabs .page-tabs-active {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 18px;
+}
+.page-data-chart {
+  width: 100%;
+  height: 340px;
+  margin: 10px 0;
+}
+.page-data-chart.page-data-chart-nomt {
+  margin: 0 0 15px;
+}
+.page-null-wrap {
+  position: relative;
+  height: 340px;
+}
+.page-null-wrap.page-data-chart-nomt {
+  margin: 0 0 15px;
+}
+.page-null-wrap .page-null-inner {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  transform: translate(0, -50%);
+}
+.page-table-small .ant-table-thead > tr > th {
+  padding: 8px;
+}
+.page-table-small .ant-table-tbody > tr > td {
+  padding: 4px;
+}
+.page-collapse-noBB.ant-collapse-borderless > .ant-collapse-item {
+  border-bottom: 0 none;
+}
+.page-label {
+  display: block;
+  margin: 10px 0 0;
+  font-size: 16px;
+  line-height: 32px;
+  color: #666;
+  font-weight: bold;
+  font-family: "sans-serif";
+}
+.page-chart-table-wrap .page-chart-table {
+  width: 100%;
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  text-align: center;
+}
+.page-chart-table-wrap .page-chart-table th {
+  width: 6%;
+  height: 40px;
+  font-size: 500;
+  border-bottom: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+.page-chart-table-wrap .page-chart-table th,
+.page-chart-table-wrap .page-chart-table td {
+  height: 32px;
+}
+.page-chart-table-wrap .page-chart-table th:first-child,
+.page-chart-table-wrap .page-chart-table td:first-child,
+.page-chart-table-wrap .page-chart-table th:nth-child(2),
+.page-chart-table-wrap .page-chart-table td:nth-child(2) {
+  width: 10%;
+  border-right: 1px solid #e8e8e8;
+  border-bottom: 1px solid #e8e8e8;
+}
+.page-chart-table-wrap .page-chart-table th.active,
+.page-chart-table-wrap .page-chart-table td.active {
+  background-color: #e6f7ff;
+}
+.page-chart-table-wrap .page-chart-table th.active:nth-child(3),
+.page-chart-table-wrap .page-chart-table td.active:nth-child(3) {
+  background-color: #bae7ff;
+}
+.page-event-del {
+  color: #f00;
+  margin-left: 3px;
+  cursor: pointer;
+}
+.page-event-del.disabled {
+  color: #b5b5b5;
+  cursor: auto;
+}
+.page-long-search {
+  line-height: 36px;
+}

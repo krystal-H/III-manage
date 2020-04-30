@@ -1,0 +1,16 @@
+{
+    "code":0,
+    "data": {
+        "app":[
+            {
+                "productId": 8011,
+                "name": "智能冰箱",
+                "mode": 0,
+                "upgrade": 0,
+                "updateTime": "1566801685596",
+                "link": "http://facebook.github.io/react/"
+            }
+        ],
+        "cloud": []
+    }
+}

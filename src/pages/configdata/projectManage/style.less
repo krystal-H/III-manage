@@ -1,0 +1,396 @@
+.projectmanage{
+    background: #f0f0f0;
+    
+   // 管理位置数据模型页面样式
+    .het-list{
+      margin: 0;
+      padding: 20px 20px;
+
+        h2{
+          font-size: 20px;
+          color: #555;
+          span{
+            margin-left: 10px;
+            font-size: 16px;
+            color: #666;
+          }
+        }
+
+        .btn-back{
+          // width: 100px;
+          float: right;
+          // background-color: #27a9e3;
+          // border: none;
+          // border-radius: 8px;
+          // color: #fff;
+          font-size: 14px;
+        }
+  
+        .form-item{
+          margin-top: 30px;
+
+          input, textarea{
+            width: 400px;
+            margin-left: 20px;
+            display: inline-block;
+          }
+
+          textarea{
+            height: 100px;
+            vertical-align: top;
+          }
+
+          .ant-select{
+            width: 160px;
+            margin-left: 20px;
+          }
+
+          .label{
+            width: 128px;
+            font-size: 16px;
+            text-align: right;
+            line-height: 32px;
+            display: inline-block;
+           
+            span{
+              width: 100%;
+              text-align: right;
+              display: inline-block;
+              .dot{
+                padding: 0 10px;
+                display: inline-block;
+                color: #ff0000;
+              }
+            }
+          }
+
+          .file-input{
+            display: inline-block;
+            vertical-align: top;
+            span{
+              line-height: 32px;
+              margin-left: 20px;
+            }
+            button{
+              line-height: 32px;
+              background-color: #27a9e3;
+              border: none;
+              color: #fff;
+              font-size: 14px;
+              margin-left: 20px;
+            }
+          }
+        }
+    }
+  .footer{
+    width: 400px;
+    text-align: center;
+    margin: 40px auto 0;
+
+    button {
+      margin: 10px 0 0 10px;
+      display: inline-block;
+    }
+  }
+   
+
+ 
+  .nav-list{
+    padding: 0 20px;
+    border-bottom: solid 1px #dedede;
+    font-size: 16px;
+    line-height: 42px;
+    a{
+      display: inline-block;
+      border-bottom: solid 1px none;
+      padding: 5px 20px;
+
+      &.active{
+        border-bottom: solid 1px #27a9e3;
+      }
+    }
+  }
+
+  .edit-detail{
+    min-height: 230px;
+    line-height: 32px;
+    padding: 30px 20px 0 10px;
+    color: #999;
+    &.production {
+      .tab-query{
+        margin-bottom: 20px;
+        &:after{
+          content: "";
+          display: block;
+          clear: both;
+        }
+        .left{
+          margin-right: 20px;
+          float: left
+        }
+        .right{
+          margin-left:  20px;
+          float: right;
+        }
+  
+        input{
+          width: 220px;
+        }
+      }
+      .btn-upload{
+        margin-left:  20px;
+        float: right;
+        .upload{
+          cursor: pointer;
+          opacity: 0;
+          // alpha: filter(opacity=0);
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+        }
+      }
+    }
+
+    &.position{
+      font-size: 16px;
+      line-height: 50px;
+      text-align: center;
+      .model-name{
+        font-size: 18px;
+        color: #1890ff;
+      }
+    }
+
+    &.robot{
+      font-size: 16px;
+      .robot-no-choose{
+        line-height: 50px;
+        text-align: center;
+      }
+      .robot-choose{
+        line-height: 32px;
+        text-align: left;
+        .robot-title{
+          span{
+            font-size: 18px;
+            margin-left: 20px;
+            color: #27a9e3;
+          }
+
+          a{
+             padding: 2px 15px;
+             display: inline-block;
+             color: white;
+             margin-left: 30px;
+             background-color: #27a9e3;
+          }
+        }
+
+        .robot-tab-voice{
+          padding-top: 20px;
+          margin-top: 20px;
+          border-top: dashed 1px #dedede;
+
+          .robot-position{
+            margin-bottom: 20px;
+            p{
+              display: inline-block;
+            }
+
+            .robot-position-select{
+              width: 180px;
+              margin-left: 20px;
+              display: inline-block;
+            }
+          }
+
+          .robot-voice-tabs{
+            width: 1000px;
+            max-width: 100%;
+            margin-top: 10px;
+            border: solid 1px #dedede;
+            ul{
+              width: 160px;
+              height: 100%;
+              min-height: 300px;
+              margin: 0;
+              padding: 0;
+              text-align: center;
+              display: inline-block;
+              vertical-align: top;
+              border-right: solid 1px #e4e4e4;
+              list-style: none;
+              li{
+                width: 100%;
+                padding: 5px 0;
+                border-bottom: solid 1px #e4e4e4;
+                border-right: solid 1px #e4e4e4;
+                background-color: #f2f2f2;
+                span{
+                  cursor: pointer;
+                }
+
+                &.active{
+                  border-right: solid 1px #fff;
+                  background-color: white;
+                }
+              }
+            }
+
+            .robot-voice-list{
+              padding: 5px 20px 0 20px;
+              min-height: 300px;
+              display: inline-block;
+              vertical-align: top;
+
+              .voice{
+                margin-top: 20px;
+                input{
+                  width: 400px;
+                  float: left;
+                }
+
+                .decrease{
+                  padding: 7px 3px;
+                  font-size: 0;
+                  color: white;
+                  display: inline-block;
+                  margin-left: 15px;
+                  cursor: pointer;
+                  vertical-align: middle;
+                  background-color: #e4e4e4;
+                  p{
+                    height: 2px;
+                    width: 10px;
+                    background: white;
+                  }
+                }
+
+                &:after{
+                  content: "";
+                  display: block;
+                  clear: both;
+                }
+              }
+
+              .voice-add{
+                margin-top: 10px;
+                span{
+                  cursor: pointer;
+                  color: #1890ff;
+                }
+              }
+            }
+          }
+
+
+        }
+      }
+    }
+  }
+  .action{
+    span{
+      cursor: pointer;
+      color: #1890ff;
+    }
+  }
+}
+
+.projectmanage-modal-add{
+    h2{
+      font-size: 16px;
+      line-height: 42px;
+    }
+
+    .header{
+      input{
+        width: 250px;
+        float: left;
+      }
+      button{
+        margin-left: 20px;
+        float: left;
+        // border: none;
+        // background-color: #27a9e3;
+      }
+
+      &:after{
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+
+    .footer{
+      text-align: center;
+
+      button {
+        padding: 5px 30px;
+        // display: inline-block;
+        // border: none;
+        // border-radius: 4px;
+        // border: 1px solid #27a9e3;
+      }
+
+      // .btn-save{
+      //   color: #fff;
+      //   background-color: #27a9e3;
+      // }
+
+      // .btn-cancel{
+      //   color: #27a9e3;
+      //   background-color: #fff;
+      // }
+    }
+
+    .projectmanage-modal-table{
+      width: 100%;
+      margin-top: 20px;
+
+      p{
+        width: 55%;
+        display: inline-block;
+        padding: 9px 12px;
+        word-break: break-all;
+        vertical-align: middle;
+        &.left{
+          width: 30%;
+        }
+      }
+
+      ul{
+        height: 322px;
+        overflow-y: auto;
+        li{
+          border-bottom: 1px solid #e8e8e8; 
+          cursor: pointer;
+          &:hover,
+          &.active{
+            color: #fff;
+            background-color: #27a9e3;
+          }
+        }
+
+      }
+      
+      .header{
+        position: relative;
+        color: #000000d9;
+        background-color: #fafafa;
+        border-bottom: 1px solid #e8e8e8;
+      }
+
+      // &.product{
+      //   p{
+      //     width: auto;
+      //     display: table-cell;
+      //     padding: 9px 12px;
+      //     word-break: break-all;
+      //     vertical-align: middle;
+      //   }
+      // }
+    }
+}
+

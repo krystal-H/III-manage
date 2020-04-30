@@ -1,0 +1,9 @@
+export const CHANGE_API_LIST = 'apiPublish/CHANGE_API_LIST';
+export const GET_CUR_API = 'apiPublish/GET_CUR_API';
+export const SET_LOADING = 'apiPublish/SET_LOADING';
+export const TOGGLE_API_DIALOG = 'apiPublish/TOGGLE_API_DIALOG';
+export const TOGGLE_DIMENSION_DIALOG = 'apiPublish/TOGGLE_DIMENSION_DIALOG';
+export const SET_DIMENSION = 'apiPublish/SET_DIMENSION';
+export const ADD_DIMENSION_ITEM = 'apiPublish/ADD_DIMENSION_ITEM';
+export const DEL_DIMENSION_ITEM = 'apiPublish/DEL_DIMENSION_ITEM';
+export const CHANGE_DIMENSION_DATA = 'apiPublish/CHANGE_DIMENSION_DATA';

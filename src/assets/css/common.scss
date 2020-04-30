@@ -1,0 +1,51 @@
+@import './variables.scss';
+
+.page-name{
+    height:28px;
+    font-size: $titleFontSize;
+    font-family:PingFangSC-Medium;
+    font-weight:500;
+    color:rgba(0,0,0,0.85);
+    line-height:28px;
+}
+//计数器
+.counter{
+    display: inline-block;
+    margin-left: 10px;
+}
+//说明链接
+.explainLink{
+    display: inline-block;
+    margin-left: 20px;
+    padding-left: 20px;
+    font-size: $columnContentFontSize;
+    color: $themeColor;
+    background: url(../images/explainLink.png) no-repeat left;
+    cursor: pointer;
+}
+//公共按钮样式---有默认样式
+.commonButBox{
+    text-align: center;
+    margin: $gap 0;
+}
+.commonButs{
+    display: inline-block;
+    padding: 6px 20px;
+    background-color: $themeColor;
+    border: 1px solid $themeColor;
+    border-radius: $borderRradius;
+    color: #fff;
+    cursor: pointer;
+}
+.commonButs:hover{
+    background-color: #6eb1ff;
+    border-color: #6eb1ff;
+}
+
+.fl {
+  float: left;
+}
+
+.fr {
+  float: right;
+}

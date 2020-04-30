@@ -1,0 +1,58 @@
+{
+	"code": 0,
+	"data": [{
+			"userId": 1,
+			"userName": "用户名1",
+			"develoeprId": 234,
+			"userCategory": 1
+		},
+		{
+			"userId": 2,
+			"userName": "用户名2",
+			"develoeprId": 234,
+			"userCategory": 1
+		},
+		{
+			"userId": 3,
+			"userName": "用户名311111111",
+			"develoeprId": 234,
+			"userCategory": 1
+		},
+		{
+			"userId": 4,
+			"userName": "用户名4",
+			"develoeprId": 234,
+			"userCategory": 1
+		},
+		{
+			"userId": 5,
+			"userName": "用户名5",
+			"develoeprId": 234,
+			"userCategory": 0
+		},
+		{
+			"userId": 6,
+			"userName": "用户名6",
+			"develoeprId": 234,
+			"userCategory": 1
+		},
+		{
+			"userId": 7,
+			"userName": "用户名7",
+			"develoeprId": 234,
+			"userCategory": 0
+		},
+		{
+			"userId": 8,
+			"userName": "用户名8",
+			"develoeprId": 234,
+			"userCategory": 0
+		},
+		{
+			"userId": 9,
+			"userName": "用户名9",
+			"develoeprId": 234,
+			"userCategory": 1
+		}
+	]
+}

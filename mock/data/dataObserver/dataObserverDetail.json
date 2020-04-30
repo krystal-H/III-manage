@@ -1,0 +1,36 @@
+{
+  "code" : 0,
+  "data" : {
+    "dataConf":[
+      {
+        "dataFormat":1,
+        "dataType":2,
+        "dataTypeScope":1,
+        "protocolProperty":"Base_1_Status_Alarm,PIR_Null_Mode_Null"
+      }
+    ],
+    "developerId":1821,
+    "deviceLabelId":"oefqj",
+    "productId":3736,
+    "pushState":1,
+    "pushToken":"ntvvx",
+    "pushWay":1,
+    "url": "eygdj",
+    "urlConfId":794,
+    "productName":"测试产品",
+    "createTime":1571123476571,
+    "source":1,
+    "deviceLabelList":[
+      {
+        "labelId":1,
+        "labelTypeName":"labelKey1",
+        "labelName":"labelValue1"
+      },
+      {
+        "labelId":2,
+        "labelTypeName":"labelKey2",
+        "labelName":"labelValue2"
+      }
+    ]
+  }
+}

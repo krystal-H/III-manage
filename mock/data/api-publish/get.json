@@ -1,0 +1,14 @@
+{
+  "code": 0,
+  "data": {
+    "releaseId": "100314",
+    "apiName": "api名称",
+    "dataType": "1",
+    "releaseTime": "1111-11-11",
+    "status": "1",
+    "apiUrl": "www.google.com",
+    "apiDesc": "我是谷歌",
+    "requestType": "GET",
+    "releaseVersion": "1.0"
+  }
+}

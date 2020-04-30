@@ -1,0 +1,18 @@
+{
+  "code": 0,
+  "data": {
+    "list": [
+      {
+        "apiId": 100314,
+        "apiName": "故障类数据接口",
+        "dataCategory": "设备数据",
+        "publishTime": 1436922140000,
+        "state": "0",
+        "url":"www.google.com",
+        "desc":"我是谷歌",
+        "method":"get",
+        "version":"1.0"
+      }
+    ]
+  }
+}

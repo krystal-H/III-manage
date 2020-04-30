@@ -1,0 +1,21 @@
+@import './../../../assets/css/variables.scss';
+
+.api-page-wrapper {
+  .api-title {
+    margin-bottom: 40px;
+    background-color: $sectionBgColor;
+  }
+  .api-content-wrapper {
+    padding: 23px;
+    background-color: $sectionBgColor;
+  }
+}
+
+/* 模态框弹窗样式 */
+.api-wrapper {
+  .api-form {
+    .ant-form-item:nth-of-type(2), .ant-form-item:nth-of-type(5) {
+      margin-bottom: 24px;
+    }
+  }
+}

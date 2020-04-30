@@ -1,0 +1,13 @@
+@import '../../../assets/css/variables.scss';
+
+.search-area {
+  background-color: $sectionBgColor;
+  padding: 12px 24px;
+  .ant-row.ant-form-item {
+    margin-right: 24px;
+  }
+}
+
+.operate-content {
+  background-color: $sectionBgColor;
+}

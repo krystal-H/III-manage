@@ -1,0 +1,5 @@
+export const SET_PRODUCT_LIST = 'product/SET_PRODUCT_LIST'
+export const SET_PRODUCT = 'product/SET_PRODUCT'
+export const SER_PRODUCT_SERVICE = 'product/SER_PRODUCT_SERVICE'
+export const CLEAR_PRODUCT_INFO = 'product/CLEAR_PRODUCT_INFO'
+export const TRIGGER_LOADING = 'product/TRIGGER_LOADING'

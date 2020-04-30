@@ -1,0 +1,62 @@
+@import './../../../assets/css/variables.scss';
+
+.data-label-page-wrapper {
+  .data-label-title {
+    margin-bottom: 40px;
+    background-color: $sectionBgColor;
+  }
+  .data-label-content-wrapper {
+    padding: 23px;
+    background-color: $sectionBgColor;
+    .step-wrapper {
+      padding: 40px 80px 80px 80px;
+      .steps-content {
+        margin-top: 16px;
+        padding-top: 80px;
+        min-height: 200px;
+        border: 1px dashed #e9e9e9;
+        border-radius: 6px;
+        .first-content {
+          .data-label-form {
+            .item {
+              padding-left: 24px;
+            }
+          }
+        }
+        .second-content {
+          .data-scope-form {
+            .download {
+              margin-right: 200px;
+            }
+          }
+        }
+        .third-content {
+          .label-name-column, .label-value-column {
+            div:first-child {
+              background-color: #bbb;
+            }
+            div {
+              padding-left: 30px;
+              height: 40px;
+              line-height: 40px;
+              border: 1px solid #ccc;
+              border-top: none;
+              list-style: none;
+            }
+          }
+          .label-value-column {
+            div {
+              border-left: none;
+            }
+          }
+        }
+        .remarks {
+          margin: 40px 0;
+        }
+      }
+      .steps-action {
+        margin-top: 64px;
+      }
+    }
+  }
+}

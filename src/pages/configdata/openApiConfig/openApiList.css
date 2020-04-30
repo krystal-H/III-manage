@@ -1,0 +1,13 @@
+.H5TemplateContent2 .H5TemplateTable {
+  margin-top: 10px;
+}
+.H5TemplateContent2 .H5TemplateTable .tooltip {
+  width: 100%;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.H5TemplateContent2 .H5TemplateTable .ant-tooltip {
+  white-space: normal;
+}

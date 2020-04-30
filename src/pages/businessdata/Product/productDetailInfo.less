@@ -1,0 +1,141 @@
+.product-info{
+    padding: 20px;
+    font-size: 16px;
+
+    h3{
+        font-size: 16px;
+        padding: 10px 0;
+    }
+    .info-item{
+        margin-bottom: 15px;
+        font-size: 14px;
+        .label{
+            width: 150px;
+            padding-right: 10px;
+            text-align: right;
+            display: inline-block;
+        }
+        
+        .module-wrap{
+            margin-bottom: 20px;
+            display: table-cell;
+            vertical-align: middle;
+            vertical-align: top;
+
+            &.img-wrap{
+                width: 180px;
+                height: 200px;
+                margin: 0 20px;
+                font-size: 14px;
+                padding: 0 10px;
+                box-sizing: border-box;
+                background: #f2f2f2;
+                .module-name{
+                    text-align: center;
+                    display: block;
+                    padding: 5px 0;
+                }
+
+                img{
+                    // width: 60px;
+                    height: 80px;
+                    display: block;
+                    margin: 20px auto 0;
+                }
+            }
+            &.list-wrap{
+                width: 560px;
+                padding-left: 50px;
+                .module-table{
+                    font-size: 14px;
+                    text-align: center;
+                    border: 1px solid #d9d9d9;
+                    margin-top: 20px;
+                    tr{
+                        border-bottom: 1px solid #d9d9d9;
+                    }
+                    td{
+                        padding: 8px 24px;
+                        &.left{
+                            width: 160px;
+                            border-right: 1px solid #d9d9d9;
+                        }
+                        &.right{
+                            width: 400px;
+                        }
+                    }
+                }
+            }
+            
+        }
+        .module-version{
+            min-width: 200px;
+            padding: 10px 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .module-download{
+            margin-left: 100px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        &.protocol-detail{
+            height: 590px;
+        }
+
+        &.product-info-detail,
+        &.technical-detail, 
+        &.protocol-detail,
+        &.module-detail, 
+        &.business-detail,
+        &.app-list,
+        &.cloud-list{
+            padding: 20px;
+            box-sizing: border-box;
+            background: #f6f6f6;
+        }
+
+        &.technical-detail, 
+        &.product-info-detail{
+            .info-item{
+                width: 380px;
+                display: inline-block;
+                margin-right: 20px; 
+                white-space: nowrap;
+            }
+            .product-info-img,
+            .product-info-msg{
+                display: inline-block;
+                vertical-align: top;
+            }
+
+            .product-info-img{
+                width: 84px;
+                height: 84px;
+                background: black;
+            }
+
+            .product-info-msg{
+                width: 800px;
+                max-width: 95%;
+            }
+        }
+
+        &.business-detail{
+            .product-img{
+                width: 60px;
+                height: 80px;
+                margin: 0 10px 10px 0;
+                display: inline-block;
+            }
+            span{
+                display: inline-block;
+                vertical-align: top;
+                word-break: break-all;
+                max-width: 70%;
+            }
+        }
+    }
+    
+}
