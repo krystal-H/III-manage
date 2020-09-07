@@ -113,7 +113,7 @@ class dataObserverDetail extends React.Component {
             </div>
             
           </div>
-          {dataObserverDetail.pushState==2&&<div style={{marginTop:'16px'}}><i>注：该数据订阅失败次数过多，订阅已锁定，请重新标记或者直接停用此订阅。</i></div>}
+          {dataObserverDetail.pushState==2&&<div style={{marginTop:'16px'}}><i>注：该数据订阅失败次数过多，订阅已锁定，请重新编辑或者直接停用此订阅。</i></div>}
           <div style={{textAlign:'right',marginTop:'20px'}}><Button type='primary' href={'#/businessdata/dataObserver/add/'+dataObserverDetail.urlConfId}>编辑</Button></div>
         </Card>
       </div>

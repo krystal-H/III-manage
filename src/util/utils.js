@@ -204,55 +204,6 @@ export const CryptoTool = {
     },
 }
 
-/***
- *
-[
-    {
-        title:"a",
-        key:"c-1",
-        value:"c-1",
-        children:[
-            {
-                title:"a",
-                key:"sc-1",
-                value:"sc-1",
-                children:[
-                    {
-                        title:"a",
-                        key:"1",
-                        value:"1",
-                        deviceSubTypeId:"1001"
-                    }
-                ]
-            }
-        ]
-    }
-]
-
-deviceCategoryList
-[
-      {
-        "categoryId":"1",
-        "categoryName":"智慧生活",
-        "subCategoryList":[
-          {
-            "subCategoryId":"1",
-            "subCategoryName":"大家电",
-            "deviceTypeList":[
-              {
-                "deviceTypeId":"1",
-                "deviceTypeName":"冰箱",
-                "defaultDeviceSubtype":{
-                    "deviceSubTypeId":"1001"
-                }
-              },
-            ]
-        }]
-    }]
-
- *
- */
-
 export const DeviceCategoryUtils = {
     //通过TreeSelect type，然后选择设备大类
     getDeviceTypeFromSelectList(typeList, deviceCategoryList) {
@@ -531,3 +482,7 @@ export function debounce (fn, delay) {
         }, delay)
     }
 }
+
+//密码校验正则式（8到18位须同时包含字母、数字、符号）
+export const psdPattern = /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[~!@#$%^&*])[0-9a-zA-Z~!@#$%^&*]{8,18}$/
+

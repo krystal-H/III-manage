@@ -1,10 +1,23 @@
 import React from 'react';
 import { Modal, Form, Input } from 'antd';
-
+import { psdPattern } from '../../../util/utils';
+import VerificationCodeInput from './VerificationCodeInput';
+import axios from '../../../util/api.request';
 const FormItem = Form.Item;
 
 @Form.create()
 class PasswordReset extends React.Component {
+    state = {
+		vcodeImageUrl:''
+    }
+    componentWillReceiveProps(nextProps){
+        if(nextProps.visible&&!this.props.visible){
+            this.getCodeImage();
+        }
+    }
+    componentDidMount(){
+        this.props.refMe(this);
+    }
     // 校验前后密码
     handleCheck = (rule, value, callback) => {
         const { form } = this.props;
@@ -31,6 +44,14 @@ class PasswordReset extends React.Component {
         onCancel();
     }
 
+    getCodeImage=()=>{
+        axios.Get('manage-open/common/check/getResetPwdImgVeriCode').then((model) => {
+            if(model.data.code==0){
+                this.setState({ vcodeImageUrl:model.data.data });
+            }
+        });
+    }
+
     render() {
         const { form, visible } = this.props;
         const { getFieldDecorator } = form;
@@ -47,23 +68,26 @@ class PasswordReset extends React.Component {
                 onCancel={this.handleCancel}
                 onOk={this.handleOk}
             >
-                <Form>
-                    <FormItem label="新密码" {...formItemLayout}>
+                <Form {...formItemLayout}>
+                    <FormItem label="新密码" >
                         {getFieldDecorator('password', {
                             rules: [{
-                                min: 6,
+                                min: 8,
                                 max: 18,
                                 required: true,
-                                message: "请输入6-18位，支持字母、数字、符号"
+                                pattern:psdPattern,
+                                message: "请输入8-18位包含字母、数字、符号3种字符"
+                            }, {
+                                validator: this.handleCheck
                             }],
                             getValueFromEvent: (e) => {
                                 return e.target.value.replace(/[^\w~!@#$%^&*]/, '');
                             }
                         })(
-                            <Input type="password" maxLength={18} placeholder="请输入6~18位，支持字母、数字、符号" />
+                            <Input type="password" maxLength={18} placeholder="请输入8-18位包含字母、数字、符号3种字符" />
                         )}
                     </FormItem>
-                    <FormItem label="确认密码" {...formItemLayout}>
+                    <FormItem label="确认密码" >
                         {getFieldDecorator('confirmPw', {
                             rules: [{
                                 required: true,
@@ -78,6 +102,11 @@ class PasswordReset extends React.Component {
                             <Input type="password" maxLength={18} placeholder="请确认新密码" />
                         )}
                     </FormItem>
+                    <VerificationCodeInput 
+                        getFieldDecorator={getFieldDecorator} 
+                        imgSrc={this.state.vcodeImageUrl}
+                        refreshVeriCode={this.getCodeImage}
+					/>
                 </Form>
             </Modal>
         );

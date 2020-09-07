@@ -35,9 +35,9 @@ export const getTestData = () => {
   })
 }
 
-export const ResetPwd = (password) => {
+export const ResetPwd = (password,verifyCode) => {
   return axios.Post(
     '/manage-open/common/user/resetPwd',
-   {password}
+   {password,verifyCode}
   )
 }

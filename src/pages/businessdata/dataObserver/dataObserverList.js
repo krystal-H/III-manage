@@ -49,7 +49,7 @@ class DataObserverList extends React.Component {
              <Tooltip placement="top" title="查看">
                 <Button shape="circle" size="small" icon="info" key={0} onClick={this.handleDetail.bind(this, item.urlConfId)} />
              </Tooltip>
-            {item.pushState == 1 &&
+            {(item.pushState == 1 ||item.pushState == 2) &&
               (<span>
                 <Divider type="vertical" />
                 <Popconfirm

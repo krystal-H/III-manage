@@ -98,10 +98,10 @@ class ProtocolTablePannel extends Component{
   filterPannel(){
     let data = this.props.protocolList || {};
     // let dataSource = tempList;
-    let controlList = data['control']||[]; //控制数据
-    let runList = data['run']||[]; //运行数据
-    let errList=data['fault']||[];//错误数据
-    let configList =data['config']||[];//配置数据
+    let controlList = data['控制数据']||[]; //控制数据
+    let runList = data['运行数据']||[]; //运行数据
+    let errList=data['故障数据']||[];//错误数据
+    let configList =data['配置数据']||[];//配置数据
 
     let dataSource = controlList.concat(runList,errList,configList);
 

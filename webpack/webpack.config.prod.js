@@ -62,7 +62,7 @@ const prod = {
       'collections': true,
       'paths': true
     }), // lodash 按需引入插件,但是这个插件可能导致一些问题；  DISCLAIMER: Using this plugin without enabling the proper feature sets may cause lodash functions to behave in unexpected ways. Methods may appear to work, however they might return incorrect results.
-    //new BundleAnalyzerPlugin() // 打包分析，分包策略确定好之后可以关闭
+    new BundleAnalyzerPlugin() // 打包分析，分包策略确定好之后可以关闭
   ]
 }
 

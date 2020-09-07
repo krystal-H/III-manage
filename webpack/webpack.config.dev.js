@@ -13,7 +13,7 @@ const dev = {
   devServer: {
     contentBase: paths.outPath,
     host: 'localhost',
-    port: '8085',
+    port: '8082',
     open: true,
     openPage: 'index.html',
     hot: true, //webpack-dev-server are launched with the --hot option, webpack.HotModuleReplacementPlugin will be added automatically
@@ -26,7 +26,7 @@ const dev = {
       '/v1/web': {
       // target: 'https://pre.cms.clife.cn',
         target: 'https://200.200.200.50',
-        // target: 'http://10.8.80.64:8222',
+        // target: 'http://10.8.80.115:8081',
         changeOrigin: true,
         secure: false,
       }

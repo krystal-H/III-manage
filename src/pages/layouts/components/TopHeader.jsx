@@ -17,8 +17,6 @@ class TopHeader extends Component {
     super(props);
     this.handlerUserDropdwon = this.handlerUserDropdwon.bind(this);
     this.handlerUpdatePassword = this.handlerUpdatePassword.bind(this);
-    // this.handleResetSave = this.handleResetSave.bind(this);
-    // this.handleResetCancel = this.handleResetCancel.bind(this);
   }
 
   state = {
@@ -35,8 +33,8 @@ class TopHeader extends Component {
 
   // 重置密码
   handleResetSave = (value) => {
-    const { password } = value;
-    ResetPwd(CryptoTool.encryption(password)).then(res => {
+    const { password,verifyCode } = value;
+    ResetPwd(CryptoTool.encryption(password),verifyCode).then(res => {
       let code = res.data.code;
       if (code === 0) {
           notification.success({
@@ -46,6 +44,8 @@ class TopHeader extends Component {
           this.handlerLogout()
           this.handleResetCancel();
           
+      }else{
+        this.refPsd.getCodeImage()
       }
     }).catch( err => {
       console.log(err);
@@ -125,7 +125,7 @@ class TopHeader extends Component {
         </div>
       
       {/* 重置密码 */}
-      <PasswordReset visible={resetVisible} onCancel={this.handleResetCancel} onOk={this.handleResetSave} />
+      <PasswordReset refMe={(me)=>{this.refPsd = me}} visible={resetVisible} onCancel={this.handleResetCancel} onOk={this.handleResetSave} />
       </div>
     );
   }

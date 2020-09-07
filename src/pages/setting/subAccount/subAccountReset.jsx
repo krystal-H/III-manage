@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Form, Input } from 'antd';
-
+import { psdPattern } from '../../../util/utils';
 const FormItem = Form.Item;
 
 @Form.create()
@@ -51,16 +51,17 @@ class SubAccountReset extends React.Component {
                     <FormItem label="新密码" {...formItemLayout}>
                         {getFieldDecorator('password', {
                             rules: [{
-                                min: 6,
+                                min: 8,
                                 max: 18,
                                 required: true,
-                                message: "请输入6-18位，支持字母、数字、符号"
+                                pattern:psdPattern,
+                                message: "请输入8-18位包含字母、数字、符号3种字符"
                             }],
                             getValueFromEvent: (e) => {
                                 return e.target.value.replace(/[^\w~!@#$%^&*]/, '');
                             }
                         })(
-                            <Input type="password" maxLength={18} placeholder="请输入密码，6~18位，支持字母、数字、符号输入" />
+                            <Input type="password" maxLength={18} placeholder="请输入8-18位包含字母、数字、符号3种字符" />
                         )}
                     </FormItem>
                     <FormItem label="确认密码" {...formItemLayout}>
