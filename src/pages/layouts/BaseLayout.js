@@ -20,6 +20,7 @@ import Exception404 from "../exception/404";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Bread from "./components/Breadcrumb";
 
+import TagList from "../configdata/protocolTag/TagList";
 
 class App extends Component {
   componentDidMount() {
@@ -28,6 +29,7 @@ class App extends Component {
     this.props.getDeviceCategoryList();
     // 获取权限模块
     this.props.getAuthModule();
+
   }
 
   shouldComponentUpdate(nextProps){
@@ -40,19 +42,14 @@ class App extends Component {
    
     return (
       <Layout style={{ height: "100%", minWidth: "1300px" }}>
-        {/* Header 头部区域 */}
-        <Header>
-          <NavHeader />
-        </Header>
-        {/* Sider内容区域 */}
+        <Header><NavHeader /></Header>
         <Layout>
           <Sider width={230} className="slide-menu">
             <SiderMenu menuList={authRoutes} />
           </Sider>
-
           {/* 中间的 内容区域 */}
           <Layout style={{ padding: "0 24px 0 24px"}}>
-			<Bread />
+			      <Bread />
             <Content
               style={{
                 // background: "#fff",
@@ -63,24 +60,18 @@ class App extends Component {
               className="layout-content"
             >
               <ErrorBoundary>
-                <Switch>
-                  {authRoutes.map((route, i) => (
-                    <RouteWithSubRoutes key={i} {...route} />
-                  ))}
-                  <Redirect exact from="/" to="/home" />
-                  <Route path="/home" component={Home}/>
-                  <Route component={Exception404} />
-                  {/* <Route component={Home} /> */}
-                </Switch>
+                  <Switch>
+                    {authRoutes.map((route, i) => (
+                      <RouteWithSubRoutes key={i} {...route} />
+                    ))}
+                    <Redirect exact from="/" to="/home" />
+                    <Route path="/home" component={Home}/>
+                    <Route path="/protocoltag" component={TagList}/>
+                    <Route component={Exception404} />
+                  </Switch>
               </ErrorBoundary>
-
               <AuthorizedCheck />
             </Content>
-            {/* Footer 底部区域 */}
-            {/* <Footer style={{ textAlign: "center" }}>
-              Copyright ©2018 clife - 深圳和而泰家居在线网络科技有限公司
-              粤ICP备14057188号
-            </Footer> */}
           </Layout>
         </Layout>
       </Layout>

@@ -215,9 +215,9 @@ class Login extends Component
               {getFieldDecorator('checked', {
                 valuePropName:'checked',
                 initialValue: checked,
-              })(<Checkbox onChange={this.changeCheckBox.bind(this)}>Remember me</Checkbox>)}
+              })(<Checkbox onChange={this.changeCheckBox.bind(this)}>记住密码</Checkbox>)}
                 <Button type="primary" htmlType="submit" className="login-form-button">
-                  Log in
+                  登 录
                 </Button>
             </Form.Item>
           </Form>

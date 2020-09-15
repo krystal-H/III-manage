@@ -87,6 +87,7 @@ export const getAuthModule = () => {
         let authList = [];
         flattenAuth(data, authList);
         authList = Array.from(new Set(authList));
+        // console.log(444,authList);
         // 拷贝
         let authRoutes = deepCopy(routes);
         // 过滤路由
@@ -98,6 +99,7 @@ export const getAuthModule = () => {
           }
           return authList.includes(item.path) || checkSystemRoute(item.path);
         });
+        // console.log(111,authRoutes);
         dispatch(setAuthModule(data, authRoutes));
       }
     });
