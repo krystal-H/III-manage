@@ -7,6 +7,9 @@ const AddScheme = asyncComponent(() => import( /* webpackChunkName: "schemeManag
 // 免开发上传固件管理
 const FirmwareMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/firmwareMagement'))
 
+// 工单管理
+const orderMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/repairOrder'))
+
 const route = {
   icon: "setting",
   name: '5.X管理',
@@ -44,6 +47,11 @@ const route = {
     },
     {
       name: '模组&固件管理'
+    },
+    {
+      name: '工单管理',
+      path: '/5xmanage/repairOrder',
+      component: orderMagement,
     },
   ]
 
