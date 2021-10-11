@@ -21,7 +21,7 @@ const formatTree = (authList) => {
         };
     });
 };
-
+ 
 class SubAccountList extends React.Component {
     state = {
         loading: false,
