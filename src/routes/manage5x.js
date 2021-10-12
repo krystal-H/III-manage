@@ -25,7 +25,11 @@ const route = {
       path: '/5xmanage/firmwareMagement/list',
       component: FirmwareMagement,
     },
-    
+    {
+      name: '工单管理',
+      path: '/5xmanage/repairOrder',
+      component: orderMagement,
+    },
     {
       name: 'banner管理'
     },
@@ -38,11 +42,7 @@ const route = {
     {
       name: '模组&固件管理'
     },
-    {
-      name: '工单管理',
-      path: '/5xmanage/repairOrder',
-      component: orderMagement,
-    },
+    
   ]
 
 }

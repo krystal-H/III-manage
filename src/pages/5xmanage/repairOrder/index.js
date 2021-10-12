@@ -9,7 +9,7 @@ const ProductAudit = ({match}) => {
     return (
         <Switch>
             <Route path={`${match.url}/list`} component={OrderList}/>
-            <Route path={`${match.url}/:productId/:id`} component={ScrollTopHOC(OrderInfo)}/>
+            {/* <Route path={`${match.url}/:productId/:id`} component={ScrollTopHOC(OrderInfo)}/> */}
             <Redirect from={`${match.url}/`} to={`${match.url}/list`} />
         </Switch>
     )

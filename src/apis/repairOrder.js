@@ -9,7 +9,8 @@ export const getList = (pager) => {
         params: pager,
         method: 'post',
         headers:{
-            'Content-Type':'application/json'
+            // 'Content-Type':'application/json',
+            // 'dev-name':'dyl'
           }
     })
 };

@@ -55,7 +55,6 @@ class HorizontalLoginForm extends React.Component {
         this.setState({
             loading: true
         })
-        return
         getList(parames).then(res => {
             let code = res.data.code
             //   if(code === REQUEST_SUCCESS){
