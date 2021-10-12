@@ -31,10 +31,10 @@ class SchemeList extends Component {
     { title: "修改账号", dataIndex: 'productName', key: 'productName', render: (text) => <span title={text}>{text}</span> },
     { title: "更新时间", dataIndex: 'productId', key: 'productId' },
     { title: "品类", dataIndex: 'allCategoryName', key: 'allCategoryName', render: (text) => <span title={text}>{text}</span> },
-    { title: "免开发方案", dataIndex: 'mode', key: 'mode', render: (item) => (<span>{modeList[item] || ''}</span>) },
-    { title: "MCU方案", dataIndex: 'email', key: 'email', render: (text) => <span title={text}>{text}</span> },
-    { title: "Soc方案", dataIndex: 'email', key: 'email', render: (text) => <span title={text}>{text}</span> },
-    { title: "状态", dataIndex: 'mode', key: 'mode', render: (item) => (<span>{modeList[item] || ''}</span>) },
+    { title: "免开发方案", dataIndex: '', key: '', render: (item) => (<span>{modeList[item] || ''}</span>) },
+    { title: "MCU方案", dataIndex: '', key: '', render: (text) => <span title={text}>{text}</span> },
+    { title: "Soc方案", dataIndex: '', key: '', render: (text) => <span title={text}>{text}</span> },
+    { title: "状态", dataIndex: '', key: '', render: (item) => (<span>{modeList[item] || ''}</span>) },
     {
       title: "操作", dataIndex: 'productId', key: 'operation', width: 66,
       render: (item) => {
