@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
-import { Card, Form, Input, Button, Select, Tooltip, Table,Modal  } from 'antd'
+import { Card, Form, Input, Button, Select, Tooltip, Table, Modal,Divider } from 'antd'
 import { getList } from '../../../apis/repairOrder'
-
+import './index.less'
 
 class HorizontalLoginForm extends React.Component {
     constructor(props) {
@@ -14,7 +14,8 @@ class HorizontalLoginForm extends React.Component {
             searchParams: {},
             loading: false,
             pager: {},
-            visible:false
+            visible: false,
+            detailInfo:{}
         }
     }
     componentDidMount() {
@@ -94,26 +95,27 @@ class HorizontalLoginForm extends React.Component {
     }
     showModal = () => {
         this.setState({
-          visible: true,
+            visible: true,
         });
-      };
-    
-      handleOk = e => {
+    };
+
+    handleOk = e => {
         console.log(e);
         this.setState({
-          visible: false,
+            visible: false,
         });
-      };
-    
-      handleCancel = e => {
+    };
+
+    handleCancel = e => {
         console.log(e);
         this.setState({
-          visible: false,
+            visible: false,
         });
-      };
+    };
     render() {
         const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
         let dataSource = this.state.dataManagerList
+        const detailInfo=this.state.detailInfo
         const columns = [
             {
                 title: "工单ID", dataIndex: "workOrderId"
@@ -178,9 +180,48 @@ class HorizontalLoginForm extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                 >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    <div className='my-order-detail'>
+                        <div className='order-item'>
+                            <div className='order-item-label'>问题分类：</div>
+                            <div className='order-item-text'>{detailInfo.problemTypeOneName}-{detailInfo.problemTypeTwoName}
+                                <span className='order-item-span' style={{ color: detailInfo.status ? '#15C054' : '#2F78FF' }}>{detailInfo.status ? '已回复' : '待回复'}</span>
+                            </div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>提交时间：</div>
+                            <div className='order-item-text'>{detailInfo.createTime && DateTool.utcToDev(detailInfo.createTime)}</div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>问题描述：</div>
+                            <div className='order-item-text'>{detailInfo.problemDesc}</div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>上传问题图片/视频：</div>
+                            <div className='order-item-text'>
+                                {
+                                    detailInfo.image && detailInfo.image.split(',').map((item, index) => {
+                                        return <Image key={index} src={item} width={100} />
+                                    })
+                                }
+                            </div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>联系方式：</div>
+                            <div className='order-item-text'>{detailInfo.phone}</div>
+                        </div>
+                        {
+                            detailInfo.status == 1 ? (<div className='order-feedback'>
+                                <div style={{ margin: '0 -24px' }}>
+                                    <Divider />
+                                </div>
+                                <div className='feedback-title'>回复详情：</div>
+                                <div className='feedback-dec'>
+                                    {detailInfo.replyContent}
+                                </div>
+                            </div>) : null
+                        }
+
+                    </div>
                 </Modal>
             </div>);
     }

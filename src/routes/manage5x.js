@@ -8,6 +8,12 @@ const FirmwareMagement = asyncComponent(() => import( /* webpackChunkName: "Firm
 
 // 工单管理
 const orderMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/repairOrder'))
+// banner管理
+const bannerMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/bannerMn'))
+// 面板管理
+const panelMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/panelMn'))
+// 物模型管理
+const PhysicalModelMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/PhysicalModel'))
 
 const route = {
   icon: "setting",
@@ -31,13 +37,19 @@ const route = {
       component: orderMagement,
     },
     {
-      name: 'banner管理'
+      name: 'banner管理',
+      path: '/5xmanage/bannerMagement',
+      component: bannerMagement,
     },
     {
-      name: '物模型管理'
+      name: '物模型管理',
+      path: '/5xmanage/physicalModelMagement',
+      component: PhysicalModelMagement,
     },
     {
-      name: '标准面板管理'
+      name: '标准面板管理',
+      path: '/5xmanage/panelModelMagement',
+      component: panelMagement,
     },
     {
       name: '模组&固件管理'
