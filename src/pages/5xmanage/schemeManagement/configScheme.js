@@ -1,6 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Modal, Button, Steps, Form, Input, Select, Radio, Upload, Icon, message } from 'antd';
-import { UploadFileHooks } from '../../../components/upload-file'
 import { fileHost } from "../../../util/utils";
 
 const { Option } = Select;
