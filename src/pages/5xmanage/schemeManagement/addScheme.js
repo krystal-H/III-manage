@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button, Steps, Form, Input, Select, Radio } from 'antd';
-import ConfigScheme from './configScheme'
+import ConfigSchemeBrief from './configSchemeBrief'
+import ConfigSchemeDetail from './configSchemeDetail'
 
 const { Option } = Select
 
@@ -15,7 +16,7 @@ const radioStyle = {
 }
 
 function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
-  const [stepcurrent, setStepcurrent] = useState(1)
+  const [stepcurrent, setStepcurrent] = useState(2)
   const refConfig = useRef()
   const [validArr, setValidArr] = useState([])
 
@@ -35,14 +36,14 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
       handleSubmit()
     } else if (stepcurrent === 1) {
       console.log(refConfig, '-----------refConfig')
-      validArr.forEach(item => {
-        item()
-      })
+      refConfig.current.onFinish()
+      // validArr.forEach(item => {
+      //   item()
+      // })
     }
   }
 
   const validateFunc = (cb) => {
-    console.log(cb, '**************cb')
     let arr = []
     arr.push(cb)
     setValidArr(arr)
@@ -127,11 +128,18 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
         {/* 配置方案简介 */}
         {
           stepcurrent === 1 &&
-          <ConfigScheme
-            ref={refConfig}
-            validateFunc={(cb) => validateFunc(cb)}
+          <ConfigSchemeBrief
+            wrappedComponentRef={refConfig}
+            // validateFunc={(cb) => validateFunc(cb)}
             nextStep={nextStep} />
         }
+
+        {/* 配置方案详情 */}
+        {
+          stepcurrent === 2 &&
+          <ConfigSchemeDetail />
+        }
+
       </div>
     </Modal>
   )

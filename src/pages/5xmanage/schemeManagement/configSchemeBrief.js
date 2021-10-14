@@ -5,15 +5,15 @@ import { fileHost } from "../../../util/utils";
 const { Option } = Select
 const { TextArea } = Input
 
-function ConfigScheme({ nextStep, form, validateFunc }, ref) {
+function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
   const [configInfo, setConfigInfo] = useState({})
   const [descPic, setDescPic] = useState('') // 简介图片
   const [previewVisible, setPreviewVisible] = useState(false)
 
   // 上传图片后绑定方法到父组件
-  useEffect(() => {
-    validateFunc(validData)
-  }, [descPic])
+  // useEffect(() => {
+  //   validateFunc(validData)
+  // }, [descPic])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -58,12 +58,12 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   }
 
   // 用于定义暴露给父组件的ref方法
-  // useImperativeHandle(ref, () => {
-  //   return {
-  //     onFinish: validData
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // })
+  useImperativeHandle(ref, () => {
+    return {
+      onFinish: validData
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
 
   const uploadConfigs = {
     action: fileHost,
@@ -142,5 +142,6 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   )
 }
 
-// export default Form.create()(forwardRef(ConfigScheme))  暴露不出去onFinish方法
-export default Form.create()(ConfigScheme)
+ConfigSchemeBrief = forwardRef(ConfigSchemeBrief)
+// export default Form.create()(forwardRef(ConfigSchemeBrief))  // 暴露不出去onFinish方法
+export default Form.create()(ConfigSchemeBrief)
