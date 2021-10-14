@@ -4,6 +4,7 @@ import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import TableHOC from '../../../components/TableHOC';
 import OperateSchemeModal from './addScheme'
+import { schemeManageListRequest } from '../../../apis/schemeManagement'
 
 import './schemeList.less'
 
@@ -41,6 +42,25 @@ function SchemeList({ form }) {
       }
     }
   ]
+
+  // 查询列表
+  const getList = () => {
+    setLoading(true)
+    let params = {
+      pageIndex: 1,
+      moduleType: "",
+      hetModuleTypeName: "",
+      pageRows: 10,
+    }
+    schemeManageListRequest(params).then(res => {
+      console.log(res, '-----------')
+    }).finally(() => { setLoading(false) })
+  }
+
+  useEffect(() => {
+    getList()
+  }, [])
+
   // 查询列表
   const searchList = () => {
     console.log('查询列表')
@@ -66,7 +86,7 @@ function SchemeList({ form }) {
               {getFieldDecorator('productId', {
                 getValueFromEvent: (e) => {
                   const val = e.target.value;
-                  return val.replace(/[^\d]/g, '');
+                  return val.replace(/[^\d]/g, '')
                 }
               })(
                 <Input placeholder="请输入三级品类名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>

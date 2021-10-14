@@ -10,11 +10,6 @@ function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
   const [descPic, setDescPic] = useState('') // 简介图片
   const [previewVisible, setPreviewVisible] = useState(false)
 
-  // 上传图片后绑定方法到父组件
-  // useEffect(() => {
-  //   validateFunc(validData)
-  // }, [descPic])
-
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -50,7 +45,7 @@ function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
   const validData = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        values.descPic = descPic
+        values.picture = descPic
         console.log('Received values of form: ', values);
         nextStep()
       }
@@ -75,12 +70,12 @@ function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
     <div>
       <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
         <Form.Item label="方案名称">
-          {getFieldDecorator('nickname', {
+          {getFieldDecorator('name', {
             rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
           })(<Input placeholder="请输入方案名称" />)}
         </Form.Item>
         <Form.Item label="通信协议" hasFeedback>
-          {getFieldDecorator('select', {
+          {getFieldDecorator('protocol', {
             rules: [{ required: true, message: '请选择通信协议' }],
           })(
             <Select placeholder="请选择通信协议">
@@ -90,21 +85,21 @@ function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
           )}
         </Form.Item>
         <Form.Item label="概况" hasFeedback>
-          {getFieldDecorator('textarea1', {
+          {getFieldDecorator('summarize', {
             rules: [{ required: true, message: '请输入概况' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
           )}
         </Form.Item>
         <Form.Item label="特点" hasFeedback>
-          {getFieldDecorator('textarea2', {
+          {getFieldDecorator('feature', {
             rules: [{ required: true, message: '请输入特点' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
           )}
         </Form.Item>
-        <Form.Item label="适合" hasFeedback>
-          {getFieldDecorator('textarea3', {
+        <Form.Item label="适合场景" hasFeedback>
+          {getFieldDecorator('illustrate', {
             rules: [{ required: true, message: '请输入适合' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
@@ -114,7 +109,7 @@ function ConfigSchemeBrief({ nextStep, form, validateFunc }, ref) {
           label="简介图"
           extra="支持格式：png、jpg 建议尺寸：134 * 188px"
           wrapperCol={{ span: 10 }}>
-          {getFieldDecorator("descPic", {
+          {getFieldDecorator("picture", {
             rules: [{ required: true, message: "请上传简介图" }]
           })(
             <div>

@@ -1,47 +1,9 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, Table } from 'antd';
+import { Select, Form, Table } from 'antd';
 import './configSchemeDetail.less'
 
 function ConfigSchemeDetail({ form }, ref) {
-  const dataSource = [
-    {
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号',
-    },
-    {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号',
-    },
-    {
-      key: '11',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号',
-    },
-    {
-      key: '21',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号',
-    },
-    {
-      key: '1111',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号',
-    },
-    {
-      key: '2222',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号',
-    },
-  ]
-
+  const [dataSource, setDataSource] = useState([])
   const columns = [
     {
       title: '姓名',
@@ -83,7 +45,19 @@ function ConfigSchemeDetail({ form }, ref) {
     <div className="config-scheme-detail">
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 19 }} onSubmit={() => onSubmit()}>
         <Form.Item label="方案功能点">
-          此三级品类关联的物模型如下
+          {/* 此三级品类关联的物模型如下 */}
+          {
+            getFieldDecorator('physicalModelId', {
+              rules: [{ required: true, message: '请选择此三级品类关联的物模型' }],
+            })(
+              <Select placeholder="请选择此三级品类关联的物模型"
+                style={{ width: 250, marginBottom: 10 }}
+                onChange={() => handleSelectChange()}>
+                <Select.Option value="1">物模型01</Select.Option>
+                <Select.Option value="2">物模型02</Select.Option>
+              </Select>
+            )
+          }
           <Table
             className="config-table"
             dataSource={dataSource}
@@ -107,14 +81,15 @@ function ConfigSchemeDetail({ form }, ref) {
         </Form.Item>
         <Form.Item label="对应模组">
           {
-            getFieldDecorator('select', {
+            getFieldDecorator('moduleIds', {
               rules: [{ required: true, message: '请选择对应模组' }],
             })(
               <Select placeholder="请选择对应支持模组"
-                style={{ width: 220 }}
+                style={{ width: 250 }}
+                mode="multiple"
                 onChange={() => handleSelectChange()}>
-                <Option value="1">冰箱</Option>
-                <Option value="2">洗衣机</Option>
+                <Select.Option value="1">冰箱</Select.Option>
+                <Select.Option value="2">洗衣机</Select.Option>
               </Select>
             )
           }

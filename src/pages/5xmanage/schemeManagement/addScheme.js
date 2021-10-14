@@ -16,7 +16,7 @@ const radioStyle = {
 }
 
 function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
-  const [stepcurrent, setStepcurrent] = useState(2)
+  const [stepcurrent, setStepcurrent] = useState(0)
   const refConfig = useRef()
   const refDetail = useRef()
 
@@ -101,7 +101,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
             </Form.Item>
             <Form.Item label="品类可支持方案">
               {
-                getFieldDecorator('schemeType', {
+                getFieldDecorator('type', {
                   rules: [{ required: true, message: '请选择品类可支持方案' }],
                 })(
                   <Radio.Group onChange={(e) => changeRadio(e)}>
