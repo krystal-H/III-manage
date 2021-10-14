@@ -7,7 +7,7 @@ export const fileHost = (function () {
     const fileTourl = "/v4/web/tencentcloud/upload";
     let hostname = window.location.hostname;
     let upfiledomain = {
-        "localhost": "https://dp.clife.net",//"http://localhost:8085",
+        "localhost": "https://cms.clife.cn",//"http://localhost:8085",
         "200.200.200.50": "https://200.200.200.50",
         "dp.clife.net": "https://dp.clife.net",
         "pre.cms.clife.cn": "https://pre.cms.clife.cn",

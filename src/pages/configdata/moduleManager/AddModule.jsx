@@ -13,7 +13,7 @@ class AddModule extends Component {
         super(props)
 
         this.state = {
-            current: 0,
+            current: 1,
         }
     }
 

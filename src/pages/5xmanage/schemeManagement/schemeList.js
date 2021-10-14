@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import TableHOC from '../../../components/TableHOC';
+import OperateSchemeModal from './addScheme'
 
 import './schemeList.less'
 
@@ -15,19 +16,13 @@ const modeList = {
   2: '审核中'
 }
 
-class SchemeList extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      dataSource: [],
-      pager: {
-        totalRows: 0,
-        pageIndex: 0
-      },
-      loading: false,//antd的loading控制，
-    }
-  }
-  column = [
+function SchemeList({ form }) {
+  const [pager, setPager] = useState({ totalRows: 0, pageIndex: 0 })
+  const [dataSource, setDataSource] = useState([])
+  const [loading, setLoading] = useState(false) //antd的loading控制
+  const [addSchemeModal, setAddSchemeModal] = useState(true)
+
+  const column = [
     { title: "修改账号", dataIndex: 'productName', key: 'productName', render: (text) => <span title={text}>{text}</span> },
     { title: "更新时间", dataIndex: 'productId', key: 'productId' },
     { title: "品类", dataIndex: 'allCategoryName', key: 'allCategoryName', render: (text) => <span title={text}>{text}</span> },
@@ -46,77 +41,81 @@ class SchemeList extends Component {
       }
     }
   ]
-
   // 查询列表
-  searchList = () => {
+  const searchList = () => {
     console.log('查询列表')
   }
 
   // 重置
-  onReset = () => {
+  const onReset = () => {
     console.log('重置')
   }
 
   // 翻页
-  onPageChange = () => {
+  const onPageChange = () => {
     console.log('翻页')
   }
 
-  render() {
-    const { dataSource, pager, loading } = this.state
-    const { getFieldDecorator } = this.props.form
-    return (
-      <div className="schemeList">
-        <TitleTab title="方案信息导入">
-          <Form layout="inline" className="schemeList-form">
-            <div>
-              <FormItem label="三级品类">
-                {getFieldDecorator('productId', {
-                  getValueFromEvent: (e) => {
-                    const val = e.target.value;
-                    return val.replace(/[^\d]/g, '');
+  const { getFieldDecorator } = form
+  return (
+    <div className="schemeList">
+      <TitleTab title="方案信息导入">
+        <Form layout="inline" className="schemeList-form">
+          <div>
+            <FormItem label="三级品类">
+              {getFieldDecorator('productId', {
+                getValueFromEvent: (e) => {
+                  const val = e.target.value;
+                  return val.replace(/[^\d]/g, '');
+                }
+              })(
+                <Input placeholder="请输入三级品类名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
+              )}
+            </FormItem>
+            <FormItem label="状态">
+              {getFieldDecorator('mode')(
+                <Select style={{ width: 160 }} placeholder="请选择状态">
+                  {
+                    Object.keys(modeList).map((item, index) => (
+                      <Select.Option key={index} value={+item}>
+                        {modeList[item]}
+                      </Select.Option>
+                    ))
                   }
-                })(
-                  <Input placeholder="请输入三级品类名称" style={{ width: 240 }} onPressEnter={() => this.searchList()}></Input>
-                )}
-              </FormItem>
-              <FormItem label="状态">
-                {getFieldDecorator('mode')(
-                  <Select style={{ width: 160 }} placeholder="请选择状态">
-                    {
-                      Object.keys(modeList).map((item, index) => (
-                        <Select.Option key={index} value={+item}>
-                          {modeList[item]}
-                        </Select.Option>
-                      ))
-                    }
-                  </Select>
-                )}
-              </FormItem>
-              <FormItem  >
-                <Button type="primary" onClick={() => this.searchList()} >查询</Button>
-              </FormItem>
-              <FormItem >
-                <Button onClick={() => this.onReset()}>重置</Button>
-              </FormItem>
-            </div>
-            <div>
-              <Form.Item>
-                <Button type="primary">批量导入</Button>
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary">新增</Button>
-              </Form.Item>
-            </div>
-          </Form>
-        </TitleTab>
-        <Card>
-          <TableCom rowKey={"productId"} columns={this.column} dataSource={dataSource}
-            pager={pager} onPageChange={() => this.onPageChange()} loading={loading} />
-        </Card>
-      </div>
-    )
-  }
+                </Select>
+              )}
+            </FormItem>
+            <FormItem  >
+              <Button type="primary" onClick={() => searchList()} >查询</Button>
+            </FormItem>
+            <FormItem >
+              <Button onClick={() => onReset()}>重置</Button>
+            </FormItem>
+          </div>
+          <div>
+            <Form.Item>
+              <Button type="primary">批量导入</Button>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" onClick={() => setAddSchemeModal(true)}>新增</Button>
+            </Form.Item>
+          </div>
+        </Form>
+      </TitleTab>
+      <Card>
+        <TableCom rowKey={"productId"} columns={column} dataSource={dataSource}
+          pager={pager} onPageChange={() => onPageChange()} loading={loading} />
+      </Card>
+      {/* 新增方案弹窗 */}
+      {
+        addSchemeModal &&
+        <OperateSchemeModal
+          visible={addSchemeModal}
+          handleOk={() => setAddSchemeModal(false)}
+          handleCancel={() => setAddSchemeModal(false)} />
+      }
+    </div>
+  )
 }
 
 export default Form.create()(SchemeList)
