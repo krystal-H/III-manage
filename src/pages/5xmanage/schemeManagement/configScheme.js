@@ -5,18 +5,13 @@ import { fileHost } from "../../../util/utils";
 const { Option } = Select;
 const { TextArea } = Input
 
-function ConfigScheme({ nextStep, form }, ref) {
+function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   const [configInfo, setConfigInfo] = useState({})
   const [descPic, setDescPic] = useState('') // 简介图片
 
-  const configs = {
-    action: fileHost,
-    className: "upload-list-inline",
-    data: file => ({
-      appId: 31438,
-      domainType: 4 // 不加密，公开
-    })
-  };
+  useEffect(() => {
+    validateFunc(validData)
+  }, [])
 
   // 图片预览
   const handlePreview = async file => {
@@ -27,8 +22,9 @@ function ConfigScheme({ nextStep, form }, ref) {
     this.setState({
       previewImage: file.url || file.preview,
       previewVisible: true
-    });
-  };
+    })
+  }
+
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
     console.log("file,file.type", file, file.type);
@@ -73,13 +69,21 @@ function ConfigScheme({ nextStep, form }, ref) {
   }
 
   // 用于定义暴露给父组件的ref方法
-  useImperativeHandle(ref, () => {
-    return {
-      onFinish: validData
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  // useImperativeHandle(ref, () => {
+  //   return {
+  //     onFinish: validData
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // })
 
+  const uploadConfigs = {
+    action: fileHost,
+    className: "upload-list-inline",
+    data: file => ({
+      appId: 31438,
+      domainType: 4 // 不加密，公开
+    })
+  }
   const { getFieldDecorator } = form
   return (
     <div>
@@ -104,24 +108,21 @@ function ConfigScheme({ nextStep, form }, ref) {
             rules: [{ required: true, message: '请输入概况' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )
-          }
+          )}
         </Form.Item>
         <Form.Item label="特点" hasFeedback>
           {getFieldDecorator('textarea2', {
             rules: [{ required: true, message: '请输入特点' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )
-          }
+          )}
         </Form.Item>
         <Form.Item label="适合" hasFeedback>
           {getFieldDecorator('textarea3', {
             rules: [{ required: true, message: '请输入适合' }]
           })(
             <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )
-          }
+          )}
         </Form.Item>
         <Form.Item
           label="简介图"
@@ -132,7 +133,7 @@ function ConfigScheme({ nextStep, form }, ref) {
           })(
             <div>
               <Upload
-                {...configs}
+                {...uploadConfigs}
                 listType="picture"
                 defaultFileList={configInfo.descPic || []}
                 onPreview={() => handlePreview()}
@@ -154,4 +155,5 @@ function ConfigScheme({ nextStep, form }, ref) {
   )
 }
 
-export default Form.create()(forwardRef(ConfigScheme))
+// export default Form.create()(forwardRef(ConfigScheme))
+export default Form.create()(ConfigScheme)
