@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
+import AddModal from './add'
 import './index.less'
 
 const FormItem = Form.Item
@@ -13,55 +14,46 @@ const modeList = {
   2: '审核中'
 }
 
-function FirmwareMagement({ form }) {
+function PhysicalModel({ form }) {
   const [pager, setpager] = useState({
     totalRows: 0,
     pageIndex: 0
   })
   const [dataSource, setdataSource] = useState([])
+  const [addVis, setAddVis] = useState(true)
   const column = [
     {
-      title: '提交账号',
+      title: '物模型ID',
       dataIndex: '',
       key: '',
     },
     {
-      title: '提交时间',
+      title: '物模型名称',
       dataIndex: '',
       key: '',
     },
     {
-      title: '归属产品',
+      title: '语言版本',
       dataIndex: '',
       key: '',
     },
     {
-      title: '方案',
-      dataIndex: '',
-      key: '',
-    },
-    {
-      title: '模组名称',
-      dataIndex: '',
-      key: '',
-    },
-    {
-      title: '上传的固件名称',
-      dataIndex: '',
-      key: '',
-    },
-    {
-      title: '固件标识',
-      dataIndex: '',
-      key: '',
-    },
-    {
-      title: '固件版本',
+      title: '所属分类',
       dataIndex: '',
       key: '',
     },
     {
       title: '状态',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '创建时间',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '修改时间',
       dataIndex: '',
       key: '',
     },
@@ -100,23 +92,21 @@ function FirmwareMagement({ form }) {
   }
 
   const { getFieldDecorator, validateFields } = form;
+  //=======
+  const handleOk = () => {
+    setAddVis(false)
+  }
+  const handleCancel = () => {
+    setAddVis(false)
+  }
   return (
-    <div className="firmwareMagement-page">
-      <TitleTab title="用户免开发固件上传信息">
-        <Form layout="inline" className="firmwareMagement-page-form">
-          <FormItem label="产品ID">
-            {getFieldDecorator('productId', {
-              getValueFromEvent: (e) => {
-                const val = e.target.value;
-                return val.replace(/[^\d]/g, '');
-              }
-            })(
-              <Input placeholder="请输入产品ID" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
-            )}
-          </FormItem>
-          <FormItem label="状态">
+    <div className="PhysicalModel-page">
+      <TitleTab title="平台物模型管理">
+        <Form layout="inline" >
+
+          <FormItem label="所属分类">
             {getFieldDecorator('mode')(
-              <Select style={{ width: 160 }} placeholder="请选择状态">
+              <Select style={{ width: 160 }} placeholder="请选择所属分类">
                 {
                   Object.keys(modeList).map((item, index) => (
                     <Select.Option key={index} value={+item}>
@@ -127,6 +117,16 @@ function FirmwareMagement({ form }) {
               </Select>
             )}
           </FormItem>
+          <FormItem label="物模型名称">
+            {getFieldDecorator('productId', {
+              getValueFromEvent: (e) => {
+                const val = e.target.value;
+                return val.replace(/[^\d]/g, '');
+              }
+            })(
+              <Input placeholder="请输入物模型名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
+            )}
+          </FormItem>
           <FormItem  >
             <Button type="primary" onClick={() => searchList()} >查询</Button>
           </FormItem>
@@ -134,13 +134,20 @@ function FirmwareMagement({ form }) {
             <Button onClick={() => onReset()}>重置</Button>
           </FormItem>
         </Form>
+        <div className="PhysicalModel-title">
+          <Button type="primary" onClick={() => { setAddVis(true) }} >新增物模型</Button>
+          <Button onClick={() => searchList()} >批量导入</Button>
+        </div>
       </TitleTab>
       <Card>
         <TableCom rowKey={"productId"} columns={column} dataSource={dataSource}
           pager={pager} onPageChange={() => onPageChange()} />
       </Card>
+      {
+        addVis && <AddModal addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} />
+      }
     </div>
   )
 }
 
-export default Form.create()(FirmwareMagement)
+export default Form.create()(PhysicalModel)

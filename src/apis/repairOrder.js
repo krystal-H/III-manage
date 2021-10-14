@@ -6,12 +6,24 @@ const prefix = '/workOrder'
 export const getList = (pager) => {
     return axios.request({
         url: '/manage-open/workOrder/getWorkOrderList',
-        params: pager,
+        data: pager,
         method: 'post',
-        headers:{
+        headers: {
             // 'Content-Type':'application/json',
             // 'dev-name':'dyl'
-          }
+        }
+    })
+};
+//上传
+export const upFile = (pager) => {
+    return axios.request({
+        url: "/v4/web/tencentcloud/upload",
+        method: 'post',
+        needFormData: true,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data:pager
     })
 };
 
