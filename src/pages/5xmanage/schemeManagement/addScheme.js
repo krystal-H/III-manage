@@ -18,7 +18,7 @@ const radioStyle = {
 function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const [stepcurrent, setStepcurrent] = useState(2)
   const refConfig = useRef()
-  const [validArr, setValidArr] = useState([])
+  const refDetail = useRef()
 
   // 上一步
   const clickPrevious = () => {
@@ -37,21 +37,11 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
     } else if (stepcurrent === 1) {
       console.log(refConfig, '-----------refConfig')
       refConfig.current.onFinish()
-      // validArr.forEach(item => {
-      //   item()
-      // })
+    } else if (stepcurrent === 2) {
+      console.log(refDetail, '-----------refDetail')
+      refDetail.current.onFinish()
     }
   }
-
-  const validateFunc = (cb) => {
-    let arr = []
-    arr.push(cb)
-    setValidArr(arr)
-  }
-
-  // useEffect(() => {
-  //   console.log(validArr, 'validArr')
-  // }, [validArr])
 
   // 选择三级品类
   const handleSelectChange = () => {
@@ -130,14 +120,14 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
           stepcurrent === 1 &&
           <ConfigSchemeBrief
             wrappedComponentRef={refConfig}
-            // validateFunc={(cb) => validateFunc(cb)}
             nextStep={nextStep} />
         }
 
         {/* 配置方案详情 */}
         {
           stepcurrent === 2 &&
-          <ConfigSchemeDetail />
+          <ConfigSchemeDetail
+            wrappedComponentRef={refDetail} />
         }
 
       </div>

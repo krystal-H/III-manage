@@ -1,0 +1,39 @@
+@charset 'utf-8';
+
+.config-scheme-detail {
+  .config-table {
+    .ant-table-body{
+      &::-webkit-scrollbar{
+        background:rgba(255,255,255,1);
+        width:8px;
+      }
+      
+      &::-webkit-scrollbar-thumb{
+          background:rgba(217,217,217,1);
+          border-radius:5px;
+      }
+    }
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      padding: 6px !important;
+    }
+  }
+  // 控制面板
+  .control-panel-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    .panel-item {
+      width: 134px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      &-pic {
+        height: 188px;
+        background-color: #F8F9FB;
+      }
+      &-tip {
+        text-align: center;
+      }
+    }
+  }
+}
