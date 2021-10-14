@@ -48,9 +48,9 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
     setValidArr(arr)
   }
 
-  useEffect(() => {
-    console.log(validArr, 'validArr')
-  }, [validArr])
+  // useEffect(() => {
+  //   console.log(validArr, 'validArr')
+  // }, [validArr])
 
   // 选择三级品类
   const handleSelectChange = () => {

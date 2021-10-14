@@ -1,33 +1,22 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Button, Steps, Form, Input, Select, Radio, Upload, Icon, message } from 'antd';
+import { Modal, Button, Form, Input, Select, Upload, Icon, message } from 'antd';
 import { fileHost } from "../../../util/utils";
 
-const { Option } = Select;
+const { Option } = Select
 const { TextArea } = Input
 
 function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   const [configInfo, setConfigInfo] = useState({})
   const [descPic, setDescPic] = useState('') // 简介图片
+  const [previewVisible, setPreviewVisible] = useState(false)
 
+  // 上传图片后绑定方法到父组件
   useEffect(() => {
     validateFunc(validData)
-  }, [])
-
-  // 图片预览
-  const handlePreview = async file => {
-    if (!file.url && !file.preview) {
-      file.preview = await this.getBase64(file.originFileObj);
-    }
-
-    this.setState({
-      previewImage: file.url || file.preview,
-      previewVisible: true
-    })
-  }
+  }, [descPic])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
-    console.log("file,file.type", file, file.type);
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       message.error("只能上传JPG或者PNG格式");
@@ -47,7 +36,6 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   // 上传文件修改
   const handleChange = (info) => {
     const { file, fileList } = info;
-    console.log('info,', info)
     if (file.status === "done") {
       setDescPic(file.response.data.url)
     } else if (file.status === "error") {
@@ -62,6 +50,7 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   const validData = () => {
     form.validateFields((err, values) => {
       if (!err) {
+        values.descPic = descPic
         console.log('Received values of form: ', values);
         nextStep()
       }
@@ -79,10 +68,7 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   const uploadConfigs = {
     action: fileHost,
     className: "upload-list-inline",
-    data: file => ({
-      appId: 31438,
-      domainType: 4 // 不加密，公开
-    })
+    data: file => ({ appId: 31438, domainType: 4 })
   }
   const { getFieldDecorator } = form
   return (
@@ -136,7 +122,7 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
                 {...uploadConfigs}
                 listType="picture"
                 defaultFileList={configInfo.descPic || []}
-                onPreview={() => handlePreview()}
+                onPreview={() => setPreviewVisible(true)}
                 beforeUpload={modulePictureBeforeUpload}
                 accept="image/png,image/jpeg"
                 onChange={handleChange}>
@@ -144,7 +130,8 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
                   null : (<Button><Icon type="upload" /> 上传图片</Button>)
                 }
               </Upload>
-              <Modal visible={false} footer={null}>
+              <Modal visible={previewVisible} footer={null}
+                onCancel={() => setPreviewVisible(false)}>
                 <img alt="example" style={{ width: "100%" }} src={descPic} />
               </Modal>
             </div>
@@ -155,5 +142,5 @@ function ConfigScheme({ nextStep, form, validateFunc }, ref) {
   )
 }
 
-// export default Form.create()(forwardRef(ConfigScheme))
+// export default Form.create()(forwardRef(ConfigScheme))  暴露不出去onFinish方法
 export default Form.create()(ConfigScheme)
