@@ -1,0 +1,2 @@
+export const SAVE_CATEGORY = "SAVE_CATEGORY"
+export const SAVE_SCHEME_BRIEF = "SAVE_SCHEME_BRIEF"

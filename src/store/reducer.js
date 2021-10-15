@@ -34,6 +34,7 @@ import { reducer as equipmentReducer } from '../pages/businessdata/equipment/sto
 import equipmentDataReducer from '../pages/businessdata/equipmentData/store/reducer';
 
 import { reducer as appManagementReducer} from '../pages/businessdata/AppManagement/store' //应用管理
+import {reducer as schemeManagementReducer} from '../pages/5xmanage/schemeManagement/store'
 
 const reducer = combineReducers({
 
@@ -153,6 +154,8 @@ const reducer = combineReducers({
    */
   //dataAnalysis: dataAnalysisReducer,
 
+  // 5.x方案管理
+  schemeMag: schemeManagementReducer
 
 });
 

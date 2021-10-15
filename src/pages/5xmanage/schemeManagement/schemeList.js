@@ -21,7 +21,7 @@ function SchemeList({ form }) {
   const [pager, setPager] = useState({ totalRows: 0, pageIndex: 0 })
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false) //antd的loading控制
-  const [addSchemeModal, setAddSchemeModal] = useState(true)
+  const [addSchemeModal, setAddSchemeModal] = useState(false)
 
   const column = [
     { title: "修改账号", dataIndex: 'productName', key: 'productName', render: (text) => <span title={text}>{text}</span> },
