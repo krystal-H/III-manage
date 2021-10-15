@@ -3,6 +3,7 @@ import { Modal, Button, Steps, Form, Tabs } from 'antd';
 import ChooseScheme from './chooseScheme';
 import ConfigSchemeBrief from './configSchemeBrief'
 import ConfigSchemeDetail from './configSchemeDetail'
+import { cloneDeep } from "lodash"
 
 import './addScheme.less'
 
@@ -15,6 +16,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const refScheme = useRef()
   const refConfig = useRef()
   const refDetail = useRef()
+  const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
 
   // 上一步
   const clickPrevious = () => {
@@ -24,6 +26,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   // 下一步验证
   const clickNext = () => {
     if (stepcurrent === 0) {
+      console.log(refScheme, 'refScheme')
       refScheme.current.onFinish()
     } else if (stepcurrent === 1) {
       refConfig.current.onFinish()
@@ -32,9 +35,32 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
     }
   }
 
-  // 当前步骤
-  const setStepCur = (num = 0) => {
+  // 切换步骤
+  const setStepCur = (num = 0, val) => {
+    if (stepcurrent === 0) {
+      setSubObj(pre => {
+        let obj = cloneDeep(pre)
+        obj.one = cloneDeep(val)
+        return obj
+      })
+    } else if (stepcurrent === 1) {
+      setSubObj(pre => {
+        let obj = cloneDeep(pre)
+        obj.two = cloneDeep(val)
+        return obj
+      })
+    }
     setStepcurrent(num)
+  }
+
+  // 提交所有数据
+  const commitAll = (values) => {
+    let params = {
+      ...subObj.one,
+      ...subObj.two,
+      ...values
+    }
+    console.log('提交的数据', params)
   }
 
   return (
@@ -69,7 +95,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
             <TabPane tab="配置方案详情" key={'2'}>
               <ConfigSchemeDetail
                 wrappedComponentRef={refDetail}
-                setStepCur={setStepCur} />
+                setStepCur={setStepCur}
+                commitAll={commitAll} />
             </TabPane>
           </Tabs>
         </div>

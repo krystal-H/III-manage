@@ -14,7 +14,7 @@ function ChooseScheme({ form, setStepCur }, ref) {
   // 用于定义暴露给父组件的ref方法
   useImperativeHandle(ref, () => {
     return {
-      onFinish: validData
+      onFinish: handleSubmit
     }
   })
 
@@ -28,11 +28,11 @@ function ChooseScheme({ form, setStepCur }, ref) {
   }
 
   // 表单验证
-  const validData = () => {
+  const handleSubmit = () => {
     form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        setStepCur(1)
+        setStepCur(1, values)
       }
     })
   }

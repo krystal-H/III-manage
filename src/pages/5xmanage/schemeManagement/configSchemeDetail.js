@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'rea
 import { Select, Form, Table } from 'antd';
 import './configSchemeDetail.less'
 
-function ConfigSchemeDetail({ form }, ref) {
+function ConfigSchemeDetail({ form, commitAll }, ref) {
   const [dataSource, setDataSource] = useState([])
   const columns = [
     {
@@ -36,6 +36,8 @@ function ConfigSchemeDetail({ form }, ref) {
     form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values)
+        values.moduleIds = values.moduleIds.join('#')
+        commitAll(values)
       }
     })
   }

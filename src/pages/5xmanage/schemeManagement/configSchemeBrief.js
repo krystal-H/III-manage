@@ -5,14 +5,11 @@ import { fileHost } from "../../../util/utils";
 const { Option } = Select
 const { TextArea } = Input
 
-function ConfigSchemeBrief({ setStepCur, form, validateFunc }, ref) {
+function ConfigSchemeBrief({ setStepCur, form }, ref) {
   const [configInfo, setConfigInfo] = useState({})
   const [descPic, setDescPic] = useState('') // 简介图片
   const [previewVisible, setPreviewVisible] = useState(false)
 
-  useEffect(() => {
-    console.log(descPic, 'descPicdescPicdescPic')
-  }, [descPic])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -52,7 +49,7 @@ function ConfigSchemeBrief({ setStepCur, form, validateFunc }, ref) {
       if (!err) {
         values.picture = descPic
         console.log('Received values of form: ', values);
-        setStepCur(2)
+        setStepCur(2, values)
       }
     })
   }
@@ -62,7 +59,6 @@ function ConfigSchemeBrief({ setStepCur, form, validateFunc }, ref) {
     return {
       onFinish: validData
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [descPic])
 
   const uploadConfigs = {
@@ -143,5 +139,4 @@ function ConfigSchemeBrief({ setStepCur, form, validateFunc }, ref) {
 }
 
 ConfigSchemeBrief = forwardRef(ConfigSchemeBrief)
-// export default Form.create()(forwardRef(ConfigSchemeBrief))  // 暴露不出去onFinish方法
 export default Form.create()(ConfigSchemeBrief)
