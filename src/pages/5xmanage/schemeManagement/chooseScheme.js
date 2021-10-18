@@ -9,7 +9,7 @@ const radioStyle = {
   lineHeight: '30px',
 }
 
-function ChooseScheme({ form, setStepCur }, ref) {
+function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
 
   // 用于定义暴露给父组件的ref方法
   useImperativeHandle(ref, () => {
@@ -23,8 +23,8 @@ function ChooseScheme({ form, setStepCur }, ref) {
   }
 
   // 选择三级品类
-  const handleSelectChange = () => {
-
+  const handleSelectChange = (val) => {
+    console.log('选择的品类')
   }
 
   // 表单验证
@@ -49,9 +49,13 @@ function ChooseScheme({ form, setStepCur }, ref) {
         })(
           <Select placeholder="请选择产品三级分类"
             style={{ width: 220 }}
-            onChange={() => handleSelectChange()}>
-            <Option value="1">冰箱</Option>
-            <Option value="2">洗衣机</Option>
+            onChange={(val) => handleSelectChange(val)}>
+            {
+              thirdCategoryList && thirdCategoryList.length > 0 &&
+              thirdCategoryList.map(item => (
+                <Option key={item.deviceTypeId} value={item.deviceTypeId}>{item.deviceTypeName}</Option>
+              ))
+            }
           </Select>
         )}
       </Form.Item>

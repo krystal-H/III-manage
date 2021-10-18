@@ -8,3 +8,12 @@ export const schemeManageListRequest = (params) => {
       method: 'get'
   })
 }
+
+// 获取品类
+export const getThirdCategory = (params) => {
+  return axios.request({
+    url: '/deviceCategory/deviceType/all',
+    params,
+    method: 'get'
+  })
+}

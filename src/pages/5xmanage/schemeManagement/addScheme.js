@@ -4,6 +4,7 @@ import ChooseScheme from './chooseScheme';
 import ConfigSchemeBrief from './configSchemeBrief'
 import ConfigSchemeDetail from './configSchemeDetail'
 import { cloneDeep } from "lodash"
+import { getThirdCategory } from '../../../apis/schemeManagement'
 
 import './addScheme.less'
 
@@ -17,6 +18,18 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const refConfig = useRef()
   const refDetail = useRef()
   const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
+  const [thirdCategoryList, setThirdCategoryList] = useState([])
+
+  // 获取三级品类
+  const getCategory = () => {
+    getThirdCategory({}).then(res => {
+      setThirdCategoryList(res.data)
+    })
+  }
+
+  useEffect(() => {
+    getCategory()
+  }, [])
 
   // 上一步
   const clickPrevious = () => {
@@ -55,11 +68,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
 
   // 提交所有数据
   const commitAll = (values) => {
-    let params = {
-      ...subObj.one,
-      ...subObj.two,
-      ...values
-    }
+    let params = { ...subObj.one, ...subObj.two, ...values }
     console.log('提交的数据', params)
   }
 
@@ -84,6 +93,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
           <Tabs activeKey={stepcurrent + ""} animated={false}>
             <TabPane tab="选择品类方案" key={'0'}>
               <ChooseScheme
+                thirdCategoryList={thirdCategoryList}
                 wrappedComponentRef={refScheme}
                 setStepCur={setStepCur} />
             </TabPane>
