@@ -5,13 +5,10 @@ const prefix = '/workOrder'
 // 获取订单列表
 export const getList = (pager) => {
     return axios.request({
-        url: '/manage-open/workOrder/getWorkOrderList',
+        url: '/manage-open/panel/template/getTemplateListByPage',
         data: pager,
         method: 'post',
-        headers: {
-            // 'Content-Type':'application/json',
-            // 'dev-name':'dyl'
-        }
+        headers: {}
     })
 };
 // 获取订单类型

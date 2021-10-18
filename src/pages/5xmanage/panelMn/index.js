@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
 import TitleTab from '../../../components/TitleTab';
+import { getList } from '../../../apis/panelMn'
 import TableCom from '../../../components/Table';
+import { DateTool } from '../../../util/utils';
 import './index.less'
 
 const FormItem = Form.Item
@@ -13,28 +15,21 @@ const modeList = {
   2: '审核中'
 }
 
-function PhysicalModel({ form }) {
-  const [pager, setpager] = useState({
-    totalRows: 0,
-    pageIndex: 0
-  })
+function PanelMn({ form }) {
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
+  const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setdataSource] = useState([])
   const [addVis, setAddVis] = useState(true)
   const column = [
     {
-      title: '物模型ID',
-      dataIndex: '',
-      key: '',
+      title: '面板ID',
+      dataIndex: 'templateId',
+      key: 'templateId',
     },
     {
-      title: '物模型名称',
-      dataIndex: '',
-      key: '',
-    },
-    {
-      title: '语言版本',
-      dataIndex: '',
-      key: '',
+      title: '标准面板名称',
+      dataIndex: 'templateName',
+      key: 'templateName',
     },
     {
       title: '所属分类',
@@ -43,18 +38,24 @@ function PhysicalModel({ form }) {
     },
     {
       title: '状态',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'status',
+      key: 'status',
     },
     {
       title: '创建时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'createTime',
+      key: 'createTime',
+      render(createTime) {
+        return createTime && DateTool.utcToDev(createTime);
+      }
     },
     {
       title: '修改时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'modifyTime',
+      key: 'modifyTime',
+      render(modifyTime) {
+        return modifyTime && DateTool.utcToDev(modifyTime);
+      }
     },
     {
       title: '操作',
@@ -86,8 +87,39 @@ function PhysicalModel({ form }) {
 
   }
 
-  const onPageChange = () => {
+  //页码改变
+  const pagerChange = (pageIndex, pageRows) => {
+    if (pageRows === pager.pageRows) {
+      setPager(pre => {
+        let obj = JSON.parse(JSON.stringify(pre))
+        return Object.assign(obj, { pageIndex, pageRows })
+      })
+    } else {
+      setPager(pre => {
+        let obj = JSON.parse(JSON.stringify(pre))
+        return Object.assign(obj, { pageIndex: 1, pageRows })
+      })
+    }
 
+  }
+  useEffect(() => {
+    getTableData()
+  }, [pager.pageRows, pager.pageIndex])
+  //列表
+  const getTableData = () => {
+    let params = {}
+    params = { ...params, ...pager }
+    getList(params).then(res => {
+      if (res.data.code == 0) {
+        setdataSource(res.data.data.list)
+        setTotalRows(res.data.data.pager.totalRows)
+      }
+
+    })
+  }
+  //重置
+  const handleReset = () => {
+    form.resetFields();
   }
 
   const { getFieldDecorator, validateFields } = form;
@@ -99,8 +131,8 @@ function PhysicalModel({ form }) {
     setAddVis(false)
   }
   return (
-    <div className="PhysicalModel-page">
-      <TitleTab title="平台物模型管理">
+    <div className="panelMn-page">
+      <TitleTab title="平台标准面板管理">
         <Form layout="inline" >
 
           <FormItem label="所属分类">
@@ -116,34 +148,37 @@ function PhysicalModel({ form }) {
               </Select>
             )}
           </FormItem>
-          <FormItem label="物模型名称">
-            {getFieldDecorator('productId', {
-              getValueFromEvent: (e) => {
-                const val = e.target.value;
-                return val.replace(/[^\d]/g, '');
-              }
-            })(
-              <Input placeholder="请输入物模型名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
+          <FormItem label="面板名称">
+            {getFieldDecorator('productId', {})(
+              <Input placeholder="请输入面板名称" style={{ width: 240 }} ></Input>
             )}
           </FormItem>
           <FormItem  >
             <Button type="primary" onClick={() => searchList()} >查询</Button>
           </FormItem>
           <FormItem >
-            <Button onClick={() => onReset()}>重置</Button>
+            <Button onClick={() => handleReset()}>重置</Button>
           </FormItem>
         </Form>
-        <div className="PhysicalModel-title">
-          <Button type="primary" onClick={() => { setAddVis(true) }} >新增物模型</Button>
+        <div className="panelMn-title">
+          <Button type="primary" onClick={() => { setAddVis(true) }} >新增标准面板</Button>
           <Button onClick={() => searchList()} >批量导入</Button>
         </div>
       </TitleTab>
       <Card>
-        <TableCom rowKey={"productId"} columns={column} dataSource={dataSource}
-          pager={pager} onPageChange={() => onPageChange()} />
+        <TableCom rowKey={"templateId"} columns={column} dataSource={dataSource}
+          pagination={{
+            defaultCurrent: 1,
+            current: pager.pageIndex,
+            onChange: pagerChange,
+            pageSize: pager.pageRows,
+            total: totalRows,
+            showQuickJumper: true,
+            showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+          }} />
       </Card>
     </div>
   )
 }
 
-export default Form.create()(PhysicalModel)
+export default Form.create()(PanelMn)

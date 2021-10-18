@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Cascader, message } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
-import { getList } from '../../../apis/repairOrder'
+import { getList, getOrderType, getCallback } from '../../../apis/repairOrder'
 import { DateTool } from '../../../util/utils';
 import './index.less'
-import openApiDetail from '../../configdata/openApiConfig/openApiDetail';
-
 const FormItem = Form.Item
 const TitleOption = TitleTab.Option
 
@@ -15,8 +13,8 @@ const modeList = {
     1: '已发布',
     2: '审核中'
 }
-
-function PhysicalModel({ form }) {
+const { TextArea } = Input;
+function rapairModel({ form }) {
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
@@ -53,14 +51,40 @@ function PhysicalModel({ form }) {
         {
             title: "操作",
             render: (text, record) => <span>
-                <a onClick={() => { openApiDetail(record) }} style={{marginRight:'10px'}}>详情</a>
-                {!record.status && <a onClick={() => { openApiDetail(record) }}>回复</a>}
+                <a onClick={() => { openApiDetail(record) }} style={{ marginRight: '10px' }}>详情</a>
+                {!record.status && <a onClick={() => { openReply(record) }}>回复</a>}
             </span>
         }
     ];
     useEffect(() => {
+        getType()
+    }, [])
+    useEffect(() => {
         getTableData()
     }, [pager.pageRows, pager.pageIndex])
+    const [options, setOptions] = useState([])
+    const getType = () => {
+        getOrderType().then(res => {
+            if (res.data.code == 0) {
+                let options = []
+                for (let key in res.data.data.problemTypeOneLevel) {
+                    let item = {
+                        value: key,
+                        label: res.data.data.problemTypeOneLevel[key],
+                        children: []
+                    }
+                    for (let key2 in res.data.data.problemTypeTwoLevel[key]) {
+                        item.children.push({
+                            value: key2,
+                            label: res.data.data.problemTypeTwoLevel[key][key2],
+                        })
+                    }
+                    options.push(item)
+                }
+                setOptions(options)
+            }
+        })
+    }
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
         if (pageRows === pager.pageRows) {
@@ -77,16 +101,16 @@ function PhysicalModel({ form }) {
 
     }
 
-    const { getFieldDecorator, validateFields } = form;
+    const { getFieldDecorator, validateFields, getFieldsValue } = form;
     //重置
     const handleReset = () => {
-
+        form.resetFields();
     }
     //搜索
     const handleFilter = () => {
-
+        getTableData()
     }
-    //=======
+    //=======详情
     const openApiDetail = (data) => {
         setDetailInfo(data)
         setAddVis(true)
@@ -97,9 +121,46 @@ function PhysicalModel({ form }) {
     const handleCancel = () => {
         setAddVis(false)
     }
+    //====回复
+    const [replyVis, setReplyVis] = useState(false)
+    const openReply = (record) => {
+        setDetailInfo(record)
+        setReplyVis(true)
+    }
+    //回复
+    const handlereplyOk = () => {
+        if (!replyContent && !replyContent.trim()) {
+            return
+        }
+        let params = {
+            workOrderId: detailInfo.workOrderId,
+            replyContent: replyContent
+        }
+        getCallback(params).then(res => {
+            if (res.data.code == 0) {
+                setReplyVis(false)
+                message.success("回复成功");
+                getTableData()
+            }
+        })
+
+    }
+    const handlereplyCancel = () => {
+        setReplyVis(false)
+    }
+    //列表
     const getTableData = () => {
         let params = {}
-        getList(pager).then(res => {
+        if (getFieldsValue().status) {
+            params.status = getFieldsValue().status
+        }
+        let id = getFieldsValue().userType
+        if (id) {
+            params.problemTypeOneLevel = id[0]
+            params.problemTypeTwoLevel = id[1]
+        }
+        params = { ...params, ...pager }
+        getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.list)
                 setTotalRows(res.data.data.pager.totalRows)
@@ -107,6 +168,12 @@ function PhysicalModel({ form }) {
 
         })
     }
+    const [replyContent, setReplyContent] = useState('')
+    const inputChange = e => {
+        e.persist()
+        setReplyContent(e.target.value)
+    }
+
     return (
         <div className="PhysicalModel-page">
             <TitleTab title="平台物模型管理">
@@ -114,17 +181,14 @@ function PhysicalModel({ form }) {
 
                     <Form.Item label="问题分类">
                         {getFieldDecorator('userType', {})(
-                            <Select style={{ width: 160 }} placeholder="请选择">
-                                <Option value="male">male</Option>
-                                <Option value="female">female</Option>
-                            </Select>
+                            <Cascader options={options} style={{ width: '412px' }} popupClassName='order-Cascader' />
                         )}
                     </Form.Item>
                     <Form.Item label="状态">
-                        {getFieldDecorator('userType', {})(
-                            <Select style={{ width: 160 }} placeholder="请选择">
-                                <Option value="male">male</Option>
-                                <Option value="female">female</Option>
+                        {getFieldDecorator('status', {})(
+                            <Select style={{ width: 160 }} placeholder="请选择" allowClear>
+                                <Option value="1">已回复</Option>
+                                <Option value="0">未回复</Option>
                             </Select>
                         )}
                     </Form.Item>
@@ -189,17 +253,28 @@ function PhysicalModel({ form }) {
                             <div style={{ margin: '0 -24px' }}>
                                 <Divider />
                             </div>
-                            <div className='feedback-title'>回复详情：</div>
-                            <div className='feedback-dec'>
-                                {detailInfo.replyContent}
+                            <div className='order-item'>
+                                <div className='feedback-title'>回复详情：</div>
+                                <div className='feedback-dec'>
+                                    {detailInfo.replyContent}
+                                </div>
                             </div>
                         </div>) : null
                     }
 
                 </div>
             </Modal>
+            <Modal
+                title="回复"
+                visible={replyVis}
+                onOk={handlereplyOk}
+                onCancel={handlereplyCancel}
+                width='700px'
+            >
+                <TextArea rows={4} onChange={inputChange} />
+            </Modal>
         </div>
     )
 }
 
-export default Form.create()(PhysicalModel)
+export default Form.create()(rapairModel)
