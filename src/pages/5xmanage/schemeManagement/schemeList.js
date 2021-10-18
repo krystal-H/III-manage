@@ -4,17 +4,23 @@ import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import TableHOC from '../../../components/TableHOC';
 import OperateSchemeModal from './addScheme'
-import { schemeManageListRequest } from '../../../apis/schemeManagement'
+import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
+import { DateTool } from "../../../util/utils";
 
 import './schemeList.less'
 
 const FormItem = Form.Item
 const TitleOption = TitleTab.Option
 
-const modeList = {
-  0: '开发中',
-  1: '已发布',
-  2: '审核中'
+const statusMap = {
+  1: '草稿',
+  2: '已发布'
+}
+
+const schemeTypeMap = {
+  1: '免开发',
+  2: 'MCU方案',
+  3: 'Soc方案'
 }
 
 function SchemeList({ form }) {
@@ -22,58 +28,129 @@ function SchemeList({ form }) {
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [addSchemeModal, setAddSchemeModal] = useState(false)
+  const [thirdCategoryList, setThirdCategoryList] = useState([])
+  const [deviceTypeId, setDeviceTypeId] = useState('')
+  const [status, setStatus] = useState('')
 
   const column = [
-    { title: "修改账号", dataIndex: 'productName', key: 'productName', render: (text) => <span title={text}>{text}</span> },
-    { title: "更新时间", dataIndex: 'productId', key: 'productId' },
-    { title: "品类", dataIndex: 'allCategoryName', key: 'allCategoryName', render: (text) => <span title={text}>{text}</span> },
-    { title: "免开发方案", dataIndex: '', key: '', render: (item) => (<span>{modeList[item] || ''}</span>) },
-    { title: "MCU方案", dataIndex: '', key: '', render: (text) => <span title={text}>{text}</span> },
-    { title: "Soc方案", dataIndex: '', key: '', render: (text) => <span title={text}>{text}</span> },
-    { title: "状态", dataIndex: '', key: '', render: (item) => (<span>{modeList[item] || ''}</span>) },
+    { title: "修改账号", dataIndex: 'account', key: 'account', render: (text) => <span title={text}>{text}</span> },
+    { title: "品类", dataIndex: 'deviceType', key: 'deviceType', render: (text) => <span title={text}>{text}</span> },
+    { title: "方案类型", dataIndex: 'type', key: 'type', render: (item) => (<span>{schemeTypeMap[item] || ''}</span>) },
+    { title: "方案名称", dataIndex: 'name', key: 'name', render: (text) => <span title={text}>{text}</span> },
     {
-      title: "操作", dataIndex: 'productId', key: 'operation', width: 66,
-      render: (item) => {
+      title: "状态",
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        const color = ["", "green", "gray"];
+        return <span style={{ color: `${color[status]}` }}>{status === 1 ? "草稿" : "已发布"}</span>
+      }
+    },
+    {
+      title: "更新时间",
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render: (updateTime) => {
+        let time = DateTool.utcToDev(updateTime);
+        return <span title={time}>{time}</span>
+      }
+    },
+    {
+      title: "操作", dataIndex: 'productId', key: 'operation', width: 180,
+      render: (text, record) => {
         return (
-          <Tooltip placement="top" title="查看">
-            <Button icon="info" shape="circle" size="small" />
-          </Tooltip>
+          <div>{generateOperationBtn(record)}</div>
         )
       }
     }
   ]
 
+  // 已发布操作按钮的数据源
+  const releaseBtnArr = () => {
+    return [
+      { title: "查看", icon: "info", key: 'View' },
+    ]
+  }
+  // 未发布操作按钮数据源
+  const unReleaseBtnArr = () => {
+    return [
+      { title: "发布", icon: "cloud-upload", key: 'release' },
+      { title: "编辑", icon: "edit", key: 'edit' },
+    ]
+  }
+
+  // 初始化表格按钮方法1
+  const generateOperationBtn = (record) => {
+    if (record.status === 2) { // 已发布
+      let btnarr = releaseBtnArr();
+      return btnarr.map((item, index) => (
+        createOperationBtn(item, record)
+      ))
+    } else { // 草稿
+      let btnarr = unReleaseBtnArr();
+      return btnarr.map((item, index) => (
+        createOperationBtn(item, record)
+      ))
+    }
+  }
+
+  // 初始化表格按钮方法2
+  const createOperationBtn = (item, record) => {
+    return (
+      <Tooltip key={item.key} placement="top" title={item.title}>
+        <Button style={{ marginLeft: "10px" }}
+          shape="circle"
+          size="small"
+          icon={item.icon}
+          key={item.templateId}
+          onClick={() => this.handleOperation(item, record)}
+        />
+      </Tooltip>)
+  }
+
   // 查询列表
   const getList = () => {
     setLoading(true)
     let params = {
-      pageIndex: 1,
-      moduleType: "",
-      hetModuleTypeName: "",
-      pageRows: 10,
+      deviceTypeId,
+      status,
+      current: 1,
+      size: 10
+      // pageIndex: 1,
+      // pageRows: 10,
     }
     schemeManageListRequest(params).then(res => {
-      console.log(res, '-----------')
+      setDataSource(res.data.data.records)
     }).finally(() => { setLoading(false) })
+  }
+
+  // 查询品类
+  const getThirdCategory = () => {
+    getThirdCategoryRequest({}).then(res => {
+      setThirdCategoryList(res.data.data)
+    })
   }
 
   useEffect(() => {
     getList()
+    getThirdCategory()
   }, [])
 
-  // 查询列表
-  const searchList = () => {
-    console.log('查询列表')
-  }
+  useEffect(() => {
+    getList()
+  }, [deviceTypeId, status])
 
   // 重置
   const onReset = () => {
-    console.log('重置')
+    form.resetFields()
+    setDeviceTypeId('')
+    setStatus('')
+    getList()
   }
 
   // 翻页
-  const onPageChange = () => {
-    console.log('翻页')
+  const onPageChange = (val) => {
+    console.log('翻页', val)
   }
 
   const { getFieldDecorator } = form
@@ -83,22 +160,30 @@ function SchemeList({ form }) {
         <Form layout="inline" className="schemeList-form">
           <div>
             <FormItem label="三级品类">
-              {getFieldDecorator('productId', {
-                getValueFromEvent: (e) => {
-                  const val = e.target.value;
-                  return val.replace(/[^\d]/g, '')
-                }
-              })(
-                <Input placeholder="请输入三级品类名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
+              {getFieldDecorator('deviceTypeId')(
+                <Select
+                  showSearch
+                  allowClear
+                  style={{ width: 240 }}
+                  placeholder="搜索产品品类"
+                  showSearch optionFilterProp="children"
+                  onChange={(val) => setDeviceTypeId(val)}>
+                  {
+                    thirdCategoryList && thirdCategoryList.length > 0 &&
+                    thirdCategoryList.map(item => (
+                      <Select.Option key={item.deviceTypeId} value={item.deviceTypeId}>{item.deviceTypeName}</Select.Option>
+                    ))
+                  }
+                </Select>
               )}
             </FormItem>
             <FormItem label="状态">
-              {getFieldDecorator('mode')(
-                <Select style={{ width: 160 }} placeholder="请选择状态">
+              {getFieldDecorator('status')(
+                <Select style={{ width: 160 }} placeholder="请选择状态" onChange={(val) => setStatus(val)}>
                   {
-                    Object.keys(modeList).map((item, index) => (
+                    Object.keys(statusMap).map((item, index) => (
                       <Select.Option key={index} value={+item}>
-                        {modeList[item]}
+                        {statusMap[item]}
                       </Select.Option>
                     ))
                   }
@@ -106,7 +191,7 @@ function SchemeList({ form }) {
               )}
             </FormItem>
             <FormItem  >
-              <Button type="primary" onClick={() => searchList()} >查询</Button>
+              <Button type="primary" onClick={() => getList()} >查询</Button>
             </FormItem>
             <FormItem >
               <Button onClick={() => onReset()}>重置</Button>
