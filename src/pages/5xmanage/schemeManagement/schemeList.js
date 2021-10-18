@@ -120,7 +120,11 @@ function SchemeList({ form }) {
       // pageRows: 10,
     }
     schemeManageListRequest(params).then(res => {
-      setDataSource(res.data.data.records)
+      let data = res.data.data.records;
+      // data.map((item, index) => {
+      //   item["key"] = item.id;
+      // })
+      setDataSource(data)
     }).finally(() => { setLoading(false) })
   }
 
@@ -208,7 +212,7 @@ function SchemeList({ form }) {
         </Form>
       </TitleTab>
       <Card>
-        <TableCom rowKey={"productId"} columns={column} dataSource={dataSource}
+        <TableCom rowKey="id" columns={column} dataSource={dataSource}
           pager={pager} onPageChange={() => onPageChange()} loading={loading} />
       </Card>
       {/* 新增方案弹窗 */}

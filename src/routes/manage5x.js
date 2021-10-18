@@ -2,9 +2,10 @@ import asyncComponent from '../lazy'
 
 // 方案管理
 const schemeManagement = asyncComponent(() => import( /* webpackChunkName: "schemeManagement" */ '../pages/5xmanage/schemeManagement'))
-
 // 免开发上传固件管理
 const FirmwareMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/firmwareMagement'))
+// 模组固件管理
+const moduleManagement = asyncComponent(() => import('../pages/5xmanage/moduleFirmwareMagment'))
 
 // 工单管理
 const orderMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/repairOrder'))
@@ -32,6 +33,11 @@ const route = {
       component: FirmwareMagement,
     },
     {
+      name: '模组&固件管理',
+      path: '/5xmanage/moduleFirmwareManagement',
+      component: moduleManagement
+    },
+    {
       name: '工单管理',
       path: '/5xmanage/repairOrder',
       component: orderMagement,
@@ -50,11 +56,7 @@ const route = {
       name: '标准面板管理',
       path: '/5xmanage/panelModelMagement',
       component: panelMagement,
-    },
-    {
-      name: '模组&固件管理'
-    },
-    
+    },    
   ]
 
 }
