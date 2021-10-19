@@ -3,6 +3,7 @@ import { Modal, Button, Steps, Form, Tabs } from 'antd'
 import { cloneDeep } from "lodash"
 import StepFirst from './stepFirst'
 import StepSecond from './stepSecond'
+import StepThird from './stepThird'
 
 import './addScheme.less'
 
@@ -11,9 +12,10 @@ const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
 function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
-  const [stepcurrent, setStepcurrent] = useState(1)
+  const [stepcurrent, setStepcurrent] = useState(2)
   const ref1 = useRef()
   const ref2 = useRef()
+  const ref3 = useRef()
   const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
 
   // 上一步
@@ -27,6 +29,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
       ref1.current.onFinish()
     } else if (stepcurrent === 1) {
       ref2.current.onFinish()
+    } else if (stepcurrent === 2) {
+      ref3.current.onFinish()
     }
   }
 
@@ -84,7 +88,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
                 setStepCur={setStepCur} />
             </TabPane>
             <TabPane tab="功能参数" key={'2'}>
-
+              <StepThird
+                wrappedComponentRef={ref3} />
             </TabPane>
           </Tabs>
         </div>

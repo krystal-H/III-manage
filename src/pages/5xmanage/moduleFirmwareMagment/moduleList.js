@@ -14,7 +14,7 @@ function ModuleList({ form }) {
   const [pager, setPager] = useState({ totalRows: 0, pageIndex: 0 })
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false) //antd的loading控制
-  const [addSchemeModal, setAddSchemeModal] = useState(false)
+  const [addSchemeModal, setAddSchemeModal] = useState(true)
 
   const [communicationMethodList, setCommunicationMethodList] = useState([]) // 通信方式列表
 
