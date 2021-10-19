@@ -4,7 +4,7 @@ import ChooseScheme from './chooseScheme';
 import ConfigSchemeBrief from './configSchemeBrief'
 import ConfigSchemeDetail from './configSchemeDetail'
 import { cloneDeep } from "lodash"
-import { getThirdCategory } from '../../../apis/schemeManagement'
+import { getThirdCategoryRequest } from '../../../apis/schemeManagement'
 
 import './addScheme.less'
 
@@ -22,7 +22,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
 
   // 获取三级品类
   const getCategory = () => {
-    getThirdCategory({}).then(res => {
+    getThirdCategoryRequest().then(res => {
       setThirdCategoryList(res.data)
     })
   }
