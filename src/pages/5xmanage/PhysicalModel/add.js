@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Radio, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
-import { upFile } from '../../../apis/repairOrder'
+import { upFile } from '../../../apis/physical'
 import './index.less'
 
 const FormItem = Form.Item
-const TitleOption = TitleTab.Option
-const { RangePicker } = DatePicker;
 const { TextArea } = Input;
-function Addmodal({ form, addVis, handleCancel, handleOk }) {
+function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
     const { getFieldDecorator, validateFields } = form;
     const sundata = () => {
+        validateFields().then(val=>{
 
+        })
     }
     //导入
     const customRequest = (option) => {
@@ -36,27 +36,40 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                 <div>
                     <Form {...formItemLayout}>
                         <FormItem label="模型名称">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('name', { rules: [{ required: true }] })(
                                 <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>
+                        <FormItem label="所属分类">
+                            {getFieldDecorator('deviceTypeId', { rules: [{ required: true }] })(
+                                <Select style={{ width: '100%' }} placeholder="请选择所属分类" allowClear>
+                                    {
+                                        optionList.map((item, index) => (
+                                            <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                                                {item.deviceTypeName}
+                                            </Select.Option>
+                                        ))
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
                         <Form.Item label="状态">
-                            {getFieldDecorator('radio-group', { rules: [{ required: true }] })(
+                            {getFieldDecorator('status', { rules: [{ required: true }] })(
                                 <Radio.Group>
-                                    <Radio value="a"> 正式</Radio>
-                                    <Radio value="b">草稿</Radio>
+                                    <Radio value={2}> 正式</Radio>
+                                    <Radio value={1}>草稿</Radio>
                                 </Radio.Group>,
                             )}
                         </Form.Item>
-                        <FormItem label="上传图片">
-                            {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
+                        <FormItem label="模板设置">
+                            {getFieldDecorator('file', { rules: [{ required: true}], valuePropName: 'fileList', })(
                                 <Upload customRequest={customRequest} showUploadList={false}>
                                     <Button type='text'  >选择模板</Button>
                                 </Upload>
                             )}
                         </FormItem>
                         <FormItem label="备注">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('remark', { rules: [{ required: true }] })(
                                 <TextArea style={{ width: '100%' }} ></TextArea>
                             )}
                         </FormItem>

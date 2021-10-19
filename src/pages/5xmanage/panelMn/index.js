@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip ,Popconfirm} from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import { getList } from '../../../apis/panelMn'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
+import AddDia from './add'
 import './index.less'
 
 const FormItem = Form.Item
@@ -16,10 +17,11 @@ const modeList = {
 }
 
 function PanelMn({ form }) {
+  const { getFieldDecorator, validateFields, getFieldsValue } = form;
   const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setdataSource] = useState([])
-  const [addVis, setAddVis] = useState(true)
+  const [addVis, setAddVis] = useState(false)
   const column = [
     {
       title: '面板ID',
@@ -33,13 +35,16 @@ function PanelMn({ form }) {
     },
     {
       title: '所属分类',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'deviceTypeName ',
+      key: 'deviceTypeName ',
     },
     {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
+      render(status) {
+        return <span>{status ? '正式' : '草稿'}</span>;
+      }
     },
     {
       title: '创建时间',
@@ -64,28 +69,43 @@ function PanelMn({ form }) {
       render: (text, record) => (
         <span>
           {
-            record.status !== 1 ?
-              <a onClick={() => { audit(record) }}>审核</a>
-              :
-              <a onClick={() => { checkDetail(record) }}>查看</a>
+            record.status == 1 ?
+              <a onClick={() => { audit(record) }}>更新</a>
+              : (<span>
+                <a onClick={() => { checkDetail(record) }} style={{ marginRight: '10px' }}>编辑</a>
+                <Popconfirm
+                  title="Are you sure delete this task?"
+                  onConfirm={confirmRel(data)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <a href="#">Delete</a>
+                </Popconfirm>,
+              </span>)
+
           }
         </span>
       ),
     }
   ]
-
+  //发布
+  const relPanel = (data) => {
+    confirm({
+      title: '发布模组',
+      content: '确认发布后，面板信息将会同步到开放平台,确定要这样做吗？',
+      okText: '确定',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk: () => {
+      },
+      onCancel() { },
+    })
+  }
   // 审核
   const audit = () => { }
   // 查看
   const checkDetail = () => { }
 
-  const searchList = () => {
-
-  }
-
-  const onReset = () => {
-
-  }
 
   //页码改变
   const pagerChange = (pageIndex, pageRows) => {
@@ -108,6 +128,9 @@ function PanelMn({ form }) {
   //列表
   const getTableData = () => {
     let params = {}
+    if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
+      params.templateName = getFieldsValue().templateName.trim()
+    }
     params = { ...params, ...pager }
     getList(params).then(res => {
       if (res.data.code == 0) {
@@ -122,7 +145,7 @@ function PanelMn({ form }) {
     form.resetFields();
   }
 
-  const { getFieldDecorator, validateFields } = form;
+
   //=======
   const handleOk = () => {
     setAddVis(false)
@@ -149,12 +172,12 @@ function PanelMn({ form }) {
             )}
           </FormItem>
           <FormItem label="面板名称">
-            {getFieldDecorator('productId', {})(
+            {getFieldDecorator('templateName', {})(
               <Input placeholder="请输入面板名称" style={{ width: 240 }} ></Input>
             )}
           </FormItem>
           <FormItem  >
-            <Button type="primary" onClick={() => searchList()} >查询</Button>
+            <Button type="primary" onClick={() => getTableData()} >查询</Button>
           </FormItem>
           <FormItem >
             <Button onClick={() => handleReset()}>重置</Button>
@@ -162,7 +185,7 @@ function PanelMn({ form }) {
         </Form>
         <div className="panelMn-title">
           <Button type="primary" onClick={() => { setAddVis(true) }} >新增标准面板</Button>
-          <Button onClick={() => searchList()} >批量导入</Button>
+          <Button  >批量导入</Button>
         </div>
       </TitleTab>
       <Card>
@@ -177,6 +200,9 @@ function PanelMn({ form }) {
             showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
           }} />
       </Card>
+      {
+        addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} />
+      }
     </div>
   )
 }

@@ -1,61 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
+import { Card, Input, Button, Select, Cascader, Divider, Modal, Form, Tooltip } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import AddModal from './add'
 import './index.less'
-
+import { getList, getOrderType ,relData} from '../../../apis/physical'
+import { DateTool } from '../../../util/utils';
 const FormItem = Form.Item
-const TitleOption = TitleTab.Option
-
-const modeList = {
-  0: '开发中',
-  1: '已发布',
-  2: '审核中'
-}
 
 function PhysicalModel({ form }) {
-  const [pager, setpager] = useState({
-    totalRows: 0,
-    pageIndex: 0
-  })
+  const { getFieldDecorator, validateFields, getFieldsValue } = form;
   const [dataSource, setdataSource] = useState([])
+  const [optionList, setOptionList] = useState([])
   const [addVis, setAddVis] = useState(true)
   const column = [
     {
       title: '物模型ID',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'id',
+      key: 'id',
     },
     {
       title: '物模型名称',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: '语言版本',
       dataIndex: '',
       key: '',
+      render() {
+        return <span>中文</span>;
+      }
     },
     {
       title: '所属分类',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'deviceType',
+      key: 'deviceType',
     },
     {
       title: '状态',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'status',
+      key: 'status',
+      render(status) {
+        return <span>{status == 1 ? '草稿' : '正式'}</span>;
+      }
     },
     {
       title: '创建时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'createTime',
+      key: 'createTime',
+      render(createTime) {
+        return createTime && DateTool.utcToDev(createTime);
+      }
     },
     {
       title: '修改时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
+      render(updateTime) {
+        return updateTime && DateTool.utcToDev(updateTime);
+      }
     },
     {
       title: '操作',
@@ -64,34 +68,64 @@ function PhysicalModel({ form }) {
       render: (text, record) => (
         <span>
           {
-            record.status !== 1 ?
-              <a onClick={() => { audit(record) }}>审核</a>
+            record.status == 1 ?
+              <span >
+                <a style={{ marginRight: '10px' }} onClick={()=>{relPhy(record.id)}}>发布</a>
+                <a >编辑</a>
+              </span>
               :
-              <a onClick={() => { checkDetail(record) }}>查看</a>
+              <a >更新</a>
           }
         </span>
       ),
     }
   ]
+  const relPhy=(id)=>{
+    Modal.confirm({
+      title: '确认',
+      okText: '确定',
+      cancelText: '取消',
+      content:  '点击确定将发布数据，点击取消可取消发布。',
+      onOk: () => {
+        relData({id}).then(res=>{
 
+        })
+      }
+    })
+  }
+  useEffect(() => {
+    getData()
+    getOption()
+  }, [])
+  const getData = () => {
+    let params = {}
+    if (getFieldsValue().name && getFieldsValue().name.trim()) {
+      params.name = getFieldsValue().name.trim()
+    }
+    if (getFieldsValue().deviceTypeId) {
+      params.deviceTypeId = getFieldsValue().deviceTypeId
+    }
+    getList(params).then(res => {
+      setdataSource(res.data.data)
+    })
+  }
+  const getOption = () => {
+    getOrderType().then(res => {
+      setOptionList(res.data.data)
+    })
+  }
   // 审核
   const audit = () => { }
   // 查看
   const checkDetail = () => { }
 
-  const searchList = () => {
-
-  }
 
   const onReset = () => {
-
+    form.resetFields();
   }
 
-  const onPageChange = () => {
 
-  }
 
-  const { getFieldDecorator, validateFields } = form;
   //=======
   const handleOk = () => {
     setAddVis(false)
@@ -105,12 +139,12 @@ function PhysicalModel({ form }) {
         <Form layout="inline" >
 
           <FormItem label="所属分类">
-            {getFieldDecorator('mode')(
-              <Select style={{ width: 160 }} placeholder="请选择所属分类">
+            {getFieldDecorator('deviceTypeId', {})(
+              <Select style={{ width: 160 }} placeholder="请选择所属分类" allowClear>
                 {
-                  Object.keys(modeList).map((item, index) => (
-                    <Select.Option key={index} value={+item}>
-                      {modeList[item]}
+                  optionList.map((item, index) => (
+                    <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                      {item.deviceTypeName}
                     </Select.Option>
                   ))
                 }
@@ -118,17 +152,12 @@ function PhysicalModel({ form }) {
             )}
           </FormItem>
           <FormItem label="物模型名称">
-            {getFieldDecorator('productId', {
-              getValueFromEvent: (e) => {
-                const val = e.target.value;
-                return val.replace(/[^\d]/g, '');
-              }
-            })(
-              <Input placeholder="请输入物模型名称" style={{ width: 240 }} onPressEnter={() => searchList()}></Input>
+            {getFieldDecorator('name', {})(
+              <Input placeholder="请输入物模型名称" style={{ width: 240 }} allowClear></Input>
             )}
           </FormItem>
           <FormItem  >
-            <Button type="primary" onClick={() => searchList()} >查询</Button>
+            <Button type="primary" onClick={() => getData()} >查询</Button>
           </FormItem>
           <FormItem >
             <Button onClick={() => onReset()}>重置</Button>
@@ -136,15 +165,15 @@ function PhysicalModel({ form }) {
         </Form>
         <div className="PhysicalModel-title">
           <Button type="primary" onClick={() => { setAddVis(true) }} >新增物模型</Button>
-          <Button onClick={() => searchList()} >批量导入</Button>
+          <Button  >批量导入</Button>
         </div>
       </TitleTab>
       <Card>
-        <TableCom rowKey={"productId"} columns={column} dataSource={dataSource}
-          pager={pager} onPageChange={() => onPageChange()} />
+        <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
+          pager={false} />
       </Card>
       {
-        addVis && <AddModal addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} />
+        addVis && <AddModal addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
       }
     </div>
   )
