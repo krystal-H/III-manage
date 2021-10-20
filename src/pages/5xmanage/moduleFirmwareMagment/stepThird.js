@@ -76,29 +76,33 @@ function StepThird({ form }, ref) {
   // --------------------------------------------------------------------
   // --------------**********************
   // 新增
-  const add2 = () => {
-    const innerList = form.getFieldValue('innerList');
+  const add2 = (index) => {
+    const innerList = form.getFieldValue(`innerList${index}`);
     const nextList = innerList.concat({});
     form.setFieldsValue({
-      innerList: nextList,
+      [`innerList${index}`]: nextList,
     })
   }
 
   // 删除
   const remove2 = (index1, index2) => {
     console.log('数组innerList的其中一项', index2)
-    const innerList = form.getFieldValue('innerList');
+    const innerList = form.getFieldValue(`innerList${index1}`);
     const funcDefList = form.getFieldValue('funcDefList')
+    console.log('------------', innerList.filter((item, key) => key !== index2))
     form.setFieldsValue({
-      innerList: innerList.filter((item, key) => key !== index2),
+      [`innerList${index1}`]: innerList.filter((item, key) => key !== index2),
       funcDefList: funcDefList[index1].dataType.specs.def.filter((item, key) => key !== index2),
     })
   }
-  getFieldDecorator('innerList', { initialValue: [{}] });
-  const innerList = getFieldValue('innerList');
-  console.log('打印下innerList值看看', innerList)
 
+  // 枚举的DOM
   const createInnerHtml = (name, index1) => {
+
+    getFieldDecorator(`innerList${index1}`, { initialValue: [{}] });
+    const innerList = getFieldValue(`innerList${index1}`);
+    console.log('打印下innerList值看看', innerList)
+
     return innerList.map((item, index2) => (
       <div className="inline-form-item" key={index2}>
         <Form.Item label="数值范围" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
@@ -129,7 +133,7 @@ function StepThird({ form }, ref) {
             key={index2}
             className="dynamic-delete-button"
             type="minus-circle-o"
-            onClick={() => remove2(index1, index2)}
+            onClick={() => remove2(index1, index2, )}
           />
         </Form.Item>
       </div>
@@ -139,25 +143,25 @@ function StepThird({ form }, ref) {
 
   // 新增
   const add = () => {
-    const list = form.getFieldValue('list');
+    const list = form.getFieldValue('listww');
     const nextList = list.concat({});
     form.setFieldsValue({
-      list: nextList,
+      listww: nextList,
     })
   }
 
   // 删除
   const remove = index => {
     console.log('数组list的其中一项', index)
-    const list = form.getFieldValue('list');
+    const list = form.getFieldValue('listww');
     const funcDefList = form.getFieldValue('funcDefList')
     form.setFieldsValue({
-      list: list.filter((item, key) => key !== index),
+      listww: list.filter((item, key) => key !== index),
       funcDefList: funcDefList.filter((item, key) => key !== index),
     })
   }
-  getFieldDecorator('list', { initialValue: [] });
-  const list = getFieldValue('list');
+  getFieldDecorator('listww', { initialValue: [] });
+  const list = getFieldValue('listww');
   console.log('打印下list值看看', list)
 
   const formItems = list.map((item, index) => (
@@ -268,7 +272,7 @@ function StepThird({ form }, ref) {
         <>
           <div>{createInnerHtml(`funcDefList[${index}].dataType.specs.def`, index)}</div>
           <Form.Item>
-            <Button type="primary" onClick={() => add2()}>新增</Button>
+            <Button type="primary" onClick={() => add2(index)}>新增</Button>
           </Form.Item>
         </>
       }
