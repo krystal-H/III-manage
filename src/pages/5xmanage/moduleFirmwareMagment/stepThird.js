@@ -1,14 +1,17 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Modal, Button, Steps, Form, Tabs, Input, Select, InputNumber, Checkbox, Radio, Upload, Icon, message } from 'antd';
 import { fileHost } from "../../../util/utils";
+import { cloneDeep } from 'lodash'
 import './stepThird.less'
 
 let id = 0
 
 function StepThird({ form }, ref) {
-  const [schemeType, setSchemeType] = useState(1)
+  const [schemeType, setSchemeType] = useState()
   const [previewVisible, setPreviewVisible] = useState(false)
   const [descPic, setDescPic] = useState('') // 简介图片
+  const [valueType, setValueType] = useState([])
+
   const { getFieldDecorator, getFieldValue } = form
   const options = [
     { label: '免开发方案', value: 1 },
@@ -16,6 +19,9 @@ function StepThird({ form }, ref) {
     { label: 'Soc方案', value: 3 },
   ]
 
+  useEffect(() => {
+    console.log('schemeType', schemeType)
+  }, [schemeType])
 
   // 表单提交
   const validData = () => {
@@ -60,46 +66,99 @@ function StepThird({ form }, ref) {
       setDescPic('')
     }
   }
-  // --------------------------------------------------------------------
-  const formItemLayout = {
-    labelCol: {
-      xs: { span: 24 },
-      sm: { span: 4 },
-    },
-    wrapperCol: {
-      xs: { span: 24 },
-      sm: { span: 20 },
-    },
-  };
 
+  const chooseValueType = (val, index) => {
+    let copyVal = cloneDeep(valueType)
+    copyVal[index] = val
+    console.log('copyVal', copyVal)
+    setValueType(copyVal)
+  }
+  // --------------------------------------------------------------------
+  // --------------**********************
+  // 新增
+  const add2 = () => {
+    const innerList = form.getFieldValue('innerList');
+    const nextList = innerList.concat({});
+    form.setFieldsValue({
+      innerList: nextList,
+    })
+  }
+
+  // 删除
+  const remove2 = (index1, index2) => {
+    console.log('数组innerList的其中一项', index2)
+    const innerList = form.getFieldValue('innerList');
+    const funcDefList = form.getFieldValue('funcDefList')
+    form.setFieldsValue({
+      innerList: innerList.filter((item, key) => key !== index2),
+      funcDefList: funcDefList[index1].dataType.specs.def.filter((item, key) => key !== index2),
+    })
+  }
+  getFieldDecorator('innerList', { initialValue: [{}] });
+  const innerList = getFieldValue('innerList');
+  console.log('打印下innerList值看看', innerList)
+
+  const createInnerHtml = (name, index1) => {
+    return innerList.map((item, index2) => (
+      <div className="inline-form-item" key={index2}>
+        <Form.Item label="数值范围" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
+          {getFieldDecorator(`${name}[${index2}].k`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: "请输入数值范围",
+              },
+            ],
+          })(<Input style={{ width: 120, marginRight: 8 }} />)}
+        </Form.Item>
+        <Form.Item label="" className="right-item">
+          至&nbsp;&nbsp;&nbsp;&nbsp;
+          {getFieldDecorator(`${name}[${index2}].v`, {
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [
+              {
+                required: true,
+                whitespace: true,
+                message: "请输入数值范围",
+              },
+            ],
+          })(<Input style={{ width: 120, marginRight: 8 }} />)}
+          <Icon
+            key={index2}
+            className="dynamic-delete-button"
+            type="minus-circle-o"
+            onClick={() => remove2(index1, index2)}
+          />
+        </Form.Item>
+      </div>
+    ))
+  }
+  // --------------**********************
+
+  // 新增
+  const add = () => {
+    const list = form.getFieldValue('list');
+    const nextList = list.concat({});
+    form.setFieldsValue({
+      list: nextList,
+    })
+  }
+
+  // 删除
+  const remove = index => {
+    console.log('数组list的其中一项', index)
+    const list = form.getFieldValue('list');
+    const funcDefList = form.getFieldValue('funcDefList')
+    form.setFieldsValue({
+      list: list.filter((item, key) => key !== index),
+      funcDefList: funcDefList.filter((item, key) => key !== index),
+    })
+  }
   getFieldDecorator('list', { initialValue: [] });
   const list = getFieldValue('list');
-
-  // getFieldDecorator('list', { initialValue: [{}] });
-  // const list = getFieldValue('list');
-  
   console.log('打印下list值看看', list)
-
-  // const listContent = list.map((item, index) => {
-  //   return (
-  //     <Form.Item label='名称：' key={index}>
-  //     {getFieldDecorator(`content[${index}].name`, {
-  //        rules: [{
-  //        required: true,
-  //        message: "名称不能为空！",
-  //        }],
-  //     })(
-  //        <Input placeholder="请输入名称" style={{ width: '60%', marginRight: 8 }} />
-  //     )}
-
-  //      {index > 0 ? (
-  //          <Button type="primary" onClick={() => remove(index)}>删除</Button>
-  //      ) : null}
-
-
-  //     </Form.Item>
-  //   );
-  // });
 
   const formItems = list.map((item, index) => (
     <div className="free-scheme-block" key={index}>
@@ -139,18 +198,80 @@ function StepThird({ form }, ref) {
           ],
         })(<Input placeholder="请输入可配置功能标识" style={{ width: '60%', marginRight: 8 }} />)}
       </Form.Item>
-      <Form.Item label="可配置功能数值" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
+      <Form.Item label="可配置功能数值" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }} hasFeedback>
         {getFieldDecorator(`funcDefList[${index}].dataType.type`, {
           validateTrigger: ['onChange', 'onBlur'],
           rules: [
             {
               required: true,
               whitespace: true,
-              message: "请输入可配置功能数值",
+              message: "请选择可配置功能数值",
             },
           ],
-        })(<Input placeholder="请输入可配置功能数值" style={{ width: '60%', marginRight: 8 }} />)}
+        })(
+          <Select placeholder="请选择可配置功能数值"
+            style={{ width: '60%', marginRight: 8 }}
+            onChange={(val) => chooseValueType(val, index)}>
+            <Select.Option value="int">数值</Select.Option>
+            <Select.Option value="enum">枚举</Select.Option>
+          </Select>
+        )}
       </Form.Item>
+      {/* 数值型 */}
+      {
+        valueType[index] === 'int' &&
+        <>
+          <div className="inline-form-item">
+            <Form.Item label="数值范围" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
+              {getFieldDecorator(`funcDefList[${index}].dataType.specs.min`, {
+                validateTrigger: ['onChange', 'onBlur'],
+                rules: [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: "请输入数值范围",
+                  },
+                ],
+              })(<Input style={{ width: 120, marginRight: 8 }} />)}
+            </Form.Item>
+            <Form.Item label="" className="right-item">
+              至&nbsp;&nbsp;&nbsp;&nbsp;
+              {getFieldDecorator(`funcDefList[${index}].dataType.specs.max`, {
+                validateTrigger: ['onChange', 'onBlur'],
+                rules: [
+                  {
+                    required: true,
+                    whitespace: true,
+                    message: "请输入数值范围",
+                  },
+                ],
+              })(<Input style={{ width: 120, marginRight: 8 }} />)}
+            </Form.Item>
+          </div>
+          <Form.Item label="默认值" labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
+            {getFieldDecorator(`funcDefList[${index}].dataType.specs.defaultValue`, {
+              validateTrigger: ['onChange', 'onBlur'],
+              rules: [
+                {
+                  required: true,
+                  whitespace: true,
+                  message: "请输入默认值",
+                },
+              ],
+            })(<Input style={{ width: '60%', marginRight: 8 }} />)}
+          </Form.Item>
+        </>
+      }
+      {/* 枚举 */}
+      {
+        valueType[index] === 'enum' &&
+        <>
+          <div>{createInnerHtml(`funcDefList[${index}].dataType.specs.def`, index)}</div>
+          <Form.Item>
+            <Button type="primary" onClick={() => add2()}>新增</Button>
+          </Form.Item>
+        </>
+      }
       <Icon
         key={index}
         className="dynamic-delete-button"
@@ -160,68 +281,15 @@ function StepThird({ form }, ref) {
     </div>
   ));
 
-  // const add = () => {
-  //   const list = form.getFieldValue('list');
-  //   const nextList = list.concat({});
-  //   form.setFieldsValue({
-  //     list: nextList,
-  //   });
-  // }
 
-  // // 删除
-  // const remove = (index) => {
-  //   const list = form.getFieldValue('list');
-  //   const content = form.getFieldValue('content');
-  //   if (list.length === 1) {
-  //     return;
-  //   }
-
-  //   form.setFieldsValue({
-  //     list: list.filter((item, key) => key !== index),
-  //     content: content.filter((item, key) => key !== index),
-  //   });
-  // }
-
-  // 删除
-  const remove = index => {
-    console.log('数组list的其中一项', index)
-    const list = form.getFieldValue('list');
-    const funcDefList = form.getFieldValue('funcDefList')
-    // We need at least one passenger
-    // if (list.length === 1) {
-    //   return;
-    // }
-    form.setFieldsValue({
-      list: list.filter((item,key) => key !== index),
-      funcDefList: funcDefList.filter((item, key) => key !== index),
-    });
-  };
-
-  // const add = () => {
-  //   const list = form.getFieldValue('list');
-  //   const nextList = list.concat({});
-  //   form.setFieldsValue({
-  //     list: nextList,
-  //   });
-  // }
-
-  // 新增
-  const add = () => {
-    // can use data-binding to get
-    const list = form.getFieldValue('list');
-    const nextList = list.concat({});
-    // can use data-binding to set
-    // important! notify form to detect changes
-    form.setFieldsValue({
-      list: nextList,
-    });
-  }
+  // ------------------------------------------------------
 
   const uploadConfigs = {
     action: fileHost,
     className: "upload-list-inline",
     data: file => ({ appId: 31438, domainType: 4 })
   }
+
   return (
     <Form labelCol={{ span: 5 }} wrapperCol={{ span: 18 }}>
       <Form.Item label="价格">
@@ -233,15 +301,11 @@ function StepThird({ form }, ref) {
         {getFieldDecorator("supportFileTransfer", {
           rules: [{ required: true, message: "请选择支持方案" }]
         })(
-          <Checkbox.Group
-            options={options}
-            onChange={(e) => setSchemeType(e)}
-          />
-          // <Radio.Group onChange={(e) => setSchemeType(e)}>
-          //   <Radio value={1}>免开发</Radio>
-          //   <Radio value={2}>MCU方案</Radio>
-          //   <Radio value={3}>Soc方案</Radio>
-          // </Radio.Group>
+          <Radio.Group onChange={(e) => setSchemeType(e.target.value)}>
+            <Radio value={1}>免开发</Radio>
+            <Radio value={2}>MCU方案</Radio>
+            <Radio value={3}>Soc方案</Radio>
+          </Radio.Group>
         )}
       </Form.Item>
       {/* 免开发方案 */}
@@ -277,7 +341,6 @@ function StepThird({ form }, ref) {
           </Form.Item>
           <Form.Item label="可配置固件功能部分">
             {formItems}
-            {/* {listContent} */}
             <Form.Item>
               <Button type="primary" onClick={() => add()}>新增</Button>
             </Form.Item>
