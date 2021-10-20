@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip ,Popconfirm} from 'antd';
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import { getList } from '../../../apis/panelMn'
 import TableCom from '../../../components/Table';
@@ -65,7 +65,7 @@ function PanelMn({ form }) {
     {
       title: '操作',
       key: 'action',
-      width: 100,
+      width: 180,
       render: (text, record) => (
         <span>
           {
@@ -73,14 +73,7 @@ function PanelMn({ form }) {
               <a onClick={() => { audit(record) }}>更新</a>
               : (<span>
                 <a onClick={() => { checkDetail(record) }} style={{ marginRight: '10px' }}>编辑</a>
-                <Popconfirm
-                  title="Are you sure delete this task?"
-                  onConfirm={confirmRel(data)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <a href="#">Delete</a>
-                </Popconfirm>,
+                {/* <a onClick={() => { relPanel(record) }} style={{ marginRight: '10px' }}>发布</a> */}
               </span>)
 
           }
@@ -90,15 +83,16 @@ function PanelMn({ form }) {
   ]
   //发布
   const relPanel = (data) => {
-    confirm({
-      title: '发布模组',
-      content: '确认发布后，面板信息将会同步到开放平台,确定要这样做吗？',
+    Modal.confirm({
+      title: '确认',
       okText: '确定',
-      okType: 'danger',
       cancelText: '取消',
+      content: '点击确定将发布数据，点击取消可取消发布。',
       onOk: () => {
-      },
-      onCancel() { },
+        relData({ id }).then(res => {
+
+        })
+      }
     })
   }
   // 审核
@@ -144,7 +138,14 @@ function PanelMn({ form }) {
   const handleReset = () => {
     form.resetFields();
   }
-
+  //搜索
+  const searchList = () => {
+    if (pager.pageIndex == 1) {
+      getTableData()
+    } else {
+      setPager({ pageIndex: 1, pageRows: 10 })
+    }
+  }
 
   //=======
   const handleOk = () => {
@@ -177,7 +178,7 @@ function PanelMn({ form }) {
             )}
           </FormItem>
           <FormItem  >
-            <Button type="primary" onClick={() => getTableData()} >查询</Button>
+            <Button type="primary" onClick={() => searchList()} >查询</Button>
           </FormItem>
           <FormItem >
             <Button onClick={() => handleReset()}>重置</Button>

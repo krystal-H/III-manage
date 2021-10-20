@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Radio, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
+import { Card, Input, Button, Select, Icon, Radio, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import { upFile } from '../../../apis/physical'
@@ -64,7 +64,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
                         <FormItem label="模板设置">
                             {getFieldDecorator('file', { rules: [{ required: true}], valuePropName: 'fileList', })(
                                 <Upload customRequest={customRequest} showUploadList={false}>
-                                    <Button type='text'  >选择模板</Button>
+                                    <Icon type="upload" /> 选择模板
                                 </Upload>
                             )}
                         </FormItem>

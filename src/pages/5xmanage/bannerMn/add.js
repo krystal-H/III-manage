@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import TableCom from '../../../components/Table';
 import { upFile } from '../../../apis/repairOrder'
-import { getList } from '../../../apis/bannerMn'
+import { addData } from '../../../apis/bannerMn'
 import './index.less'
 
 const FormItem = Form.Item
 const TitleOption = TitleTab.Option
 const { RangePicker } = DatePicker;
 function Addmodal({ form, addVis, handleCancel, handleOk }) {
-    console.log(form, addVis, '===')
     const { getFieldDecorator, validateFields } = form;
     const sundata = () => {
-
+        validateFields().then(val => {
+            console.log(val, '======')
+        })
     }
     //导入
     const customRequest = (option) => {
@@ -36,26 +36,31 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
             >
                 <div>
                     <Form {...formItemLayout}>
+                        <FormItem label="banner名称">
+                            {getFieldDecorator('bannerName', { rules: [{ required: true }] })(
+                                <Input style={{ width: '100%' }} ></Input>
+                            )}
+                        </FormItem>
                         <FormItem label="计划展示开始时间">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('showStartTime', { rules: [{ required: true }] })(
                                 <DatePicker showTime style={{ width: '100%' }} />
                             )}
                         </FormItem>
                         <FormItem label="计划展示结束时间">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('showEndTime', { rules: [{ required: true }] })(
                                 <DatePicker showTime style={{ width: '100%' }} />
                             )}
                         </FormItem>
                         <FormItem label="上传图片">
-                            {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
+                            {getFieldDecorator('file', { valuePropName: 'fileList', })(
                                 <Upload customRequest={customRequest} showUploadList={false}>
                                     <Button type='text'  >上传图片</Button>
                                 </Upload>
                             )}
                         </FormItem>
                         <FormItem label="跳转URL">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
-                                <Input style={{ width: '100%' }} onPressEnter={() => searchList()}></Input>
+                            {getFieldDecorator('url', { rules: [{ required: true }] })(
+                                <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>
                     </Form>
@@ -65,4 +70,4 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
     )
 
 }
-export default  Form.create()(Addmodal)
+export default Form.create()(Addmodal)

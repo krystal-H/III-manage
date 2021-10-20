@@ -37,9 +37,9 @@ function rapairModel({ form }) {
             title: "问题内容", dataIndex: "problemDesc",
         },
         {
-            title: "问题图片/视频", dataIndex: "noticeTitle1",
-            render(createTime) {
-                return <span>查看</span>;
+            title: "问题图片/视频", dataIndex: "image",
+            render(image, record) {
+                return <span onClick={() => { lookImg(record) }}>查看</span>;
             }
         },
         {
@@ -63,6 +63,15 @@ function rapairModel({ form }) {
         getTableData()
     }, [pager.pageRows, pager.pageIndex])
     const [options, setOptions] = useState([])
+    const [showImg, setShowImg] = useState(false)
+    const lookImg = (detailInfo) => {
+        setShowImg(true)
+        if (detailInfo.image) {
+            setShowImg(true)
+        } else {
+            alert('无图片')
+        }
+    }
     const getType = () => {
         getOrderType().then(res => {
             if (res.data.code == 0) {
@@ -176,7 +185,7 @@ function rapairModel({ form }) {
 
     return (
         <div className="PhysicalModel-page">
-            <TitleTab title="平台物模型管理">
+            <TitleTab title="工单管理">
                 <Form layout="inline" >
 
                     <Form.Item label="问题分类">
@@ -212,67 +221,88 @@ function rapairModel({ form }) {
                         showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
                     }} />
             </Card>
-            <Modal
-                title="详情"
-                visible={addVis}
-                onOk={handleOk}
-                onCancel={handleCancel}
-                width='700px'
-            >
-                <div className='my-order-detail'>
-                    <div className='order-item'>
-                        <div className='order-item-label'>问题分类：</div>
-                        <div className='order-item-text'>{detailInfo.problemTypeOneName}-{detailInfo.problemTypeTwoName}
-                            <span className='order-item-span' style={{ color: detailInfo.status ? '#15C054' : '#2F78FF' }}>{detailInfo.status ? '已回复' : '待回复'}</span>
-                        </div>
-                    </div>
-                    <div className='order-item'>
-                        <div className='order-item-label'>提交时间：</div>
-                        <div className='order-item-text'>{detailInfo.createTime && DateTool.utcToDev(detailInfo.createTime)}</div>
-                    </div>
-                    <div className='order-item'>
-                        <div className='order-item-label'>问题描述：</div>
-                        <div className='order-item-text'>{detailInfo.problemDesc}</div>
-                    </div>
-                    <div className='order-item'>
-                        <div className='order-item-label'>上传问题图片/视频：</div>
-                        <div className='order-item-text'>
-                            {
-                                detailInfo.image && detailInfo.image.split(',').map((item, index) => {
-                                    return <Image key={index} src={item} width={100} />
-                                })
-                            }
-                        </div>
-                    </div>
-                    <div className='order-item'>
-                        <div className='order-item-label'>联系方式：</div>
-                        <div className='order-item-text'>{detailInfo.phone}</div>
-                    </div>
-                    {
-                        detailInfo.status == 1 ? (<div className='order-feedback'>
-                            <div style={{ margin: '0 -24px' }}>
-                                <Divider />
+            {
+                addVis && <Modal
+                    title="详情"
+                    visible={addVis}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    width='700px'
+                    footer={false}
+                >
+                    <div className='my-order-detail'>
+                        <div className='order-item'>
+                            <div className='order-item-label'>问题分类：</div>
+                            <div className='order-item-text'>{detailInfo.problemTypeOneName}-{detailInfo.problemTypeTwoName}
+                                <span className='order-item-span' style={{ color: detailInfo.status ? '#15C054' : '#2F78FF' }}>{detailInfo.status ? '已回复' : '待回复'}</span>
                             </div>
-                            <div className='order-item'>
-                                <div className='feedback-title'>回复详情：</div>
-                                <div className='feedback-dec'>
-                                    {detailInfo.replyContent}
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>提交时间：</div>
+                            <div className='order-item-text'>{detailInfo.createTime && DateTool.utcToDev(detailInfo.createTime)}</div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>问题描述：</div>
+                            <div className='order-item-text'>{detailInfo.problemDesc}</div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>上传问题图片/视频：</div>
+                            <div className='order-item-text'>
+                                {
+                                    detailInfo.image && detailInfo.image.split(',').map((item, index) => {
+                                        return <img key={index} src={item} width={100} />
+                                    })
+                                }
+                            </div>
+                        </div>
+                        <div className='order-item'>
+                            <div className='order-item-label'>联系方式：</div>
+                            <div className='order-item-text'>{detailInfo.phone}</div>
+                        </div>
+                        {
+                            detailInfo.status == 1 ? (<div className='order-feedback'>
+                                <div style={{ margin: '0 -24px' }}>
+                                    <Divider />
                                 </div>
-                            </div>
-                        </div>) : null
-                    }
+                                <div className='order-item'>
+                                    <div className='feedback-title'>回复详情：</div>
+                                    <div className='feedback-dec'>
+                                        {detailInfo.replyContent}
+                                    </div>
+                                </div>
+                            </div>) : null
+                        }
 
-                </div>
-            </Modal>
-            <Modal
-                title="回复"
-                visible={replyVis}
-                onOk={handlereplyOk}
-                onCancel={handlereplyCancel}
-                width='700px'
-            >
-                <TextArea rows={4} onChange={inputChange} />
-            </Modal>
+                    </div>
+                </Modal>
+            }
+            {
+                replyVis && <Modal
+                    title="回复"
+                    visible={replyVis}
+                    onOk={handlereplyOk}
+                    onCancel={handlereplyCancel}
+                    width='700px'
+                >
+                    <TextArea rows={4} onChange={inputChange} />
+                </Modal>
+            }
+            {
+                showImg && <Modal
+                    title="图片信息"
+                    visible={showImg}
+                    onCancel={() => { setShowImg(false) }}
+                    width='700px'
+                    footer={false}
+
+                >
+                    {
+                        detailInfo.image && detailInfo.image.split(',').map((item, index) => {
+                            return <img key={index} src={item} width={100} />
+                        })
+                    }
+                </Modal>
+            }
         </div>
     )
 }
