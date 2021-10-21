@@ -18,7 +18,7 @@ export const getOrderType = () => {
         method: 'get',
     })
 };
-// 回复
+// 更改状态
 export const relData = (data) => {
     return axios.request({
         url: '/manage-open/physicalModel/publish',
@@ -40,12 +40,13 @@ export const upFile = (pager) => {
     })
 };
 
-// 获取产品详情
-export const getProduct = (productId) => {
+// 新增
+export const newData = (data) => {
     return axios.request({
-        url: prefix + '/product/getInfo',
-        params: productId,
-        method: 'get'
+        url: '/manage-open/physicalModel/create',
+        method: 'post',
+        data,
+        headers: {}
     })
 }
 

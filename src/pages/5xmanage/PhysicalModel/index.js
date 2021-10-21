@@ -114,10 +114,6 @@ function PhysicalModel({ form }) {
       setOptionList(res.data.data)
     })
   }
-  // 审核
-  const audit = () => { }
-  // 查看
-  const checkDetail = () => { }
 
 
   const onReset = () => {

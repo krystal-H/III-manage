@@ -9,8 +9,9 @@ import './index.less'
 const FormItem = Form.Item
 const TitleOption = TitleTab.Option
 const { RangePicker } = DatePicker;
-function Addmodal({ form, addVis, handleCancel, handleOk }) {
+function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
     const { getFieldDecorator, validateFields } = form;
+    const [dataSource, setdataSource] = useState([])
     const sundata = () => {
 
     }
@@ -24,6 +25,23 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
     };
+    const column = [
+        {
+            title: '功能名称',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
+            title: '标识符',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: '数据类型',
+            dataIndex: 'name',
+            key: 'name',
+        },
+    ]
     return (
         <div>
             <Modal
@@ -35,24 +53,46 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
             >
                 <div>
                     <Form {...formItemLayout}>
-                        <FormItem label="计划展示开始时间">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
-                                <DatePicker showTime style={{ width: '100%' }} />
+
+                        <FormItem label="所属分类">
+                            {getFieldDecorator('mode')(
+                                <Select placeholder="请选择所属分类">
+                                    {
+                                        optionList.map((item, index) => (
+                                            <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                                                {item.deviceTypeName}
+                                            </Select.Option>
+                                        ))
+                                    }
+                                </Select>
                             )}
                         </FormItem>
-                        <FormItem label="计划展示结束时间">
+                        <FormItem label="面板名称">
                             {getFieldDecorator('productId', { rules: [{ required: true }] })(
-                                <DatePicker showTime style={{ width: '100%' }} />
+                                <Input style={{ width: '100%' }} onPressEnter={() => searchList()}></Input>
                             )}
                         </FormItem>
-                        <FormItem label="上传图片">
+                        <div style={{ padding: '0 60px' }}>
+                            <div>此三级品类关联的物模型如下：</div>
+                            <TableCom rowKey={"id"} columns={column} dataSource={dataSource} style={{ padding: '10px 0' }}
+                                pager={false} />
+                        </div>
+                        <FormItem label="封面">
                             {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
-                                <Upload customRequest={customRequest} showUploadList={false}>
-                                    <Button type='text'  >上传图片</Button>
+                                <Upload customRequest={customRequest} name="avatar"
+                                    listType="picture-card" accept=".png,.jpeg,.jpg">
+                                    <span>上传</span>
                                 </Upload>
                             )}
                         </FormItem>
-                        <FormItem label="跳转URL">
+                        <FormItem label="上传H5包">
+                            {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
+                                <Upload customRequest={customRequest} showUploadList={false}>
+                                    <Button type='text'  >上传H5包</Button>
+                                </Upload>
+                            )}
+                        </FormItem>
+                        <FormItem label="工程文件地址">
                             {getFieldDecorator('productId', { rules: [{ required: true }] })(
                                 <Input style={{ width: '100%' }} onPressEnter={() => searchList()}></Input>
                             )}
@@ -64,4 +104,4 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
     )
 
 }
-export default  Form.create()(Addmodal)
+export default Form.create()(Addmodal)

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, Cascader, Divider, Modal, Form, Tooltip } from 'antd';
+import { Card, Input, Button, Select, message, Modal, Form, Tooltip } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import AddModal from './add'
 import './index.less'
-import { getList, getOrderType ,relData} from '../../../apis/physical'
+import { getList, getOrderType, relData } from '../../../apis/physical'
 import { DateTool } from '../../../util/utils';
 const FormItem = Form.Item
 
@@ -70,7 +70,7 @@ function PhysicalModel({ form }) {
           {
             record.status == 1 ?
               <span >
-                <a style={{ marginRight: '10px' }} onClick={()=>{relPhy(record.id)}}>发布</a>
+                <a style={{ marginRight: '10px' }} onClick={() => { relPhy(record.id) }}>发布</a>
                 <a >编辑</a>
               </span>
               :
@@ -80,15 +80,17 @@ function PhysicalModel({ form }) {
       ),
     }
   ]
-  const relPhy=(id)=>{
+  const relPhy = (id) => {
     Modal.confirm({
       title: '确认',
       okText: '确定',
       cancelText: '取消',
-      content:  '点击确定将发布数据，点击取消可取消发布。',
+      content: '点击确定将发布数据，点击取消可取消发布。',
       onOk: () => {
-        relData({id}).then(res=>{
-
+        relData({ id }).then(res => {
+          if (res.data.code == 0) {
+            message.success('发布成功');
+          }
         })
       }
     })

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import { getList } from '../../../apis/panelMn'
+import {  getOrderType } from '../../../apis/physical'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import AddDia from './add'
@@ -21,6 +22,7 @@ function PanelMn({ form }) {
   const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setdataSource] = useState([])
+  const [optionList, setOptionList] = useState([])
   const [addVis, setAddVis] = useState(false)
   const column = [
     {
@@ -100,7 +102,11 @@ function PanelMn({ form }) {
   // 查看
   const checkDetail = () => { }
 
-
+  const getOption = () => {
+    getOrderType().then(res => {
+      setOptionList(res.data.data)
+    })
+  }
   //页码改变
   const pagerChange = (pageIndex, pageRows) => {
     if (pageRows === pager.pageRows) {
@@ -116,6 +122,9 @@ function PanelMn({ form }) {
     }
 
   }
+  useEffect(() => {
+    getOption()
+  }, [])
   useEffect(() => {
     getTableData()
   }, [pager.pageRows, pager.pageIndex])
@@ -163,9 +172,9 @@ function PanelMn({ form }) {
             {getFieldDecorator('mode')(
               <Select style={{ width: 160 }} placeholder="请选择所属分类">
                 {
-                  Object.keys(modeList).map((item, index) => (
-                    <Select.Option key={index} value={+item}>
-                      {modeList[item]}
+                  optionList.map((item, index) => (
+                    <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                      {item.deviceTypeName}
                     </Select.Option>
                   ))
                 }
@@ -202,7 +211,7 @@ function PanelMn({ form }) {
           }} />
       </Card>
       {
-        addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} />
+        addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
       }
     </div>
   )
