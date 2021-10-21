@@ -14,8 +14,8 @@ const uploadConfigs = {
 }
 
 const formItemLayout = {
-  labelCol: { span: 5 },
-  wrapperCol: { span: 18 },
+  labelCol: { span: 6 },
+  wrapperCol: { span: 16 },
 }
 
 const StyleItem = {
@@ -69,6 +69,24 @@ function StepThird({ form }, ref) {
     return isJpgOrPng && fileLength;
   }
 
+  // pdf格式校验
+  const referenceCircuitDiagramBeforeUpload = (file) => {
+    console.log("file,file.type", file, file.type);
+    const isJpgOrPng = file.type === "application/pdf";
+    if (!isJpgOrPng) {
+      message.error("只能上传PDF文件");
+    }
+    const isLt2M = file.size / 1024 / 1024 <= 2;
+    if (!isLt2M) {
+      message.error("PDF must smaller than 2M!");
+    }
+    const fileLength = file.name.length <= 50;
+    if (!fileLength) {
+      message.error("文件名称长度不超过50个字符");
+    }
+    return isJpgOrPng && isLt2M && fileLength;
+  }
+
   // 上传文件修改
   const handleChange = (info, type) => {
     console.log('上传的info', info)
@@ -102,6 +120,51 @@ function StepThird({ form }, ref) {
     return isJpgOrPng && isLt2M && fileLength;
   }
 
+  // 库文件格式校验
+  const libraryFileBeforeUpload = (file) => {
+    console.log("file,file.type", file, file.type);
+    const isJpgOrPng =
+      file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a";
+    if (!isJpgOrPng) {
+      message.error("只能上传.a库文件");
+    }
+    const isLt2M = file.size / 1024 / 1024 <= 512;
+    if (!isLt2M) {
+      message.error(".a库文件必须小于512M!");
+    }
+    const fileLength = file.name.length <= 50;
+    if (!fileLength) {
+      message.error("文件名称长度不超过50个字符");
+    }
+    return isJpgOrPng && isLt2M && fileLength;
+  }
+
+  // 烧录文件格式校验
+  const burnFileBeforeUpload = (file) => {
+    console.log("file,file.type", file, file.type);
+    const isJpgOrPng =
+      file.type === "application/macbinary" ||
+      file.type === "application/octet-stream";
+    if (!isJpgOrPng) {
+      message.error("只能上传烧录文件!");
+    }
+    const isLt2M = file.size / 1024 / 1024 <= 32;
+    if (!isLt2M) {
+      message.error(".bin文件必须小于32M!");
+    }
+    const fileLength = file.name.length <= 50;
+    if (!fileLength) {
+      message.error("文件名称长度不超过50个字符");
+    }
+    return isJpgOrPng && isLt2M && fileLength;
+  }
+
+  // 图片预览
+  const handlePreview = async file => {
+
+
+  };
+
   const chooseValueType = (val, index) => {
     let copyVal = cloneDeep(valueType)
     copyVal[index] = val
@@ -109,7 +172,7 @@ function StepThird({ form }, ref) {
     setValueType(copyVal)
   }
   // --------------------------------------------------------------------
-  // --------------**********************
+  // -*********新增枚举项start*************
   // 新增枚举项
   const addEnum = (index) => {
     const innerList = form.getFieldValue(`innerList${index}`);
@@ -159,7 +222,7 @@ function StepThird({ form }, ref) {
       </div>
     ))
   }
-  // --------------**********************
+  // -***********新增枚举项end***********
 
   // 新增配置项
   const addConfig = () => {
@@ -262,13 +325,19 @@ function StepThird({ form }, ref) {
     </div>
   ))
 
+  const uploadButton = (
+    <Button>
+      <Icon type="upload" /> 上传文档
+    </Button>
+  )
+
   // ------------------------------------------------------
   return (
     <Form {...formItemLayout}>
       <Form.Item label="价格">
         {getFieldDecorator('name', {
           rules: [{ required: true, message: '请输入价格', whitespace: true }],
-        })(<Input placeholder="请输入价格" style={{ width: 500 }} />)}人民币/个
+        })(<Input placeholder="请输入价格" style={{ width: 280 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
         {getFieldDecorator("supportFileTransfer", {
@@ -320,20 +389,14 @@ function StepThird({ form }, ref) {
           </Form.Item>
         </div>
       }
-
-      {/* MCU方案 */}
       {
-        schemeType === 2 &&
-        <>
-          <div>MCU方案</div>
-        </>
+        (schemeType === 2 || schemeType === 3) &&
+        <Form.Item label="通信模组文件" colon={false}></Form.Item>
       }
-
       {/* Soc方案 */}
       {
         schemeType === 3 &&
         <>
-          <Form.Item label="模组文件" colon={false}></Form.Item>
           <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）">
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
               {getFieldDecorator("sourceCode", {
@@ -346,7 +409,7 @@ function StepThird({ form }, ref) {
                     onChange={(info) => handleChange(info, 'sourceCode')}
                     defaultFileList={[]}
                     accept=".zip ">
-                    <Button><Icon type="upload" /> 上传文档</Button>
+                    {uploadButton}
                     {/* {moduleInfo.sourceCode && moduleInfo.sourceCode.length >= 1 ? null : uploadButton} */}
                   </Upload>
                 </div>
@@ -361,6 +424,161 @@ function StepThird({ form }, ref) {
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
+          </Form.Item>
+          <Form.Item label="库文件" extra="（请上传格式为.a的库文件）">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              {getFieldDecorator("libraryFile", {
+                rules: [{ required: false, message: "请上传库文件" }]
+              })(
+                <div>
+                  <Upload
+                    {...uploadConfigs}
+                    beforeUpload={() => libraryFileBeforeUpload}
+                    onChange={(info) => handleChange(info, 'libraryFile')}
+                    defaultFileList={[]}
+                    accept=".a"
+                  >
+                    {uploadButton}
+                    {/* {moduleInfo.libraryFile && moduleInfo.libraryFile.length >= 1 ? null : uploadButton} */}
+                  </Upload>
+                </div>
+              )}
+            </Form.Item>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              <div>
+                版本号：
+                {getFieldDecorator("libraryFileVersion", {
+                  initialValue: '',
+                  rules: [{ required: false, message: "请输入库文件版本号" }]
+                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
+              </div>
+            </Form.Item>
+          </Form.Item>
+        </>
+      }
+      {/* MCU方案 */}
+      {
+        (schemeType === 2 || schemeType === 3) &&
+        <>
+
+          <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              {getFieldDecorator("burnFile", {
+                rules: [{ required: false, message: "请上传烧录文件" }]
+              })(
+                <div>
+                  <Upload
+                    {...uploadConfigs}
+                    beforeUpload={() => burnFileBeforeUpload}
+                    onChange={(info) => handleChange(info, 'burnFile')}
+                    defaultFileList={[]}
+                    accept=".bin"
+                  >
+                    {uploadButton}
+                    {/* {moduleInfo.burnFile && moduleInfo.burnFile.length >= 1 ? null : uploadButton} */}
+                  </Upload>
+                </div>
+              )}
+            </Form.Item>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              <div>
+                版本号：
+                {getFieldDecorator("burnFileVersion", {
+                  initialValue: '',
+                  rules: [{ required: false, message: "请输入烧录文件版本号" }]
+                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
+              </div>
+            </Form.Item>
+          </Form.Item>
+          <Form.Item label="烧录文件名称">
+
+          </Form.Item>
+
+          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）">
+            {getFieldDecorator("modulePicture", {
+              rules: [{ required: false, message: "请上传一张图片" }]
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  listType="picture"
+                  defaultFileList={[]}
+                  onPreview={() => handlePreview}
+                  beforeUpload={() => modulePictureBeforeUpload}
+                  accept="image/png"
+                  onChange={(info) => handleChange(info, 'modulePicture')}
+                >
+                  {uploadButton}
+                </Upload>
+                {/* <Modal
+                  visible={this.state.previewVisible}
+                  footer={null}
+                  onCancel={this.handleCancelPreview}
+                >
+                  <img
+                    alt="example"
+                    style={{ width: "100%" }}
+                    src={this.state.previewImage}
+                  />
+                </Modal> */}
+              </div>
+            )}
+          </Form.Item>
+          <Form.Item
+            label="参考电路"
+            extra="（请上传格式为.png，小于500k图片）"
+          >
+            {getFieldDecorator("referenceCircuitDiagram", {
+              rules: [{ required: false, message: "请上传一张图片" }]
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  listType="picture"
+                  defaultFileList={[]}
+                  onPreview={() => handlePreview}
+                  beforeUpload={modulePictureBeforeUpload}
+                  accept="image/png"
+                  onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
+                >
+                  {uploadButton}
+                </Upload>
+                {/* <Modal
+                  visible={this.state.previewVisible}
+                  footer={null}
+                  onCancel={this.handleCancelPreview}
+                >
+                  <img
+                    alt="example"
+                    style={{ width: "100%" }}
+                    src={this.state.previewImage}
+                  />
+                </Modal> */}
+              </div>
+            )}
+          </Form.Item>
+          <Form.Item
+            label="说明文档"
+            extra="（请上传格式为.pdf，大小2M说明文件)"
+          >
+            {getFieldDecorator("readmePdf", {
+              rules: [{ required: false, message: "请上传文档" }]
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  defaultFileList={[]}
+                  beforeUpload={() => referenceCircuitDiagramBeforeUpload}
+                  accept=".pdf"
+                  onChange={(info) => handleChange(info, 'readmePdf')}
+                >
+                  {uploadButton}
+                  {/* {moduleInfo.readmePdf && moduleInfo.readmePdf.length >= 1 ? null : uploadButton} */}
+                </Upload>
+              </div>
+            )}
           </Form.Item>
         </>
       }
