@@ -24,7 +24,7 @@ const StyleItem = {
 
 function StepThird({ form }, ref) {
   const [schemeType, setSchemeType] = useState()
-  const [previewVisible, setPreviewVisible] = useState(false)
+  const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
   const [descPic, setDescPic] = useState('') // 简介图片
   const [valueType, setValueType] = useState([])
 
@@ -193,25 +193,25 @@ function StepThird({ form }, ref) {
     })
   }
 
-  // 枚举的DOM创建
+  // 枚举的DOM创建——内层
   const createInnerHtml = (name, index1) => {
     getFieldDecorator(`innerList${index1}`, { initialValue: [{ uniquekey: 0 }] })
     const innerList = getFieldValue(`innerList${index1}`);
 
     return innerList.map((item, index2) => (
       <div className="inline-form-item" key={index2}>
-        <Form.Item label="数值范围" {...formItemLayout}>
+        <Form.Item label="key-value" {...formItemLayout}>
           {getFieldDecorator(`${name}[${item.uniquekey}].k`, {
             validateTrigger: ['onChange', 'onBlur'],
-            rules: [{ required: true, whitespace: true, message: "请输入数值范围" }],
-          })(<Input style={{ width: 120, marginRight: 8 }} />)}
+            rules: [{ required: true, whitespace: true, message: "请输入key值" }],
+          })(<Input style={{ width: 95, marginRight: 8 }} />)}
         </Form.Item>
         <Form.Item label="" className="right-item">
-          至&nbsp;&nbsp;&nbsp;&nbsp;
+          -&nbsp;&nbsp;&nbsp;&nbsp;
           {getFieldDecorator(`${name}[${item.uniquekey}].v`, {
             validateTrigger: ['onChange', 'onBlur'],
-            rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
-          })(<Input style={{ width: 120, marginRight: 8 }} />)}
+            rules: [{ required: true, whitespace: true, message: "请输入value值", }],
+          })(<Input style={{ width: 95, marginRight: 8 }} />)}
           <Icon
             key={index2}
             className="dynamic-delete-button"
@@ -246,7 +246,7 @@ function StepThird({ form }, ref) {
   getFieldDecorator('configList', { initialValue: [] })
   const list = getFieldValue('configList')
 
-  // 新增可配置固件的DOM创建
+  // 新增可配置固件的DOM创建——外层
   const firmwareFormHtml = list.map((item, index) => (
     <div className="free-scheme-block" key={index}>
       <Form.Item label="可配置模块" {...formItemLayout}>
@@ -288,14 +288,14 @@ function StepThird({ form }, ref) {
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.min`, {
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
-              })(<Input style={{ width: 120, marginRight: 8 }} />)}
+              })(<Input style={{ width: 90, marginRight: 8 }} />)}
             </Form.Item>
             <Form.Item label="" className="right-item">
               至&nbsp;&nbsp;&nbsp;&nbsp;
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.max`, {
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
-              })(<Input style={{ width: 120, marginRight: 8 }} />)}
+              })(<Input style={{ width: 90, marginRight: 8 }} />)}
             </Form.Item>
           </div>
           <Form.Item label="默认值" {...formItemLayout}>
@@ -311,17 +311,14 @@ function StepThird({ form }, ref) {
         valueType[index] === 'enum' &&
         <>
           <div>{createInnerHtml(`funcDefList[${index}].dataType.specs.def`, index)}</div>
-          <Form.Item>
-            <Button type="primary" onClick={() => addEnum(index)}>新增</Button>
-          </Form.Item>
+          <div className="add-enmu-btn">
+            <Button type="primary" icon="plus" onClick={() => addEnum(index)}>新增</Button>
+          </div>
         </>
       }
-      <Icon
-        key={index}
-        className="dynamic-delete-button"
-        type="minus-circle-o"
-        onClick={() => removeConfig(index)}
-      />
+      <div className="del-btn" key={index} onClick={() => removeConfig(index)}>
+        删除&nbsp;&nbsp;<Icon type="delete" />
+      </div>
     </div>
   ))
 
@@ -335,9 +332,9 @@ function StepThird({ form }, ref) {
   return (
     <Form {...formItemLayout}>
       <Form.Item label="价格">
-        {getFieldDecorator('name', {
+        {getFieldDecorator('price', {
           rules: [{ required: true, message: '请输入价格', whitespace: true }],
-        })(<Input placeholder="请输入价格" style={{ width: 280 }} />)}&nbsp;&nbsp;人民币/个
+        })(<Input placeholder="请输入价格" style={{ width: 350 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
         {getFieldDecorator("supportFileTransfer", {
@@ -382,9 +379,10 @@ function StepThird({ form }, ref) {
             )}
           </Form.Item>
           <Form.Item label="可配置固件功能部分">
+            {/* 创建DOM */}
             {firmwareFormHtml}
             <Form.Item>
-              <Button type="primary" onClick={() => addConfig()}>新增</Button>
+              <Button type="primary" icon="plus" onClick={() => addConfig()}>新增</Button>
             </Form.Item>
           </Form.Item>
         </div>
@@ -436,8 +434,7 @@ function StepThird({ form }, ref) {
                     beforeUpload={() => libraryFileBeforeUpload}
                     onChange={(info) => handleChange(info, 'libraryFile')}
                     defaultFileList={[]}
-                    accept=".a"
-                  >
+                    accept=".a">
                     {uploadButton}
                     {/* {moduleInfo.libraryFile && moduleInfo.libraryFile.length >= 1 ? null : uploadButton} */}
                   </Upload>
@@ -493,9 +490,10 @@ function StepThird({ form }, ref) {
             </Form.Item>
           </Form.Item>
           <Form.Item label="烧录文件名称">
-
+            {getFieldDecorator('name', {
+              rules: [{ required: true, message: '烧录文件名称', whitespace: true }],
+            })(<Input placeholder="烧录文件名称" style={{ width: 350 }} />)}
           </Form.Item>
-
           <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）">
             {getFieldDecorator("modulePicture", {
               rules: [{ required: false, message: "请上传一张图片" }]
