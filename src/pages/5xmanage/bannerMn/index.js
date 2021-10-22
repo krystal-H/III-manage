@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
-import { getList, relData } from '../../../apis/bannerMn'
+import { getList, relData,delData } from '../../../apis/bannerMn'
 import AddModal from './add';
 import './index.less'
 import { DateTool } from '../../../util/utils';
@@ -69,7 +69,7 @@ function FirmwareMagement({ form }) {
             title: '确认',
             okText: '确定',
             cancelText: '取消',
-            content: tip,
+            content: '是否删除此banner',
             onOk: () => {
                 delData({ id }).then(res => {
                     if (res.data.code == 0) {
@@ -178,6 +178,7 @@ function FirmwareMagement({ form }) {
     }
     //
     const handleOk = () => {
+        getTableData()
         setAddVis(false)
     }
     const handleCancel = () => {
