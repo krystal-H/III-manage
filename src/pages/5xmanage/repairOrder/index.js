@@ -168,7 +168,7 @@ function rapairModel({ form }) {
             params.problemTypeOneLevel = id[0]
             params.problemTypeTwoLevel = id[1]
         }
-        params = { ...params, ...pager }
+        params = { ...params, ...pager}
         getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.list)

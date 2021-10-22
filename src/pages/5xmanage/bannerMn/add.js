@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, message, Select, Icon, Divider, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import { upFile } from '../../../apis/repairOrder'
 import { addData } from '../../../apis/bannerMn'
 import { fileHost } from "../../../util/utils";
 import moment from "moment";
+
 import './index.less'
 
 const FormItem = Form.Item
@@ -84,7 +84,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                             )}
                         </FormItem>
                         <FormItem label="上传图片">
-                            {getFieldDecorator('imageUrl', { rules: [{ required: true, message: "请上传图" }], })(
+                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
                                 // <Upload customRequest={customRequest} name="avatar"
                                 //     listType="picture-card" accept=".png,.jpeg,.jpg" showUploadList={false}>
                                 //     <span>上传</span>
