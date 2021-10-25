@@ -1,21 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, Popconfirm } from 'antd';
+import { Card, Input, Button, Select, message, Divider, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import { getList } from '../../../apis/panelMn'
-import {  getOrderType } from '../../../apis/physical'
+import { getList, relData } from '../../../apis/panelMn'
+import { getOrderType } from '../../../apis/physical'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import AddDia from './add'
+import EditDia from './edit'
 import './index.less'
 
 const FormItem = Form.Item
-const TitleOption = TitleTab.Option
 
-const modeList = {
-  0: '开发中',
-  1: '已发布',
-  2: '审核中'
-}
 
 function PanelMn({ form }) {
   const { getFieldDecorator, validateFields, getFieldsValue } = form;
@@ -24,6 +19,8 @@ function PanelMn({ form }) {
   const [dataSource, setdataSource] = useState([])
   const [optionList, setOptionList] = useState([])
   const [addVis, setAddVis] = useState(false)
+  const [editVis, setEditVis] = useState(false)
+  const [actionData, setActionData] = useState({})
   const column = [
     {
       title: '面板ID',
@@ -72,10 +69,10 @@ function PanelMn({ form }) {
         <span>
           {
             record.status == 1 ?
-              <a onClick={() => { audit(record) }}>更新</a>
+              <a onClick={() => { openEdit(record) }}>更新</a>
               : (<span>
-                <a onClick={() => { checkDetail(record) }} style={{ marginRight: '10px' }}>编辑</a>
-                {/* <a onClick={() => { relPanel(record) }} style={{ marginRight: '10px' }}>发布</a> */}
+                <a onClick={() => { openEdit(record) }} style={{ marginRight: '10px' }}>编辑</a>
+                <a onClick={() => { relPanel(record) }} >发布</a>
               </span>)
 
           }
@@ -91,16 +88,23 @@ function PanelMn({ form }) {
       cancelText: '取消',
       content: '点击确定将发布数据，点击取消可取消发布。',
       onOk: () => {
-        relData({ id }).then(res => {
-
+        let params = {
+          ...data,
+          status: 1
+        }
+        delete params.createTime
+        delete params.modifyTime
+        relData(params).then(res => {
+          message.success("发布成功");
+          getTableData()
         })
       }
     })
   }
-  // 审核
-  const audit = () => { }
-  // 查看
-  const checkDetail = () => { }
+  const openEdit = (data) => {
+    setActionData(data)
+    setEditVis(true)
+  }
 
   const getOption = () => {
     getOrderType().then(res => {
@@ -163,6 +167,13 @@ function PanelMn({ form }) {
   const handleCancel = () => {
     setAddVis(false)
   }
+  //=====编辑
+  const handleEditCancel = () => {
+    setEditVis(false)
+  }
+  const handleeditOk = () => {
+    setEditVis(false)
+  }
   return (
     <div className="panelMn-page">
       <TitleTab title="平台标准面板管理">
@@ -212,6 +223,9 @@ function PanelMn({ form }) {
       </Card>
       {
         addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
+      }
+      {
+        editVis && <EditDia addVis={editVis} handleCancel={handleEditCancel} handleOk={handleeditOk} optionList={optionList} actionData={actionData}/>
       }
     </div>
   )
