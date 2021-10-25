@@ -24,9 +24,17 @@ const StyleItem = {
 
 function StepThird({ form }, ref) {
   const [schemeType, setSchemeType] = useState()
-  const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
-  const [descPic, setDescPic] = useState('') // 简介图片
   const [valueType, setValueType] = useState([])
+  const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
+
+  const [pinDiagram, setPindiagram] = useState('') // 引脚示意图
+  const [sourceCode, setSourcecode] = useState('') // 源码路径
+  const [libraryFile, setLibraryFile] = useState('') // 库文件路径
+  const [burnFile, setBurnFile] = useState('') // 烧录文件路径
+  const [modulePicture, setModulepicture] = useState('') // 模组图片
+  const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState('') // 参考电路图
+  const [readmePdf, setReadmepdf] = useState('')
+
 
   const { getFieldDecorator, getFieldValue } = form
   const options = [
@@ -90,14 +98,18 @@ function StepThird({ form }, ref) {
   // 上传文件修改
   const handleChange = (info, type) => {
     console.log('上传的info', info)
+    // type首字母转大写，赋值 setAaa(xxx)
+    const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
     const { file, fileList } = info;
     if (file.status === "done") {
-      type == 'picture' && setDescPic(file.response.data.url)
+      setTimeout(() => {
+        eval(`set${upperType}`)(file.response.data.url)
+      }, 0)
     } else if (file.status === "error") {
       message.error(`${info.file.name} 上传失败`);
-      setDescPic('')
+      eval(`set${upperType}`)('')
     } else {
-      setDescPic('')
+      eval(`set${upperType}`)('')
     }
   }
 
@@ -195,20 +207,35 @@ function StepThird({ form }, ref) {
 
   // 枚举的DOM创建——内层
   const createInnerHtml = (name, index1) => {
-    getFieldDecorator(`innerList${index1}`, { initialValue: [{ uniquekey: 0 }] })
-    const innerList = getFieldValue(`innerList${index1}`);
+    const html1 = <div className="inline-form-item" key={index1}>
+      <Form.Item label="默认值" {...formItemLayout}>
+        {getFieldDecorator(`${name}.defaultValue[${index1}].k`, {
+          validateTrigger: ['onChange', 'onBlur'],
+          rules: [{ required: true, whitespace: true, message: "请输入key值" }],
+        })(<Input style={{ width: 95, marginRight: 8 }} />)}
+      </Form.Item>
+      <Form.Item className="right-item">
+        -&nbsp;&nbsp;&nbsp;&nbsp;
+        {getFieldDecorator(`${name}.defaultValue[${index1}].v`, {
+          validateTrigger: ['onChange', 'onBlur'],
+          rules: [{ required: true, whitespace: true, message: "请输入value值", }],
+        })(<Input style={{ width: 95, marginRight: 8 }} />)}
+      </Form.Item>
+    </div>
 
-    return innerList.map((item, index2) => (
+    getFieldDecorator(`innerList${index1}`, { initialValue: [{ uniquekey: 0 }] })
+    const innerList = getFieldValue(`innerList${index1}`)
+    const html2 = innerList.map((item, index2) => (
       <div className="inline-form-item" key={index2}>
         <Form.Item label="key-value" {...formItemLayout}>
-          {getFieldDecorator(`${name}[${item.uniquekey}].k`, {
+          {getFieldDecorator(`${name}.def[${item.uniquekey}].k`, {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入key值" }],
           })(<Input style={{ width: 95, marginRight: 8 }} />)}
         </Form.Item>
         <Form.Item label="" className="right-item">
           -&nbsp;&nbsp;&nbsp;&nbsp;
-          {getFieldDecorator(`${name}[${item.uniquekey}].v`, {
+          {getFieldDecorator(`${name}.def[${item.uniquekey}].v`, {
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入value值", }],
           })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -221,6 +248,7 @@ function StepThird({ form }, ref) {
         </Form.Item>
       </div>
     ))
+    return [html1, html2]
   }
   // -***********新增枚举项end***********
 
@@ -310,7 +338,7 @@ function StepThird({ form }, ref) {
       {
         valueType[index] === 'enum' &&
         <>
-          <div>{createInnerHtml(`funcDefList[${index}].dataType.specs.def`, index)}</div>
+          <div>{createInnerHtml(`funcDefList[${index}].dataType.specs`, index)}</div>
           <div className="add-enmu-btn">
             <Button type="primary" icon="plus" onClick={() => addEnum(index)}>新增</Button>
           </div>
@@ -355,7 +383,7 @@ function StepThird({ form }, ref) {
             label="可配置固件引脚示意图"
             extra="请上传尺寸为227*404px，格式为png的引脚示意图"
             wrapperCol={{ span: 10 }}>
-            {getFieldDecorator("picture", {
+            {getFieldDecorator("pinDiagram", {
               rules: [{ required: true, message: "请上传可配置固件引脚示意图" }]
             })(
               <div>
@@ -366,14 +394,14 @@ function StepThird({ form }, ref) {
                   onPreview={() => setPreviewVisible(true)}
                   beforeUpload={modulePictureBeforeUpload}
                   accept="image/png,image/jpeg"
-                  onChange={(info) => handleChange(info, 'picture')}>
-                  {descPic && descPic.length >= 1 ?
+                  onChange={(info) => handleChange(info, 'pinDiagram')}>
+                  {pinDiagram && pinDiagram.length >= 1 ?
                     null : (<Button><Icon type="upload" /> 上传图片</Button>)
                   }
                 </Upload>
                 <Modal visible={previewVisible} footer={null}
                   onCancel={() => setPreviewVisible(false)}>
-                  <img alt="example" style={{ width: "100%" }} src={descPic} />
+                  <img alt="example" style={{ width: "100%" }} src={pinDiagram} />
                 </Modal>
               </div>
             )}
@@ -407,8 +435,7 @@ function StepThird({ form }, ref) {
                     onChange={(info) => handleChange(info, 'sourceCode')}
                     defaultFileList={[]}
                     accept=".zip ">
-                    {uploadButton}
-                    {/* {moduleInfo.sourceCode && moduleInfo.sourceCode.length >= 1 ? null : uploadButton} */}
+                    {sourceCode && sourceCode.length >= 1 ? null : uploadButton}
                   </Upload>
                 </div>
               )}
@@ -435,8 +462,7 @@ function StepThird({ form }, ref) {
                     onChange={(info) => handleChange(info, 'libraryFile')}
                     defaultFileList={[]}
                     accept=".a">
-                    {uploadButton}
-                    {/* {moduleInfo.libraryFile && moduleInfo.libraryFile.length >= 1 ? null : uploadButton} */}
+                    {libraryFile && libraryFile.length >= 1 ? null : uploadButton}
                   </Upload>
                 </div>
               )}
@@ -472,8 +498,7 @@ function StepThird({ form }, ref) {
                     defaultFileList={[]}
                     accept=".bin"
                   >
-                    {uploadButton}
-                    {/* {moduleInfo.burnFile && moduleInfo.burnFile.length >= 1 ? null : uploadButton} */}
+                    {burnFile && burnFile.length >= 1 ? null : uploadButton}
                   </Upload>
                 </div>
               )}
@@ -508,7 +533,7 @@ function StepThird({ form }, ref) {
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'modulePicture')}
                 >
-                  {uploadButton}
+                  {modulePicture && modulePicture.length >= 1 ? null : uploadButton}
                 </Upload>
                 {/* <Modal
                   visible={this.state.previewVisible}
@@ -541,7 +566,7 @@ function StepThird({ form }, ref) {
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
                 >
-                  {uploadButton}
+                  {referenceCircuitDiagram && referenceCircuitDiagram.length >= 1 ? null : uploadButton}
                 </Upload>
                 {/* <Modal
                   visible={this.state.previewVisible}
@@ -572,8 +597,7 @@ function StepThird({ form }, ref) {
                   accept=".pdf"
                   onChange={(info) => handleChange(info, 'readmePdf')}
                 >
-                  {uploadButton}
-                  {/* {moduleInfo.readmePdf && moduleInfo.readmePdf.length >= 1 ? null : uploadButton} */}
+                  {readmePdf && readmePdf.length >= 1 ? null : uploadButton}
                 </Upload>
               </div>
             )}
