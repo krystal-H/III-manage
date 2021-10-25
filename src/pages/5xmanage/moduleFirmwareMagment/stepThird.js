@@ -4,6 +4,7 @@ import { fileHost } from "../../../util/utils";
 import { cloneDeep } from 'lodash'
 import './stepThird.less'
 
+let picId = 0
 let uniquekey = 0
 
 // 上传地址
@@ -26,32 +27,30 @@ function StepThird({ form }, ref) {
   const [schemeType, setSchemeType] = useState()
   const [valueType, setValueType] = useState([])
   const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
+  const [showSrc, setshowSrc] = useState('') // 图片预览展示的地址
 
-  const [pinDiagram, setPindiagram] = useState('') // 引脚示意图
-  const [sourceCode, setSourcecode] = useState('') // 源码路径
-  const [libraryFile, setLibraryFile] = useState('') // 库文件路径
-  const [burnFile, setBurnFile] = useState('') // 烧录文件路径
-  const [modulePicture, setModulepicture] = useState('') // 模组图片
-  const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState('') // 参考电路图
+  const [pinDiagram, setPindiagram] = useState([]) // 引脚示意图
+  const [sourceCode, setSourcecode] = useState([]) // 源码路径
+  const [libraryFile, setLibraryFile] = useState([]) // 库文件路径
+  const [burnFile, setBurnFile] = useState([]) // 烧录文件路径
+  const [modulePicture, setModulepicture] = useState([]) // 模组图片
+  const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
   const [readmePdf, setReadmepdf] = useState('')
 
-
   const { getFieldDecorator, getFieldValue } = form
-  const options = [
-    { label: '免开发方案', value: 1 },
-    { label: 'MCU方案', value: 2 },
-    { label: 'Soc方案', value: 3 },
-  ]
-
-  useEffect(() => {
-    console.log('schemeType', schemeType)
-  }, [schemeType])
 
   // 表单提交
   const validData = () => {
     form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        values.funcDefList = values.funcDefList.map(item => {
+          if (item.dataType.type === 'enum') {
+            item.dataType.specs.def = item.dataType.specs.def.filter(item => item)
+          }
+          return item
+        })
+        console.log('过滤的数据---------------', values)
         // setStepCur(2, values)
       }
     })
@@ -62,7 +61,7 @@ function StepThird({ form }, ref) {
     return {
       onFinish: validData
     }
-  })
+  }, [pinDiagram])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -100,83 +99,71 @@ function StepThird({ form }, ref) {
     console.log('上传的info', info)
     // type首字母转大写，赋值 setAaa(xxx)
     const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
-    const { file, fileList } = info;
+    const { file, fileList } = info
     if (file.status === "done") {
+      const arr = []
+      const uploadObj = {
+        status: 'done',
+        url: file.response.data.url
+      }
+      arr.push(uploadObj)
       setTimeout(() => {
-        eval(`set${upperType}`)(file.response.data.url)
+        eval(`set${upperType}`)(arr)
       }, 0)
     } else if (file.status === "error") {
-      message.error(`${info.file.name} 上传失败`);
-      eval(`set${upperType}`)('')
+      message.error(`${info.file.name} 上传失败`)
+      eval(`set${upperType}`)([])
     } else {
-      eval(`set${upperType}`)('')
+      eval(`set${upperType}`)([])
     }
   }
 
-  // 源码模式校验
-  const sourceCodeBeforeUpload = (file) => {
-    const isJpgOrPng =
-      file.type === "application/zip" ||
-      file.type === "application/x-zip-compressed";
-    if (!isJpgOrPng) {
-      message.error("只能上传zip文件");
+  // 格式判断
+  const judgeFormat = (file, type) => {
+    switch (type) {
+      case '源码':
+        return (file.type === "application/zip" || file.type === "application/x-zip-compressed")
+      case '烧录文件':
+        return (file.type === "application/macbinary" || file.type === "application/octet-stream")
+      case '库文件':
+        return file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a"
+      case 'PDF文件':
+        return file.type === "application/pdf"
     }
-    const isLt2M = file.size / 1024 / 1024 <= 512;
-    if (!isLt2M) {
-      message.error("zip文件必须小于512M!");
-    }
-    const fileLength = file.name.length <= 50;
-    if (!fileLength) {
-      message.error("文件名称长度不超过50个字符");
-    }
-    return isJpgOrPng && isLt2M && fileLength;
   }
 
-  // 库文件格式校验
-  const libraryFileBeforeUpload = (file) => {
-    console.log("file,file.type", file, file.type);
-    const isJpgOrPng =
-      file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a";
-    if (!isJpgOrPng) {
-      message.error("只能上传.a库文件");
+  // 上传文档限制
+  const uploadDocumentLimit = (file, type, limitSize) => {
+    const isFormat = judgeFormat(file, type)
+    if (!isFormat) {
+      message.error(`只能上传${type}!`)
     }
-    const isLt2M = file.size / 1024 / 1024 <= 512;
-    if (!isLt2M) {
-      message.error(".a库文件必须小于512M!");
+
+    const isLimit = file.size / 1024 / 1024 <= limitSize
+    if (!isLimit) {
+      message.error(`文件必须小于${limitSize}M`)
     }
-    const fileLength = file.name.length <= 50;
+
+    const fileLength = file.name.length <= 50
     if (!fileLength) {
-      message.error("文件名称长度不超过50个字符");
+      message.error("文件名称长度不超过50个字符")
     }
-    return isJpgOrPng && isLt2M && fileLength;
+
+    return isFormat && isLimit && fileLength
   }
 
-  // 烧录文件格式校验
-  const burnFileBeforeUpload = (file) => {
-    console.log("file,file.type", file, file.type);
-    const isJpgOrPng =
-      file.type === "application/macbinary" ||
-      file.type === "application/octet-stream";
-    if (!isJpgOrPng) {
-      message.error("只能上传烧录文件!");
-    }
-    const isLt2M = file.size / 1024 / 1024 <= 32;
-    if (!isLt2M) {
-      message.error(".bin文件必须小于32M!");
-    }
-    const fileLength = file.name.length <= 50;
-    if (!fileLength) {
-      message.error("文件名称长度不超过50个字符");
-    }
-    return isJpgOrPng && isLt2M && fileLength;
-  }
+  // 选择支持方案
+  // const changeScheme = (e) => {
+  //   setSchemeType(e.target.value)
+  // }
 
   // 图片预览
-  const handlePreview = async file => {
+  const handlePreview = (val, arr) => {
+    setPreviewVisible(val)
+    setshowSrc(arr[0].url)
+  }
 
-
-  };
-
+  // 数值or枚举
   const chooseValueType = (val, index) => {
     let copyVal = cloneDeep(valueType)
     copyVal[index] = val
@@ -350,11 +337,9 @@ function StepThird({ form }, ref) {
     </div>
   ))
 
-  const uploadButton = (
-    <Button>
-      <Icon type="upload" /> 上传文档
-    </Button>
-  )
+  const uploadButton = (type = '上传文档') => {
+    return (<Button><Icon type="upload" />{type}</Button>)
+  }
 
   // ------------------------------------------------------
   return (
@@ -390,19 +375,13 @@ function StepThird({ form }, ref) {
                 <Upload
                   {...uploadConfigs}
                   listType="picture"
-                  defaultFileList={[]}
-                  onPreview={() => setPreviewVisible(true)}
+                  defaultFileList={pinDiagram || []}
+                  onPreview={() => handlePreview(true, pinDiagram)}
                   beforeUpload={modulePictureBeforeUpload}
-                  accept="image/png,image/jpeg"
+                  accept="image/png"
                   onChange={(info) => handleChange(info, 'pinDiagram')}>
-                  {pinDiagram && pinDiagram.length >= 1 ?
-                    null : (<Button><Icon type="upload" /> 上传图片</Button>)
-                  }
+                  {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
                 </Upload>
-                <Modal visible={previewVisible} footer={null}
-                  onCancel={() => setPreviewVisible(false)}>
-                  <img alt="example" style={{ width: "100%" }} src={pinDiagram} />
-                </Modal>
               </div>
             )}
           </Form.Item>
@@ -426,16 +405,16 @@ function StepThird({ form }, ref) {
           <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）">
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
               {getFieldDecorator("sourceCode", {
-                rules: [{ required: false, message: "请上传源码" }]
+                rules: [{ required: true, message: "请上传源码" }]
               })(
                 <div>
                   <Upload
                     {...uploadConfigs}
-                    beforeUpload={() => sourceCodeBeforeUpload}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '源码', 512)}
                     onChange={(info) => handleChange(info, 'sourceCode')}
-                    defaultFileList={[]}
+                    defaultFileList={sourceCode || []}
                     accept=".zip ">
-                    {sourceCode && sourceCode.length >= 1 ? null : uploadButton}
+                    {sourceCode && sourceCode.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
               )}
@@ -445,7 +424,7 @@ function StepThird({ form }, ref) {
               <div>
                 版本号：
                 {getFieldDecorator("sourceCodeVersion", {
-                  rules: [{ required: false, message: "请输入源码版本号" }]
+                  rules: [{ required: true, message: "请输入源码版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
@@ -453,16 +432,16 @@ function StepThird({ form }, ref) {
           <Form.Item label="库文件" extra="（请上传格式为.a的库文件）">
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
               {getFieldDecorator("libraryFile", {
-                rules: [{ required: false, message: "请上传库文件" }]
+                rules: [{ required: true, message: "请上传库文件" }]
               })(
                 <div>
                   <Upload
                     {...uploadConfigs}
-                    beforeUpload={() => libraryFileBeforeUpload}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '库文件', 512)}
                     onChange={(info) => handleChange(info, 'libraryFile')}
-                    defaultFileList={[]}
+                    defaultFileList={libraryFile || []}
                     accept=".a">
-                    {libraryFile && libraryFile.length >= 1 ? null : uploadButton}
+                    {libraryFile && libraryFile.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
               )}
@@ -473,7 +452,7 @@ function StepThird({ form }, ref) {
                 版本号：
                 {getFieldDecorator("libraryFileVersion", {
                   initialValue: '',
-                  rules: [{ required: false, message: "请输入库文件版本号" }]
+                  rules: [{ required: true, message: "请输入库文件版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
@@ -488,17 +467,17 @@ function StepThird({ form }, ref) {
           <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）">
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
               {getFieldDecorator("burnFile", {
-                rules: [{ required: false, message: "请上传烧录文件" }]
+                rules: [{ required: true, message: "请上传烧录文件" }]
               })(
                 <div>
                   <Upload
                     {...uploadConfigs}
-                    beforeUpload={() => burnFileBeforeUpload}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '烧录文件', 32)}
                     onChange={(info) => handleChange(info, 'burnFile')}
-                    defaultFileList={[]}
+                    defaultFileList={burnFile || []}
                     accept=".bin"
                   >
-                    {burnFile && burnFile.length >= 1 ? null : uploadButton}
+                    {burnFile && burnFile.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
               )}
@@ -509,7 +488,7 @@ function StepThird({ form }, ref) {
                 版本号：
                 {getFieldDecorator("burnFileVersion", {
                   initialValue: '',
-                  rules: [{ required: false, message: "请输入烧录文件版本号" }]
+                  rules: [{ required: true, message: "请输入烧录文件版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
@@ -519,7 +498,7 @@ function StepThird({ form }, ref) {
               rules: [{ required: true, message: '烧录文件名称', whitespace: true }],
             })(<Input placeholder="烧录文件名称" style={{ width: 350 }} />)}
           </Form.Item>
-          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）">
+          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{span: 9}}>
             {getFieldDecorator("modulePicture", {
               rules: [{ required: false, message: "请上传一张图片" }]
             })(
@@ -527,31 +506,21 @@ function StepThird({ form }, ref) {
                 <Upload
                   {...uploadConfigs}
                   listType="picture"
-                  defaultFileList={[]}
-                  onPreview={() => handlePreview}
+                  defaultFileList={modulePicture || []}
+                  onPreview={() => handlePreview(true, modulePicture)}
                   beforeUpload={() => modulePictureBeforeUpload}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'modulePicture')}
                 >
-                  {modulePicture && modulePicture.length >= 1 ? null : uploadButton}
+                  {modulePicture && modulePicture.length >= 1 ? null : uploadButton('上传图片')}
                 </Upload>
-                {/* <Modal
-                  visible={this.state.previewVisible}
-                  footer={null}
-                  onCancel={this.handleCancelPreview}
-                >
-                  <img
-                    alt="example"
-                    style={{ width: "100%" }}
-                    src={this.state.previewImage}
-                  />
-                </Modal> */}
               </div>
             )}
           </Form.Item>
           <Form.Item
             label="参考电路"
             extra="（请上传格式为.png，小于500k图片）"
+            wrapperCol={{span: 9}}
           >
             {getFieldDecorator("referenceCircuitDiagram", {
               rules: [{ required: false, message: "请上传一张图片" }]
@@ -560,50 +529,44 @@ function StepThird({ form }, ref) {
                 <Upload
                   {...uploadConfigs}
                   listType="picture"
-                  defaultFileList={[]}
-                  onPreview={() => handlePreview}
+                  defaultFileList={referenceCircuitDiagram || []}
+                  onPreview={() => handlePreview(true, referenceCircuitDiagram)}
                   beforeUpload={modulePictureBeforeUpload}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
                 >
-                  {referenceCircuitDiagram && referenceCircuitDiagram.length >= 1 ? null : uploadButton}
+                  {referenceCircuitDiagram && referenceCircuitDiagram.length >= 1 ? null : uploadButton('上传图片')}
                 </Upload>
-                {/* <Modal
-                  visible={this.state.previewVisible}
-                  footer={null}
-                  onCancel={this.handleCancelPreview}
-                >
-                  <img
-                    alt="example"
-                    style={{ width: "100%" }}
-                    src={this.state.previewImage}
-                  />
-                </Modal> */}
               </div>
             )}
           </Form.Item>
           <Form.Item
             label="说明文档"
             extra="（请上传格式为.pdf，大小2M说明文件)"
+            wrapperCol={{span: 9}}
           >
             {getFieldDecorator("readmePdf", {
-              rules: [{ required: false, message: "请上传文档" }]
+              rules: [{ required: true, message: "请上传文档" }]
             })(
               <div>
                 <Upload
                   {...uploadConfigs}
-                  defaultFileList={[]}
-                  beforeUpload={() => referenceCircuitDiagramBeforeUpload}
+                  defaultFileList={readmePdf || []}
+                  beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 2)}
                   accept=".pdf"
                   onChange={(info) => handleChange(info, 'readmePdf')}
                 >
-                  {readmePdf && readmePdf.length >= 1 ? null : uploadButton}
+                  {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
                 </Upload>
               </div>
             )}
           </Form.Item>
         </>
       }
+      <Modal visible={previewVisible} footer={null}
+        onCancel={() => setPreviewVisible(false)}>
+        <img alt="example" style={{ width: "100%" }} src={showSrc} />
+      </Modal>
     </Form>
   )
 }

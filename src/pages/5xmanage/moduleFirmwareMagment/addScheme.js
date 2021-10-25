@@ -12,7 +12,7 @@ const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
 function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
-  const [stepcurrent, setStepcurrent] = useState(2)
+  const [stepcurrent, setStepcurrent] = useState(0)
   const ref1 = useRef()
   const ref2 = useRef()
   const ref3 = useRef()
