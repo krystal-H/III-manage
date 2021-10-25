@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Button, Select, Icon, Radio, Modal, Form, Tabs, DatePicker, Upload, message } from 'antd';
 import TableCom from './TableCom';
-import { upFile,newData } from '../../../apis/physical'
+import { upFile, newData } from '../../../apis/physical'
 import './index.less'
 
 const FormItem = Form.Item
@@ -23,15 +23,16 @@ function delaData(data) {
     return newData
 }
 function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
-    const { getFieldDecorator, validateFields } = form;
+    const { getFieldDecorator, validateFields,setFieldsValue  } = form;
+    const [fileList, setFileList] = useState([])
     const [currentTab, setCurrentTab] = useState('1')
     const [tableData, setTableData] = useState([])
     const [showData, setShowData] = useState([])
     const sundata = () => {
         validateFields().then(val => {
-            console.log(val,'提交的wenj')
-            newData(val).then(res=>{
-                if(res.data.code == 0){
+            console.log(val, '提交的wenj')
+            newData(val).then(res => {
+                if (res.data.code == 0) {
                     message.success('新增成功');
                 }
             })
@@ -67,6 +68,11 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
         setShowData(arr)
     }
     const beforeUpload = (file) => {
+        if (fileList.length == 1) {
+            alert('最多上传一个文件')
+            message.info('最多上传一个文件');
+            return false
+        }
         return true
     }
     const normFile = e => {
@@ -76,10 +82,30 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
         }
         return e && e.fileList;
     };
-    const onRemove =file=>{
-        setTableData([])
-        setShowData([])
+    const onRemove = file => {
+        alert(1)
+        setFieldsValue({
+            fileList: []
+            // page1:[{url:actionData.page1}]
+        })
+        // setTableData([])
+        // setShowData([])
     }
+    const handleChange = ({ file, fileList }) => {
+        fileList = fileList.map(file => {
+            if (file.response) {
+                let { code, data } = file.response;
+                if (code === 0) {
+                    file.url = data.url;
+                }
+            }
+            return file;
+        });
+        // console.log(fileList,'===')
+        if (fileList.length < 1) {
+            setFileList(fileList);
+        }
+    };
     return (
         <div>
             <Modal
@@ -119,7 +145,8 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
                         </Form.Item>
                         <FormItem label="模板设置">
                             {getFieldDecorator('file', { rules: [{ required: true }], valuePropName: 'fileList', getValueFromEvent: normFile, })(
-                                <Upload customRequest={customRequest} beforeUpload={beforeUpload} listType="picture" onRemove ={onRemove }>
+                                <Upload customRequest={customRequest} beforeUpload={beforeUpload} listType="picture"
+                                    onChange={handleChange} onRemove={onRemove}>
                                     <Icon type="upload" /> 选择模板
                                 </Upload>
                             )}

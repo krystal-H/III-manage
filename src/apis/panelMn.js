@@ -20,14 +20,22 @@ export const relData = (data) => {
         headers: {}
     })
 };
-// // 获取订单类型
-// export const getOrderType = () => {
-//     return axios.request({
-//         url: '/manage-open/workOrder/getWorkOrderDictionary',
-//         method: 'post',
-//         data:{}
-//     })
-// };
+// 获取物模型列表
+export const getPhyList = (id) => {
+    return axios.request({
+        url: `/manage-open/physicalModel/list/deviceTypeId/${id}`,
+        method: 'get',
+    })
+};
+//获取物模型下的数据
+export const getPhyData = (data) => {
+    return axios.request({
+        url: '/manage-open/physicalModel/func/list',
+        method: 'post',
+        data,
+        headers: {}
+    })
+};
 // // 回复
 // export const getCallback = (data) => {
 //     return axios.request({

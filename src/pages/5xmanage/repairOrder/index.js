@@ -65,7 +65,7 @@ function rapairModel({ form }) {
     const [options, setOptions] = useState([])
     const [showImg, setShowImg] = useState(false)
     const lookImg = (detailInfo) => {
-        setShowImg(true)
+        // setShowImg(true)
         if (detailInfo.image) {
             setShowImg(true)
         } else {

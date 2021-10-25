@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, Cascader, Divider, Modal, Form, Tooltip } from 'antd';
+import { Card, Input, Button, Select, Cascader, Divider, Modal, Form, message } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import AddModal from './add'
@@ -12,7 +12,7 @@ function PhysicalModel({ form }) {
   const { getFieldDecorator, validateFields, getFieldsValue } = form;
   const [dataSource, setdataSource] = useState([])
   const [optionList, setOptionList] = useState([])
-  const [addVis, setAddVis] = useState(true)
+  const [addVis, setAddVis] = useState(false)
   const column = [
     {
       title: '物模型ID',
@@ -88,7 +88,8 @@ function PhysicalModel({ form }) {
       content:  '点击确定将发布数据，点击取消可取消发布。',
       onOk: () => {
         relData({id}).then(res=>{
-
+          message.success('发布成功');
+          getData()
         })
       }
     })
