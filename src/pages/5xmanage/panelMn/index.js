@@ -18,7 +18,7 @@ function PanelMn({ form }) {
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setdataSource] = useState([])
   const [optionList, setOptionList] = useState([])
-  const [addVis, setAddVis] = useState(false)
+  const [addVis, setAddVis] = useState(true)
   const [editVis, setEditVis] = useState(false)
   const [actionData, setActionData] = useState({})
   const column = [
