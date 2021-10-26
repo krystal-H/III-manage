@@ -10,7 +10,6 @@ const radioStyle = {
 }
 
 function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
-
   // 用于定义暴露给父组件的ref方法
   useImperativeHandle(ref, () => {
     return {

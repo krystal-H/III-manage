@@ -4,6 +4,13 @@ import { cloneDeep } from "lodash"
 import StepFirst from './stepFirst'
 import StepSecond from './stepSecond'
 import StepThird from './stepThird'
+import {
+  getModuleBrandRequest,
+  getNetRequest,
+  getModuleProtocolRequest,
+  bindSceneListRequest,
+  getModuleTypeMenuRequest
+} from '../../../apis/moduleFirmwareMagment'
 
 import './addScheme.less'
 
@@ -17,6 +24,57 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const ref2 = useRef()
   const ref3 = useRef()
   const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
+  const [brandList, setBrandList] = useState([]) // 生产厂家
+  const [netList, setNetList] = useState([]) // 配网库
+  const [protocolList, setProtocolList] = useState([]) // 支持协议
+  const [bindSceneList, setBindSceneList] = useState([]) // 绑定场景
+  const [moduleCommonObj, setModuleCommonObj] = useState()
+  // const [communicationMethodList, setCommunicationMethodList] = useState([]) // 通信方式
+
+  // 生产厂家列表
+  const getBrandList = () => {
+    getModuleBrandRequest().then(res => {
+      setBrandList(res.data.data)
+    })
+  }
+
+  // 配网库列表
+  const getNetList = () => {
+    getNetRequest().then(res => {
+      setNetList(res.data.data)
+    })
+  }
+
+  // 支持协议
+  const getProtocol = () => {
+    getModuleProtocolRequest().then(res => {
+      setProtocolList(res.data.data)
+    })
+  }
+
+  // 绑定场景菜单
+  const getBindSceneList = () => {
+    bindSceneListRequest().then(res => {
+      setBindSceneList(res.data.data)
+    })
+  }
+
+  // 模组公共列表
+  const getCommonList = () => {
+    getModuleTypeMenuRequest().then(res => {
+      setModuleCommonObj(res.data.data)
+    })
+  }
+
+
+  useEffect(() => {
+    getBrandList()
+    getNetList()
+    getProtocol()
+    getBindSceneList()
+    getCommonList()
+  }, [])
+
 
   // 上一步
   const clickPrevious = () => {
@@ -85,18 +143,24 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
           <Tabs activeKey={stepcurrent + ""} animated={false}>
             <TabPane tab="基本参数" key={'0'}>
               <StepFirst
+                brandList={brandList}
+                netList={netList}
                 wrappedComponentRef={ref1}
                 setStepCur={setStepCur} />
             </TabPane>
             <TabPane tab="功能参数" key={'1'}>
               <StepSecond
+                netList={netList}
+                protocolList={protocolList}
+                bindSceneList={bindSceneList}
+                moduleCommonObj={moduleCommonObj}
                 wrappedComponentRef={ref2}
                 setStepCur={setStepCur} />
             </TabPane>
             <TabPane tab="功能参数" key={'2'}>
               <StepThird
-                wrappedComponentRef={ref3} 
-                commitAll={commitAll}/>
+                wrappedComponentRef={ref3}
+                commitAll={commitAll} />
             </TabPane>
           </Tabs>
         </div>

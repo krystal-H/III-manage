@@ -23,7 +23,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   // 获取三级品类
   const getCategory = () => {
     getThirdCategoryRequest().then(res => {
-      setThirdCategoryList(res.data)
+      setThirdCategoryList(res.data.data)
     })
   }
 

@@ -1,15 +1,9 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Button, Steps, Form, Tabs, Input, Select, InputNumber, Checkbox, Radio } from 'antd';
+import { Form, Select, InputNumber, Checkbox, Radio } from 'antd';
 
-function StepSecond({ form, setStepCur }, ref) {
-  const [communicationMethodList, setCommunicationMethodList] = useState([])
-  const [networkMethodList, setnetworkMethodList] = useState([])
+import './stepSecond.less'
 
-  // 多选框改变
-  const checkboxOnChange = checkedValues => {
-
-  }
-
+function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, moduleCommonObj }, ref) {
   // 表单提交
   const validData = () => {
     form.validateFields((err, values) => {
@@ -34,12 +28,13 @@ function StepSecond({ form, setStepCur }, ref) {
         {getFieldDecorator("moduleTypeList", {
           rules: [{ required: true, message: "请选择通信方式" }]
         })(
-          <Checkbox.Group onChange={checkboxOnChange}>
-            {communicationMethodList && communicationMethodList.length ? communicationMethodList.map(item => (
-              <Checkbox value={item.moduleType} key={item.moduleType}>
-                {item.moduleTypeName}
-              </Checkbox>
-            )) : null}
+          <Checkbox.Group>
+            {moduleCommonObj.moduleTypeList && moduleCommonObj.moduleTypeList.length ?
+              moduleCommonObj.moduleTypeList.map(item => (
+                <Checkbox value={item.moduleType} key={item.moduleType}>
+                  {item.moduleTypeName}
+                </Checkbox>
+              )) : null}
           </Checkbox.Group>
         )}
       </Form.Item>
@@ -47,9 +42,15 @@ function StepSecond({ form, setStepCur }, ref) {
         {getFieldDecorator("appModuleId", {
           rules: [{ required: true, message: "请您选择配网库" }]
         })(
-          <Select placeholder="请选择配网库">
-            <Option value="1">1</Option>
-            <Option value="2">2</Option>
+          <Select placeholder="请选择配网库" showSearch
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }>
+            {netList.map((item, index) => (
+              <Select.Option value={item.moduleId} key={item.moduleId}>
+                {item.moduleId + " " + item.hetModuleTypeName}
+              </Select.Option>
+            ))}
           </Select>
         )}
       </Form.Item>
@@ -58,11 +59,12 @@ function StepSecond({ form, setStepCur }, ref) {
           rules: [{ required: true, message: "请选择配网方式" }]
         })(
           <Checkbox.Group>
-            {networkMethodList && networkMethodList.length ? networkMethodList.map(item => (
-              <Checkbox value={item.networkType} key={item.networkType}>
-                {item.networkTypeName}
-              </Checkbox>
-            )) : null}
+            {moduleCommonObj.networkTypeList && moduleCommonObj.networkTypeList.length ?
+              moduleCommonObj.networkTypeList.map(item => (
+                <Checkbox value={item.networkType} key={item.networkType}>
+                  {item.networkTypeName}
+                </Checkbox>
+              )) : null}
           </Checkbox.Group>
         )}
       </Form.Item>
@@ -70,9 +72,18 @@ function StepSecond({ form, setStepCur }, ref) {
         {getFieldDecorator("supportProtocolType", {
           rules: [{ required: true, message: "请选择支持协议" }]
         })(
-          <Select placeholder="请选择支持协议">
-            <Option value="1">1</Option>
-            <Option value="2">2</Option>
+          <Select placeholder="请选择支持协议"
+            showSearch
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }>
+            {
+              protocolList.supportProtocolList.map((item, index) => (
+                <Select.Option value={item.supportProtocol} key={item.supportProtocol}>
+                  {item.supportProtocolName}
+                </Select.Option>
+              ))
+            }
           </Select>
         )}
       </Form.Item>
@@ -91,9 +102,18 @@ function StepSecond({ form, setStepCur }, ref) {
         {getFieldDecorator("dataLengthLimit", {
           rules: [{ required: true, message: "请输入通信速率" }]
         })(
-          <Select placeholder="请选择数据长度上限">
-            <Option value="1">1</Option>
-            <Option value="2">2</Option>
+          <Select placeholder="请选择数据长度上限"
+            showSearch
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }>
+            {
+              protocolList.dataLengthLimitList.map((item, index) => (
+                <Select.Option value={item.dataLengthLimit} key={item.dataLengthLimit}>
+                  {item.dataLengthLimitName}
+                </Select.Option>
+              ))
+            }
           </Select>
         )}
       </Form.Item>
@@ -101,9 +121,17 @@ function StepSecond({ form, setStepCur }, ref) {
         {getFieldDecorator("bindSceneType", {
           rules: [{ required: true, message: "请选择认证通道" }]
         })(
-          <Select placeholder="请选择认证通道">
-            <Option value="1">1</Option>
-            <Option value="2">2</Option>
+          <Select placeholder="请选择认证通道"
+            showSearch
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {bindSceneList.map((item, index) => (
+              <Select.Option value={item.sceneTypeId} key={item.sceneTypeId}>
+                {item.sceneTypeName}
+              </Select.Option>
+            ))}
           </Select>
         )}
       </Form.Item>
