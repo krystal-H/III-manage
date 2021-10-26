@@ -36,7 +36,7 @@ export const getNetRequest = () => {
 // 支持协议
 export const getModuleProtocolRequest = () => {
   return axios.request({
-    url: '/manage-open/module/type/getMenu',
+    url: prefix + '/module/type/getMenu',
     method: 'get'
   })
 }
@@ -44,7 +44,7 @@ export const getModuleProtocolRequest = () => {
 // 获得绑定场景菜单
 export const bindSceneListRequest = (moduleId) => {
   return axios.request({
-    url: '/manage-open/module/type/bindSceneType/list',
+    url: prefix + '/module/type/bindSceneType/list',
     params: {
       moduleId
     },
