@@ -20,8 +20,6 @@ import Exception404 from "../exception/404";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Bread from "./components/Breadcrumb";
 
-import TagList from "../configdata/protocolTag/TagList";
-
 class App extends Component {
   componentDidMount() {
     //获取设备信息
@@ -66,7 +64,6 @@ class App extends Component {
                     ))}
                     <Redirect exact from="/" to="/home" />
                     <Route path="/home" component={Home}/>
-                    <Route path="/protocoltag" component={TagList}/>
                     <Route component={Exception404} />
                   </Switch>
               </ErrorBoundary>
