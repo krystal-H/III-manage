@@ -48,13 +48,19 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
         obj.two = cloneDeep(val)
         return obj
       })
+    } else if (stepcurrent === 2) {
+      setSubObj(pre => {
+        let obj = cloneDeep(pre)
+        obj.three = cloneDeep(val)
+        return obj
+      })
     }
     setStepcurrent(num)
   }
 
   // 提交所有数据
   const commitAll = (values) => {
-    let params = { ...subObj.one, ...subObj.two, ...values }
+    let params = { ...subObj.one, ...subObj.two, ...subObj.three, ...values }
     console.log('提交的数据', params)
   }
 
@@ -89,7 +95,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
             </TabPane>
             <TabPane tab="功能参数" key={'2'}>
               <StepThird
-                wrappedComponentRef={ref3} />
+                wrappedComponentRef={ref3} 
+                commitAll={commitAll}/>
             </TabPane>
           </Tabs>
         </div>

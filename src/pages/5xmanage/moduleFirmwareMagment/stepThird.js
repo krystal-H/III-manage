@@ -51,7 +51,7 @@ function StepThird({ form }, ref) {
           return item
         })
         console.log('过滤的数据---------------', values)
-        // setStepCur(2, values)
+        commitAll(values)
       }
     })
   }
