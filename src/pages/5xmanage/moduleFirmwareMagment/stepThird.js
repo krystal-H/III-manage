@@ -23,7 +23,7 @@ const StyleItem = {
   width: '60%'
 }
 
-function StepThird({ form }, ref) {
+function StepThird({ form, commitAll }, ref) {
   const [schemeType, setSchemeType] = useState()
   const [valueType, setValueType] = useState([])
   const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
@@ -35,7 +35,7 @@ function StepThird({ form }, ref) {
   const [burnFile, setBurnFile] = useState([]) // 烧录文件路径
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
-  const [readmePdf, setReadmepdf] = useState('')
+  const [readmePdf, setReadmepdf] = useState([])
 
   const { getFieldDecorator, getFieldValue } = form
 
@@ -44,14 +44,56 @@ function StepThird({ form }, ref) {
     form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        values.funcDefList = values.funcDefList.map(item => {
-          if (item.dataType.type === 'enum') {
-            item.dataType.specs.def = item.dataType.specs.def.filter(item => item)
-          }
-          return item
-        })
-        console.log('过滤的数据---------------', values)
-        commitAll(values)
+        debugger
+        if (values.funcDefList && values.funcDefList.length > 0) {
+          values.funcDefList = values.funcDefList.map(item => {
+            if (item.dataType.type === 'enum') {
+              item.dataType.specs.def = item.dataType.specs.def.filter(item => item)
+            }
+            return item
+          })
+        }
+
+        // 免开发的参数
+        const freeParams = {
+          price: values.price,
+          schemeType: values.schemeType,
+          customConfigJson: values.funcDefList || [],
+          pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
+        }
+        // mcu方案的参数
+        const mcuParams = {
+          burnFile: values.burnFile, // 烧录文件
+          burnFileName: values.burnFileName, // 烧录文件名称
+          modulePicture: modulePicture && modulePicture.length ? modulePicture[0].url : '',
+          referenceCircuitDiagram: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].url : '',
+          readmePdf: readmePdf && readmePdf.length ? readmePdf[0].url : '',
+          readmePdfName: '',
+        }
+
+        // Soc方案参数
+        const socParams = {
+          sourceCode: sourceCode && sourceCode.length ? sourceCode[0].url : '',
+          sourceCodeVersion: values.sourceCodeVersion,
+          sourceCodeName: '',
+          libraryFile: libraryFile && libraryFile.length ? libraryFile[0].url : '',
+          burnFileVersion: values.burnFileVersion,
+          burnFileName: '',
+          ...mcuParams
+        }
+        const firmwareDefReqList = []
+        switch (schemeType) {
+          case 1:
+            firmwareDefReqList.push(freeParams)
+            break;
+          case 2:
+            firmwareDefReqList.push(mcuParams)
+            break;
+          case 3:
+            firmwareDefReqList.push(socParams)
+            break;
+        }
+        commitAll(firmwareDefReqList)
       }
     })
   }
@@ -61,7 +103,7 @@ function StepThird({ form }, ref) {
     return {
       onFinish: validData
     }
-  }, [pinDiagram])
+  }, [pinDiagram, sourceCode, libraryFile, burnFile, modulePicture, referenceCircuitDiagram, readmePdf, form])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -76,27 +118,9 @@ function StepThird({ form }, ref) {
     return isJpgOrPng && fileLength;
   }
 
-  // pdf格式校验
-  const referenceCircuitDiagramBeforeUpload = (file) => {
-    console.log("file,file.type", file, file.type);
-    const isJpgOrPng = file.type === "application/pdf";
-    if (!isJpgOrPng) {
-      message.error("只能上传PDF文件");
-    }
-    const isLt2M = file.size / 1024 / 1024 <= 2;
-    if (!isLt2M) {
-      message.error("PDF must smaller than 2M!");
-    }
-    const fileLength = file.name.length <= 50;
-    if (!fileLength) {
-      message.error("文件名称长度不超过50个字符");
-    }
-    return isJpgOrPng && isLt2M && fileLength;
-  }
-
   // 上传文件修改
   const handleChange = (info, type) => {
-    console.log('上传的info', info)
+    console.log('上传的info', info, type)
     // type首字母转大写，赋值 setAaa(xxx)
     const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
     const { file, fileList } = info
@@ -110,6 +134,7 @@ function StepThird({ form }, ref) {
       setTimeout(() => {
         eval(`set${upperType}`)(arr)
       }, 0)
+      form.setFieldsValue({ type: file.response.data.url })
     } else if (file.status === "error") {
       message.error(`${info.file.name} 上传失败`)
       eval(`set${upperType}`)([])
@@ -151,11 +176,6 @@ function StepThird({ form }, ref) {
 
     return isFormat && isLimit && fileLength
   }
-
-  // 选择支持方案
-  // const changeScheme = (e) => {
-  //   setSchemeType(e.target.value)
-  // }
 
   // 图片预览
   const handlePreview = (val, arr) => {
@@ -350,7 +370,7 @@ function StepThird({ form }, ref) {
         })(<Input placeholder="请输入价格" style={{ width: 350 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
-        {getFieldDecorator("supportFileTransfer", {
+        {getFieldDecorator("schemeType", {
           rules: [{ required: true, message: "请选择支持方案" }]
         })(
           <Radio.Group onChange={(e) => setSchemeType(e.target.value)}>
@@ -498,7 +518,7 @@ function StepThird({ form }, ref) {
               rules: [{ required: true, message: '烧录文件名称', whitespace: true }],
             })(<Input placeholder="烧录文件名称" style={{ width: 350 }} />)}
           </Form.Item>
-          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{span: 9}}>
+          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 9 }}>
             {getFieldDecorator("modulePicture", {
               rules: [{ required: false, message: "请上传一张图片" }]
             })(
@@ -520,7 +540,7 @@ function StepThird({ form }, ref) {
           <Form.Item
             label="参考电路"
             extra="（请上传格式为.png，小于500k图片）"
-            wrapperCol={{span: 9}}
+            wrapperCol={{ span: 9 }}
           >
             {getFieldDecorator("referenceCircuitDiagram", {
               rules: [{ required: false, message: "请上传一张图片" }]
@@ -543,7 +563,7 @@ function StepThird({ form }, ref) {
           <Form.Item
             label="说明文档"
             extra="（请上传格式为.pdf，大小2M说明文件)"
-            wrapperCol={{span: 9}}
+            wrapperCol={{ span: 9 }}
           >
             {getFieldDecorator("readmePdf", {
               rules: [{ required: true, message: "请上传文档" }]

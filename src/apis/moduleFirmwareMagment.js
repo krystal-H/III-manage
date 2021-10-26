@@ -59,3 +59,15 @@ export const getModuleTypeMenuRequest = () => {
       method: 'get'
   })
 }
+
+// 保存模组&固件
+export const saveModuleRequest = (params) => {
+  return axios.request({
+    url: prefix + '/module/create',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+}

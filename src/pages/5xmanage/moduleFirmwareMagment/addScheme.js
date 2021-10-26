@@ -9,7 +9,8 @@ import {
   getNetRequest,
   getModuleProtocolRequest,
   bindSceneListRequest,
-  getModuleTypeMenuRequest
+  getModuleTypeMenuRequest,
+  saveModuleRequest
 } from '../../../apis/moduleFirmwareMagment'
 
 import './addScheme.less'
@@ -66,7 +67,6 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
     })
   }
 
-
   useEffect(() => {
     getBrandList()
     getNetList()
@@ -106,20 +106,20 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
         obj.two = cloneDeep(val)
         return obj
       })
-    } else if (stepcurrent === 2) {
-      setSubObj(pre => {
-        let obj = cloneDeep(pre)
-        obj.three = cloneDeep(val)
-        return obj
-      })
     }
     setStepcurrent(num)
   }
 
   // 提交所有数据
   const commitAll = (values) => {
-    let params = { ...subObj.one, ...subObj.two, ...subObj.three, ...values }
+    console.log('第三步提交的数据', values, '====', ...values)
+    let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
     console.log('提交的数据', params)
+    saveModuleRequest(params).then(res => {
+      if (res.data.code == 0) {
+        message.success(`提交成功`, 2, console.log('该回列表页了/////'))
+      }
+    })
   }
 
   return (
