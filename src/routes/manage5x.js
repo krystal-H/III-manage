@@ -56,6 +56,11 @@ const route = {
       name: '标准面板管理',
       path: '/5xmanage/panelModelMagement',
       component: panelMagement,
+    },
+    {
+      name: '申请&采购模组申请',
+      path: '/5xmanage/applyModuleAuditing',
+      component: panelMagement,
     },    
   ]
 
