@@ -16,6 +16,9 @@ const panelMagement = asyncComponent(() => import( /* webpackChunkName: "Firmwar
 // 物模型管理
 const PhysicalModelMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/PhysicalModel'))
 
+
+const applyModuleAuditing = asyncComponent(() => import('../pages/5xmanage/applyModuleAuditing'))
+
 const route = {
   icon: "setting",
   name: '5.X管理',
@@ -60,7 +63,7 @@ const route = {
     {
       name: '申请&采购模组申请',
       path: '/5xmanage/applyModuleAuditing',
-      component: panelMagement,
+      component: applyModuleAuditing,
     },    
   ]
 

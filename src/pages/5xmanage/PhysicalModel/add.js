@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Button, Select, Icon, Radio, Modal, Form, Tabs, DatePicker, Upload, message } from 'antd';
 import TableCom from './TableCom';
-import { upFile, newData } from '../../../apis/physical'
+import { upFile, newData, getDetailTable, getDetailInfo, editData } from '../../../apis/physical'
 import './index.less'
 
 const FormItem = Form.Item
@@ -22,32 +22,74 @@ function delaData(data) {
     })
     return newData
 }
-function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
-    const { getFieldDecorator, validateFields,setFieldsValue  } = form;
+function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) {
+    const { getFieldDecorator, validateFields, setFieldsValue, getFieldValue, getFieldsValue } = form;
     const [fileList, setFileList] = useState([])
     const [currentTab, setCurrentTab] = useState('1')
     const [tableData, setTableData] = useState([])
     const [showData, setShowData] = useState([])
-    const sundata = () => {
-        validateFields().then(val => {
-            console.log(val, '提交的wenj')
-            newData(val).then(res => {
-                if (res.data.code == 0) {
-                    message.success('新增成功');
-                }
-            })
+    useEffect(() => {
+        if (editId) {
+            initData()
+        }
+    }, [])
+    const initData = () => {
+        getDetailInfo({ id: editId }).then(res => {
+            if (res.data.code == 0) {
+                setFieldsValue({
+                    name: res.data.data.name,
+                    deviceTypeId: res.data.data.deviceTypeId,
+                    status: res.data.data.status,
+                    remark: res.data.data.remark
+                })
+
+            }
+        })
+        getDetailTable({ id: editId }).then(res => {
+            if (res.data.code == 0) {
+                let data = delaData(res.data.data.standard || [])
+                setTableData(data)
+                tabcallback('1', data)
+            }
         })
     }
+    const sundata = () => {
+        if (editId) {
+            validateFields().then(val => {
+                let params = { ...val, file: getFieldValue('file')[0].originFileObj, id: editId }
+                editData(params).then(res => {
+                    if (res.data.code == 0) {
+                        message.success('编辑成功');
+                        handleOk()
+                    }
+                })
+            })
+        } else {
+            validateFields().then(val => {
+                let params = { ...val, file: getFieldValue('file')[0].originFileObj }
+                newData(params).then(res => {
+                    if (res.data.code == 0) {
+                        message.success('新增成功');
+                        handleOk()
+                    }
+                })
+            })
+        }
+
+    }
+
     //导入
     const customRequest = (option) => {
+        if (getFieldValue('file') && getFieldValue('file').length) {
+            message.info('只能上传一个文件')
+            return
+        }
         upFile({ file: option.file }).then(res => {
             if (res.data.code == 0) {
                 let data = delaData(res.data.data.standard || [])
                 setTableData(data)
-
                 tabcallback('1', data)
             }
-
         })
     }
     const formItemLayout = {
@@ -67,49 +109,29 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
         })
         setShowData(arr)
     }
-    const beforeUpload = (file) => {
-        if (fileList.length == 1) {
-            alert('最多上传一个文件')
-            message.info('最多上传一个文件');
+    const beforeUpload = (file, fileList) => {
+        if (fileList.length > 1) {
             return false
         }
         return true
     }
     const normFile = e => {
-        console.log('Upload event:', e);
         if (Array.isArray(e)) {
             return e;
         }
         return e && e.fileList;
     };
     const onRemove = file => {
-        alert(1)
-        setFieldsValue({
-            fileList: []
-            // page1:[{url:actionData.page1}]
-        })
-        // setTableData([])
-        // setShowData([])
     }
     const handleChange = ({ file, fileList }) => {
-        fileList = fileList.map(file => {
-            if (file.response) {
-                let { code, data } = file.response;
-                if (code === 0) {
-                    file.url = data.url;
-                }
-            }
-            return file;
-        });
-        // console.log(fileList,'===')
-        if (fileList.length < 1) {
-            setFileList(fileList);
+        if (fileList.length > 1) {
+            fileList.splice(1)
         }
     };
     return (
         <div>
             <Modal
-                title="新增物模型"
+                title={editId ? "编辑物模型" : "新增物模型"}
                 visible={addVis}
                 onOk={sundata}
                 onCancel={handleCancel}
@@ -156,21 +178,23 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
                                 <TextArea style={{ width: '100%' }} ></TextArea>
                             )}
                         </FormItem>
-                        <FormItem label="物模型详情">
-                            <div>
-                                <Tabs activeKey={currentTab} onChange={tabcallback}>
-                                    <TabPane tab="属性" key="1">
-                                    </TabPane>
-                                    <TabPane tab="事件" key="2">
-                                    </TabPane>
-                                    <TabPane tab="服务" key="3">
-                                    </TabPane>
-                                </Tabs>
+                        {
+                            tableData.length ? <FormItem label="物模型详情">
                                 <div>
-                                    <TableCom dataSource={showData} pagination={false} />
+                                    <Tabs activeKey={currentTab} onChange={tabcallback}>
+                                        <TabPane tab="属性" key="1">
+                                        </TabPane>
+                                        <TabPane tab="事件" key="2">
+                                        </TabPane>
+                                        <TabPane tab="服务" key="3">
+                                        </TabPane>
+                                    </Tabs>
+                                    <div>
+                                        <TableCom dataSource={showData} pagination={false} />
+                                    </div>
                                 </div>
-                            </div>
-                        </FormItem>
+                            </FormItem> : null
+                        }
                     </Form>
                 </div>
             </Modal>

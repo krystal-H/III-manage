@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Form, Input, Button, Select, Tooltip, message } from 'antd'
+import { Card, Form, Input, Button, Select, Tooltip, Modal, message } from 'antd'
 import TableCom from '../../../components/Table'
 import TitleTab from '../../../components/TitleTab'
 import { DateTool } from "../../../util/utils"
 import OperateSchemeModal from './addScheme'
 import { cloneDeep } from "lodash"
 import { ModuleListRequest, getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
+import { ModuleDeleteRequest } from '../../../apis/moduleManager';
 import './moduleList.less'
 
 const { Option } = Select
+const { confirm } = Modal
 
 function ModuleList({ form }) {
   const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
@@ -111,21 +113,6 @@ function ModuleList({ form }) {
     ]
   }
 
-  // 初始化表格按钮方法2
-  const createOperationBtn = (item, record) => {
-    return (
-      <Tooltip key={item.key} placement="top" title={item.title}>
-        <Button style={{ marginLeft: "10px" }}
-          shape="circle"
-          size="small"
-          icon={item.icon}
-          key={item.templateId}
-          onClick={() => handleOperation(item, record)}
-        />
-      </Tooltip>
-    )
-  }
-
   // 列表中的按钮点击触发
   const handleOperation = (item, record) => {
     switch (item.key) {
@@ -179,7 +166,7 @@ function ModuleList({ form }) {
           okType: 'danger',
           cancelText: '取消',
           onOk: () => {
-            // this.deleteOperation(record.moduleId);
+            deleteOperation(record.moduleId);
           },
           onCancel() { },
         });
@@ -188,6 +175,31 @@ function ModuleList({ form }) {
       default:
         break;
     }
+  }
+
+  // 删除操作
+  const deleteOperation = (moduleId) => {
+    ModuleDeleteRequest(moduleId).then(res => {
+      if (res.data.code === 0) {
+        message.success(`删除成功`)
+        getTableData()
+      }
+    })
+  }
+
+  // 初始化表格按钮方法2
+  const createOperationBtn = (item, record) => {
+    return (
+      <Tooltip key={item.key} placement="top" title={item.title}>
+        <Button style={{ marginLeft: "10px" }}
+          shape="circle"
+          size="small"
+          icon={item.icon}
+          key={item.key}
+          onClick={() => handleOperation(item, record)}
+        />
+      </Tooltip>
+    )
   }
 
   // 获取模组列表

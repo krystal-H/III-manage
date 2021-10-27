@@ -44,7 +44,6 @@ function StepThird({ form, commitAll }, ref) {
     form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        debugger
         if (values.funcDefList && values.funcDefList.length > 0) {
           values.funcDefList = values.funcDefList.map(item => {
             if (item.dataType.type === 'enum') {
@@ -58,7 +57,7 @@ function StepThird({ form, commitAll }, ref) {
         const freeParams = {
           price: values.price,
           schemeType: values.schemeType,
-          customConfigJson: values.funcDefList || [],
+          customConfigJson: JSON.stringify(values.funcDefList) || JSON.stringify([]),
           pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
         }
         

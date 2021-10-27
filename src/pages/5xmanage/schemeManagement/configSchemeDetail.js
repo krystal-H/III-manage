@@ -11,8 +11,6 @@ const typeMap = {
 }
 
 function ConfigSchemeDetail({ form, commitAll }, ref) {
-  const [dataSource, setDataSource] = useState([])
-  const [physicalId, setPhysicalId] = useState('') // 物模型id
   const [objectModalList, setObjectModalList] = useState([]) // 物模型列表
   const [funcList, setFuncList] = useState([]) // 功能列表
   const [moduleIdsList, setModuleIdsList] = useState([]) // 模组列表

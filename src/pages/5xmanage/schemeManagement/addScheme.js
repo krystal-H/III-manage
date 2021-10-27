@@ -60,10 +60,9 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCatego
     console.log('提交的数据', params)
     saveSchemeRequest(params).then(res => {
       if (res.data.code === 0) {
-        message.success(`提交成功`, 2, () => {
-          handleCancel()
-          getTableData()
-        })
+        message.success(`提交成功`)
+        handleCancel()
+        getTableData()
       }
     })
   }

@@ -18,9 +18,10 @@ function PanelMn({ form }) {
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setdataSource] = useState([])
   const [optionList, setOptionList] = useState([])
-  const [addVis, setAddVis] = useState(true)
+  const [addVis, setAddVis] = useState(false)
   const [editVis, setEditVis] = useState(false)
   const [actionData, setActionData] = useState({})
+  const [modelType, setModelType] = useState('')
   const column = [
     {
       title: '面板ID',
@@ -34,8 +35,8 @@ function PanelMn({ form }) {
     },
     {
       title: '所属分类',
-      dataIndex: 'deviceTypeName ',
-      key: 'deviceTypeName ',
+      dataIndex: 'allCategoryName',
+      key: 'allCategoryName',
     },
     {
       title: '状态',
@@ -101,10 +102,7 @@ function PanelMn({ form }) {
       }
     })
   }
-  const openEdit = (data) => {
-    setActionData(data)
-    setEditVis(true)
-  }
+
 
   const getOption = () => {
     getOrderType().then(res => {
@@ -138,6 +136,9 @@ function PanelMn({ form }) {
     if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
       params.templateName = getFieldsValue().templateName.trim()
     }
+    if (getFieldsValue().deviceTypeId ) {
+      params.deviceTypeId = getFieldsValue().deviceTypeId
+    }
     params = { ...params, ...pager }
     getList(params).then(res => {
       if (res.data.code == 0) {
@@ -161,7 +162,17 @@ function PanelMn({ form }) {
   }
 
   //=======
+  const openEdit = (data) => {
+    setModelType('edit')
+    setActionData(data)
+    setAddVis(true)
+  }
+  const openAdd = () => {
+    setModelType('add')
+    setAddVis(true)
+  }
   const handleOk = () => {
+    searchList()
     setAddVis(false)
   }
   const handleCancel = () => {
@@ -180,7 +191,7 @@ function PanelMn({ form }) {
         <Form layout="inline" >
 
           <FormItem label="所属分类">
-            {getFieldDecorator('mode')(
+            {getFieldDecorator('deviceTypeId')(
               <Select style={{ width: 160 }} placeholder="请选择所属分类">
                 {
                   optionList.map((item, index) => (
@@ -205,7 +216,7 @@ function PanelMn({ form }) {
           </FormItem>
         </Form>
         <div className="panelMn-title">
-          <Button type="primary" onClick={() => { setAddVis(true) }} >新增标准面板</Button>
+          <Button type="primary" onClick={() => { openAdd() }} >新增标准面板</Button>
           <Button  >批量导入</Button>
         </div>
       </TitleTab>
@@ -222,11 +233,11 @@ function PanelMn({ form }) {
           }} />
       </Card>
       {
-        addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
+        addVis && <AddDia addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} modelType={modelType} actionData={actionData} />
       }
-      {
-        editVis && <EditDia addVis={editVis} handleCancel={handleEditCancel} handleOk={handleeditOk} optionList={optionList} actionData={actionData}/>
-      }
+      {/* {
+        editVis && <EditDia addVis={editVis} handleCancel={handleEditCancel} handleOk={handleeditOk} optionList={optionList} actionData={actionData} />
+      } */}
     </div>
   )
 }

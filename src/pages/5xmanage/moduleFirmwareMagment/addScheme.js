@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Modal, Button, Steps, Form, Tabs } from 'antd'
+import { Modal, Button, Steps, Form, Tabs, message } from 'antd'
 import { cloneDeep } from "lodash"
 import StepFirst from './stepFirst'
 import StepSecond from './stepSecond'
@@ -107,10 +107,9 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommo
     console.log('提交的数据', params)
     saveModuleRequest(params).then(res => {
       if (res.data.code == 0) {
-        message.success(`提交成功`, 2, () => {
-          handleCancel()
-          getTableData()
-        })
+        message.success(`提交成功`)
+        handleCancel()
+        getTableData()
       }
     })
   }
