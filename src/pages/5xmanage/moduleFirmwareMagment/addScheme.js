@@ -9,7 +9,6 @@ import {
   getNetRequest,
   getModuleProtocolRequest,
   bindSceneListRequest,
-  getModuleTypeMenuRequest,
   saveModuleRequest
 } from '../../../apis/moduleFirmwareMagment'
 
@@ -19,7 +18,7 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
+function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommonObj, getTableData }) {
   const [stepcurrent, setStepcurrent] = useState(0)
   const ref1 = useRef()
   const ref2 = useRef()
@@ -29,7 +28,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const [netList, setNetList] = useState([]) // 配网库
   const [protocolList, setProtocolList] = useState([]) // 支持协议
   const [bindSceneList, setBindSceneList] = useState([]) // 绑定场景
-  const [moduleCommonObj, setModuleCommonObj] = useState()
+
   // const [communicationMethodList, setCommunicationMethodList] = useState([]) // 通信方式
 
   // 生产厂家列表
@@ -60,19 +59,11 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
     })
   }
 
-  // 模组公共列表
-  const getCommonList = () => {
-    getModuleTypeMenuRequest().then(res => {
-      setModuleCommonObj(res.data.data)
-    })
-  }
-
   useEffect(() => {
     getBrandList()
     getNetList()
     getProtocol()
     getBindSceneList()
-    getCommonList()
   }, [])
 
 
@@ -112,12 +103,14 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
 
   // 提交所有数据
   const commitAll = (values) => {
-    console.log('第三步提交的数据', values, '====', ...values)
     let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
     console.log('提交的数据', params)
     saveModuleRequest(params).then(res => {
       if (res.data.code == 0) {
-        message.success(`提交成功`, 2, console.log('该回列表页了/////'))
+        message.success(`提交成功`, 2, () => {
+          handleCancel()
+          getTableData()
+        })
       }
     })
   }
