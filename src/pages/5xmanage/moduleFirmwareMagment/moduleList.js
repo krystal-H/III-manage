@@ -1,34 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Select, Table, Tooltip, Modal, message } from 'antd';
-import TableCom from '../../../components/Table';
-import TitleTab from '../../../components/TitleTab';
-import { DateTool } from "../../../util/utils";
+import React, { useState, useEffect } from 'react'
+import { Card, Form, Input, Button, Select, Tooltip, message } from 'antd'
+import TableCom from '../../../components/Table'
+import TitleTab from '../../../components/TitleTab'
+import { DateTool } from "../../../util/utils"
 import OperateSchemeModal from './addScheme'
-import { ModuleListRequest } from '../../../apis/moduleFirmwareMagment'
-
+import { cloneDeep } from "lodash"
+import { ModuleListRequest, getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
 import './moduleList.less'
 
-const { Option } = Select;
+const { Option } = Select
 
 function ModuleList({ form }) {
-  const [pager, setPager] = useState({ totalRows: 0, pageIndex: 0 })
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
+  const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [addSchemeModal, setAddSchemeModal] = useState(false)
-
-  const [communicationMethodList, setCommunicationMethodList] = useState([]) // 通信方式列表
-
+  const { getFieldDecorator, getFieldsValue } = form
+  const [moduleCommonObj, setModuleCommonObj] = useState({})
   const columns = [
     {
       title: "模组型号",
-      width: "15%",
       key: "hetModuleTypeName",
       dataIndex: "hetModuleTypeName",
       render: (text) => <span title={text}>{text}</span>
     },
     {
       title: "模组名称",
-      width: "15%",
       key: "moduleName",
       dataIndex: "moduleName",
       render: (text) => <span title={text}>{text}</span>
@@ -42,23 +40,20 @@ function ModuleList({ form }) {
     },
     {
       title: "生产厂商",
-      width: "15%",
       key: "brandName",
       dataIndex: "brandName"
     },
     {
       title: "状态",
-      width: "65px",
-      key: "releaseStatus",
-      dataIndex: "releaseStatus",
+      key: "status",
+      dataIndex: "status",
       render: (status) => {
-        const color = ["green", "gray"];
-        return <span style={{ color: `${color[status]}` }}>{status === 1 ? "已发布" : "草稿"}</span>
+        const color = ["green", "gray"]
+        return <span style={{ color: `${color[status]}` }}>{status == '1' ? "已发布" : "草稿"}</span>
       }
     },
     {
       title: "更新时间",
-      width: "15%",
       key: "modifyTime",
       dataIndex: "modifyTime",
       render: (modifyTime) => {
@@ -68,31 +63,35 @@ function ModuleList({ form }) {
     },
     {
       title: "操作",
-      width: "80px",
+      width: "180px",
       key: "operation",
       dataIndex: "operation",
       render: (text, record) => {
         return (
           <div>{generateOperationBtn(record)}</div>
-        );
+        )
       }
     }
-
   ]
+
+  // 模组公共列表
+  const getCommonList = () => {
+    getModuleTypeMenuRequest().then(res => {
+      setModuleCommonObj(res.data.data)
+    })
+  }
+
+  useEffect(() => {
+    getCommonList()
+  }, [])
 
   // 初始化表格按钮方法1
   const generateOperationBtn = (record) => {
-    if (record.releaseStatus === 1) {
-      let btnarr = releaseBtnArr()
-      return btnarr.map((item, index) => (
-        createOperationBtn(item, record)
-      ))
-    } else {
-      let btnarr = unReleaseBtnArr()
-      return btnarr.map((item, index) => (
-        createOperationBtn(item, record)
-      ))
-    }
+    let btnarr = []
+    record.status === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
+    return btnarr.map((item, index) => (
+      createOperationBtn(item, record)
+    ))
   }
 
   // 已上线操作按钮的数据源
@@ -123,7 +122,8 @@ function ModuleList({ form }) {
           key={item.templateId}
           onClick={() => handleOperation(item, record)}
         />
-      </Tooltip>)
+      </Tooltip>
+    )
   }
 
   // 列表中的按钮点击触发
@@ -131,7 +131,6 @@ function ModuleList({ form }) {
     switch (item.key) {
       case "View":
         // this.props.getModuleInfoPreview(record.moduleId, "view");
-
         break;
       case "Offline":
         confirm({
@@ -144,8 +143,7 @@ function ModuleList({ form }) {
             // this.OfflineOperataion(record.moduleId, 0);
           },
           onCancel() { },
-        });
-
+        })
         break;
       case "release":
         console.log(record.completeStatus);
@@ -192,71 +190,83 @@ function ModuleList({ form }) {
     }
   }
 
-  useEffect(() => {
-    getModuleList()
-  }, [])
-
   // 获取模组列表
-  const getModuleList = (params) => {
+  const getTableData = () => {
     setLoading(true)
-
-    ModuleListRequest({}).then(res => {
+    let { moduleName, moduleTypeList } = getFieldsValue()
+    const params = {
+      moduleName: moduleName ? moduleName.trim() : '',
+      moduleTypeList: moduleTypeList ? moduleTypeList : '',
+      ...pager
+    }
+    ModuleListRequest(params).then(res => {
       if (res.data.code === 0) {
-        let data = res.data.data;
-        // data.map((item, index) => {
-        //   item["key"] = item.moduleId;
-        // })
-        setDataSource(data)
+        setDataSource(res.data.data.list)
+        setTotalRows(res.data.data.pager.totalRows)
       }
     }).finally(() => { setLoading(false) })
   }
 
+  useEffect(() => {
+    getTableData()
+  }, [pager.pageRows, pager.pageIndex])
+
   // 搜索按钮触发,默认请求第一页的数据
   const searchClick = () => {
-    form.validateFields((err, values) => {
-      // console.log("搜索请求参数：",params)
-    })
+    if (pager.pageIndex === 1) {
+      getTableData()
+    } else {
+      setPager({ pageIndex: 1, pageRows: 10 })
+    }
   }
 
   // 重置按钮触发
   const reset = () => {
-    form.resetFields();
+    form.resetFields()
+    searchClick()
   }
 
   // 翻页
-  const paginationChange = () => {
-    console.log('翻页')
+  const pagerChange = (pageIndex, pageRows) => {
+    setPager(pre => {
+      let obj = cloneDeep(pre)
+      return Object.assign(obj, { pageIndex: pageRows === pager.pageRows ? pageIndex : 1, pageRows })
+    })
   }
 
   // 初始化通信方式的子选项
-  const generateOptions = (communicationMethodList) => {
-    if (!communicationMethodList) return
-    return communicationMethodList.map((item, index) => (
+  const generateOptions = (moduleTypeList) => {
+    if (!moduleTypeList) return
+    return moduleTypeList.map((item, index) => (
       <Option value={item.moduleType} key={item.moduleType}>{item.moduleTypeName}</Option>
     ))
   }
-  const { getFieldDecorator } = form
+
   return (
     <div className="module-firmware-page">
       <TitleTab title="模组&固件管理">
         <Form layout="inline">
           <Form.Item label='关键字'>
-            {getFieldDecorator('hetModuleTypeName', {})(
+            {getFieldDecorator('moduleName', {})(
               <Input placeholder="请输入生产厂商或模组型号" style={{ width: 260 }} maxLength={20} />,
             )}
           </Form.Item>
           <Form.Item label='通信方式'>
-            {getFieldDecorator('moduleType', { initialValue: undefined })(
-              <Select style={{ width: 200, marginBottom: 0 }} placeholder="请选择通信方式">
-                {generateOptions(communicationMethodList)}
+            {getFieldDecorator('moduleTypeList', { initialValue: undefined })(
+              <Select style={{ width: 200, marginBottom: 0 }} placeholder="请选择通信方式"
+                showSearch
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                {generateOptions(moduleCommonObj.moduleTypeList)}
               </Select>
             )}
           </Form.Item>
           <Form.Item>
-            <Button type="primary" onClick={() => searchClick}>查询</Button>
+            <Button type="primary" onClick={() => searchClick()}>查询</Button>
           </Form.Item>
           <Form.Item>
-            <Button type="default" onClick={() => reset}>重置</Button>
+            <Button type="default" onClick={() => reset()}>重置</Button>
           </Form.Item>
           <Form.Item>
             <Button type="primary" onClick={() => setAddSchemeModal(true)}>添加模组</Button>
@@ -265,8 +275,20 @@ function ModuleList({ form }) {
       </TitleTab>
 
       <Card className='ModuleManagerListTable' style={{ marginTop: 10 }}>
-        <TableCom rowKey="moduleId" bordered columns={columns} dataSource={dataSource} pager={pager}
-          onPageChange={paginationChange} loading={loading} />
+        <TableCom rowKey="moduleId" bordered
+          columns={columns}
+          dataSource={dataSource}
+          loading={loading}
+          pagination={{
+            defaultCurrent: 1,
+            current: pager.pageIndex,
+            onChange: pagerChange,
+            pageSize: pager.pageRows,
+            total: totalRows,
+            showQuickJumper: false,
+            showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+          }}
+        />
       </Card>
 
       {/* 添加模组 */}
@@ -274,6 +296,8 @@ function ModuleList({ form }) {
         addSchemeModal &&
         <OperateSchemeModal
           visible={addSchemeModal}
+          moduleCommonObj={moduleCommonObj}
+          getTableData={getTableData}
           handleCancel={() => setAddSchemeModal(false)} />
       }
     </div>

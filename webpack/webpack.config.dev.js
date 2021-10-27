@@ -25,9 +25,7 @@ const dev = {
     proxy: {
       '/v1/web': {
       // target: 'https://pre.cms.clife.cn',
-        target: 'https://dp.clife.net',
-        // target: 'http://10.6.50.121:8080',
-        // target: 'http://10.6.50.96:8080',//ljy
+        target: 'http://10.6.50.121:8080',//dyl
         changeOrigin: true,
         secure: false,
       }
