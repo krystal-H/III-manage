@@ -4,8 +4,8 @@ import TableCom from '../../../components/Table'
 import TitleTab from '../../../components/TitleTab'
 import { DateTool } from "../../../util/utils"
 import OperateSchemeModal from './addScheme'
-import { ModuleListRequest, getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
 import { cloneDeep } from "lodash"
+import { ModuleListRequest, getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
 import './moduleList.less'
 
 const { Option } = Select
@@ -21,14 +21,12 @@ function ModuleList({ form }) {
   const columns = [
     {
       title: "模组型号",
-      width: "15%",
       key: "hetModuleTypeName",
       dataIndex: "hetModuleTypeName",
       render: (text) => <span title={text}>{text}</span>
     },
     {
       title: "模组名称",
-      width: "15%",
       key: "moduleName",
       dataIndex: "moduleName",
       render: (text) => <span title={text}>{text}</span>
@@ -42,23 +40,20 @@ function ModuleList({ form }) {
     },
     {
       title: "生产厂商",
-      width: "15%",
       key: "brandName",
       dataIndex: "brandName"
     },
     {
       title: "状态",
-      width: "65px",
-      key: "releaseStatus",
-      dataIndex: "releaseStatus",
+      key: "status",
+      dataIndex: "status",
       render: (status) => {
-        const color = ["green", "gray"];
-        return <span style={{ color: `${color[status]}` }}>{status === 1 ? "已发布" : "草稿"}</span>
+        const color = ["green", "gray"]
+        return <span style={{ color: `${color[status]}` }}>{status == '1' ? "已发布" : "草稿"}</span>
       }
     },
     {
       title: "更新时间",
-      width: "15%",
       key: "modifyTime",
       dataIndex: "modifyTime",
       render: (modifyTime) => {
@@ -68,16 +63,15 @@ function ModuleList({ form }) {
     },
     {
       title: "操作",
-      width: "80px",
+      width: "180px",
       key: "operation",
       dataIndex: "operation",
       render: (text, record) => {
         return (
           <div>{generateOperationBtn(record)}</div>
-        );
+        )
       }
     }
-
   ]
 
   // 模组公共列表
@@ -94,7 +88,7 @@ function ModuleList({ form }) {
   // 初始化表格按钮方法1
   const generateOperationBtn = (record) => {
     let btnarr = []
-    record.releaseStatus === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
+    record.status === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
     return btnarr.map((item, index) => (
       createOperationBtn(item, record)
     ))
@@ -128,7 +122,8 @@ function ModuleList({ form }) {
           key={item.templateId}
           onClick={() => handleOperation(item, record)}
         />
-      </Tooltip>)
+      </Tooltip>
+    )
   }
 
   // 列表中的按钮点击触发
@@ -136,7 +131,6 @@ function ModuleList({ form }) {
     switch (item.key) {
       case "View":
         // this.props.getModuleInfoPreview(record.moduleId, "view");
-
         break;
       case "Offline":
         confirm({
@@ -149,8 +143,7 @@ function ModuleList({ form }) {
             // this.OfflineOperataion(record.moduleId, 0);
           },
           onCancel() { },
-        });
-
+        })
         break;
       case "release":
         console.log(record.completeStatus);
