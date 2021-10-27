@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import App from './pages/app';
 
-import './index.less';
+import './index.scss';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 // if (process.env.NODE_ENV === 'development') {
