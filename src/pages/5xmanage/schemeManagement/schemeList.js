@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip } from 'antd';
-import TitleTab from '../../../components/TitleTab';
-import TableCom from '../../../components/Table';
-import TableHOC from '../../../components/TableHOC';
+import React, { useState, useEffect } from 'react'
+import { Card, Input, Button, Select, Form, Tooltip } from 'antd'
+import TitleTab from '../../../components/TitleTab'
+import TableCom from '../../../components/Table'
 import OperateSchemeModal from './addScheme'
 import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
-import { DateTool } from "../../../util/utils";
+import { DateTool } from "../../../util/utils"
+import { cloneDeep } from "lodash"
 
 import './schemeList.less'
-
-const FormItem = Form.Item
-const TitleOption = TitleTab.Option
 
 const statusMap = {
   1: '草稿',
@@ -24,14 +21,13 @@ const schemeTypeMap = {
 }
 
 function SchemeList({ form }) {
-  const [pager, setPager] = useState({ totalRows: 0, pageIndex: 0 })
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
+  const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [addSchemeModal, setAddSchemeModal] = useState(false)
   const [thirdCategoryList, setThirdCategoryList] = useState([])
-  const [deviceTypeId, setDeviceTypeId] = useState('')
-  const [status, setStatus] = useState('')
-
+  const { getFieldDecorator, getFieldsValue } = form
   const column = [
     { title: "修改账号", dataIndex: 'account', key: 'account', render: (text) => <span title={text}>{text}</span> },
     { title: "品类", dataIndex: 'deviceType', key: 'deviceType', render: (text) => <span title={text}>{text}</span> },
@@ -81,17 +77,11 @@ function SchemeList({ form }) {
 
   // 初始化表格按钮方法1
   const generateOperationBtn = (record) => {
-    if (record.status === 2) { // 已发布
-      let btnarr = releaseBtnArr();
-      return btnarr.map((item, index) => (
-        createOperationBtn(item, record)
-      ))
-    } else { // 草稿
-      let btnarr = unReleaseBtnArr();
-      return btnarr.map((item, index) => (
-        createOperationBtn(item, record)
-      ))
-    }
+    let btnarr = []
+    record.status === 2 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
+    return btnarr.map((item, index) => (
+      createOperationBtn(item, record)
+    ))
   }
 
   // 初始化表格按钮方法2
@@ -108,27 +98,37 @@ function SchemeList({ form }) {
       </Tooltip>)
   }
 
-  // 查询列表
-  const getList = () => {
+  // 查询
+  const searchClick = () => {
+    if (pager.pageIndex === 1) {
+      getTableData()
+    } else {
+      setPager({ pageIndex: 1, pageRows: 10 })
+    }
+  }
+
+  // 获取table数据
+  const getTableData = () => {
     setLoading(true)
-    let params = {
-      deviceTypeId,
-      status,
-      current: 1,
-      size: 10
-      // pageIndex: 1,
-      // pageRows: 10,
+    let { deviceTypeId, status } = getFieldsValue()
+    const params = {
+      deviceTypeId: deviceTypeId ? deviceTypeId : '',
+      status: status ? status : '',
+      ...pager
     }
     schemeManageListRequest(params).then(res => {
-      let data = res.data.data.records;
-      // data.map((item, index) => {
-      //   item["key"] = item.id;
-      // })
-      setDataSource(data)
+      if (res.data.code === 0) {
+        setDataSource(res.data.data.list)
+        setTotalRows(res.data.data.pager.totalRows)
+      }
     }).finally(() => { setLoading(false) })
   }
 
-  // 查询品类
+  useEffect(() => {
+    getTableData()
+  }, [pager.pageRows, pager.pageIndex])
+
+  // 获取三级品类list
   const getThirdCategory = () => {
     getThirdCategoryRequest({}).then(res => {
       setThirdCategoryList(res.data.data)
@@ -136,42 +136,37 @@ function SchemeList({ form }) {
   }
 
   useEffect(() => {
-    getList()
     getThirdCategory()
   }, [])
-
-  useEffect(() => {
-    getList()
-  }, [deviceTypeId, status])
 
   // 重置
   const onReset = () => {
     form.resetFields()
-    setDeviceTypeId('')
-    setStatus('')
-    getList()
+    searchClick()
   }
 
   // 翻页
-  const onPageChange = (val) => {
-    console.log('翻页', val)
+  const pagerChange = (pageIndex, pageRows) => {
+    setPager(pre => {
+      let obj = cloneDeep(pre)
+      return Object.assign(obj, { pageIndex: pageRows === pager.pageRows ? pageIndex : 1, pageRows })
+    })
   }
 
-  const { getFieldDecorator } = form
   return (
     <div className="schemeList">
       <TitleTab title="方案信息导入">
         <Form layout="inline" className="schemeList-form">
           <div>
-            <FormItem label="三级品类">
+            <Form.Item label="三级品类">
               {getFieldDecorator('deviceTypeId')(
                 <Select
-                  showSearch
                   allowClear
                   style={{ width: 240 }}
                   placeholder="搜索产品品类"
-                  showSearch optionFilterProp="children"
-                  onChange={(val) => setDeviceTypeId(val)}>
+                  showSearch
+                  optionFilterProp="children"
+                >
                   {
                     thirdCategoryList && thirdCategoryList.length > 0 &&
                     thirdCategoryList.map(item => (
@@ -180,40 +175,46 @@ function SchemeList({ form }) {
                   }
                 </Select>
               )}
-            </FormItem>
-            <FormItem label="状态">
+            </Form.Item>
+            <Form.Item label="状态">
               {getFieldDecorator('status')(
-                <Select style={{ width: 160 }} placeholder="请选择状态" onChange={(val) => setStatus(val)}>
+                <Select style={{ width: 160 }} placeholder="请选择状态">
                   {
                     Object.keys(statusMap).map((item, index) => (
-                      <Select.Option key={index} value={+item}>
-                        {statusMap[item]}
-                      </Select.Option>
+                      <Select.Option key={index} value={+item}>{statusMap[item]}</Select.Option>
                     ))
                   }
                 </Select>
               )}
-            </FormItem>
-            <FormItem  >
-              <Button type="primary" onClick={() => getList()} >查询</Button>
-            </FormItem>
-            <FormItem >
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" onClick={() => searchClick()} >查询</Button>
+            </Form.Item>
+            <Form.Item>
               <Button onClick={() => onReset()}>重置</Button>
-            </FormItem>
+            </Form.Item>
           </div>
           <div>
-            <Form.Item>
-              <Button type="primary">批量导入</Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" onClick={() => setAddSchemeModal(true)}>新增</Button>
-            </Form.Item>
+            <Form.Item><Button type="primary">批量导入</Button></Form.Item>
+            <Form.Item><Button type="primary" onClick={() => setAddSchemeModal(true)}>新增</Button></Form.Item>
           </div>
         </Form>
       </TitleTab>
       <Card>
-        <TableCom rowKey="id" columns={column} dataSource={dataSource}
-          pager={pager} onPageChange={() => onPageChange()} loading={loading} />
+        <TableCom rowKey="id"
+          columns={column}
+          dataSource={dataSource}
+          pager={pager}
+          loading={loading}
+          pagination={{
+            defaultCurrent: 1,
+            current: pager.pageIndex,
+            onChange: pagerChange,
+            pageSize: pager.pageRows,
+            total: totalRows,
+            showQuickJumper: false,
+            showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+          }} />
       </Card>
       {/* 新增方案弹窗 */}
       {
