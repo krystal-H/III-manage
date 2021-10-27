@@ -222,6 +222,7 @@ function FirmwareMagement({ form }) {
                     title="查看图片"
                     visible={showImg}
                     width={1200}
+                    footer={null}
                     onCancel={() => { setShowImg(false) }}
                 >
                     <div className='banner-img-wrap'>

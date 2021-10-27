@@ -24,6 +24,8 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 params.templateId=actionData.templateId
             }
             delete params.filePath
+            delete params.deviceSubtypeId2
+            params.deviceSubtypeId=0
             relData(params).then(res => {
                 if (res.data.code == 0) {
                     message.success('新增成功');
@@ -43,7 +45,6 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             filePath: actionData.htmlPath,
             deviceTypeId: actionData.deviceTypeId,
             templateName: actionData.templateName,
-            deviceSubtypeId: actionData.deviceSubtypeId,
             page1: actionData.page1,
             htmlPath: actionData.htmlPath,
         })
@@ -54,7 +55,6 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 setPhyList(res.data.data)
             }
         })
-        getableFn(actionData.deviceSubtypeId)
     }
     const formItemLayout = {
         labelCol: { span: 6 },
@@ -79,7 +79,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
     ]
     const typeChange = (val) => {
         setFieldsValue({
-            deviceSubtypeId: ''
+            deviceSubtypeId2: ''
         })
         setdataSource([])
         getPhyList(val).then(res => {
@@ -96,11 +96,11 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
         })
     }
     const beforeUpload = (file) => {
-        const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-        if (!isJpgOrPng) {
-            message.error("只能上传JPG或者PNG格式");
-        }
-        return isJpgOrPng
+        // const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+        // if (!isJpgOrPng) {
+        //     message.error("只能上传JPG或者PNG格式");
+        // }
+        // return isJpgOrPng
     }
     const onChangeFile = ({ file, fileList }) => {
         if (file.status === "done") {
@@ -166,7 +166,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                             )}
                         </FormItem>
                         <FormItem label="物模型选择">
-                            {getFieldDecorator('deviceSubtypeId')(
+                            {getFieldDecorator('deviceSubtypeId2')(
                                 <Select placeholder="请选择" onChange={getableFn}>
                                     {
                                         phyList.map((item, index) => (
@@ -187,7 +187,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                                     <Upload
                                         className="avatar-uploader"
                                         {...uploadConfigs}
-                                        accept="image/png"
+                                        accept=".png,.jpeg,.jpg"
                                         onChange={onChangeFile}
                                         listType="picture-card"
                                         beforeUpload={beforeUpload}
