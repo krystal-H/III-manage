@@ -1,41 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
+import { Card, Input, Button, Select, notification, message, Modal, Form, Tooltip, DatePicker, Upload,Icon  } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import { upFile } from '../../../apis/repairOrder'
 import { getPhyList, getPhyData } from '../../../apis/panelMn'
+import { fileHost } from "../../../util/utils";
 import './index.less'
-
+// 上传地址
+const uploadConfigs = {
+    action: fileHost,
+    data: file => ({ appId: 31438, domainType: 4 })
+}
 const FormItem = Form.Item
 const TitleOption = TitleTab.Option
 const { RangePicker } = DatePicker;
-//处理数据
-function delaData(data) {
-    let newData = []
-    data.forEach(item => {
-        if (!item.funcParamList || !item.funcParamList.length) return
-        item.funcParamList.forEach(item2 => {
-            let newItem = JSON.parse(JSON.stringify(item))
-            newData.push({ ...newItem, ...item2 })
-        })
-    })
-    newData.forEach((item, index) => {
-        item.key = index
-    })
-    return newData
-}
 function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
-    const { getFieldDecorator, validateFields, setFieldsValue } = form;
+    const { getFieldDecorator, validateFields, setFieldsValue, getFieldValue } = form;
     const [dataSource, setdataSource] = useState([])
     const [phyList, setPhyList] = useState([])
+    const [descPic, setDescPic] = useState('')
     const sundata = () => {
-
-    }
-    //导入
-    const customRequest = (option) => {
-        upFile({ file: option.file }).then(res => {
-
-        })
+        console.log(getFieldValue('page1'))
     }
     const formItemLayout = {
         labelCol: { span: 6 },
@@ -75,6 +60,23 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
                 setdataSource(res.data.data.standard)
             }
         })
+    }
+    const beforeUpload = (file) => {
+        const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+        if (!isJpgOrPng) {
+            message.error("只能上传JPG或者PNG格式");
+        }
+        return isJpgOrPng
+    }
+    const onChangeFile = ({ file, fileList }) => {
+        if (file.status === "done") {
+            let file = fileList[0];
+            // 给最外层添加一个url ,不然upload组件不会点击下载
+            file.url = file.response.data.url;
+        } else if (file.status === "error") {
+            message.error(`上传失败`);
+            fileList.length = 0;
+        }
     }
     return (
         <div>
@@ -119,24 +121,36 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList }) {
                                 </Select>
                             )}
                         </FormItem>
-                        <div style={{ paddingLeft: '162px',marginBottom:'20px' }}><TableCom rowKey={"funcIdentifier"} columns={column} dataSource={dataSource}
+                        <div style={{ paddingLeft: '162px', marginBottom: '20px' }}><TableCom rowKey={"funcIdentifier"} columns={column} dataSource={dataSource}
                             pager={false} /></div>
 
                         <FormItem label="封面">
-                            {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
-                                <Upload customRequest={customRequest} name="avatar"
-                                    listType="picture-card" accept=".png,.jpeg,.jpg">
-                                    <span>上传</span>
-                                </Upload>
+                            {getFieldDecorator('page1', { rules: [{ required: true }], })(
+                                <div>
+                                    <Upload
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        {...uploadConfigs}
+                                        accept="image/png"
+                                        onChange={onChangeFile}
+                                        beforeUpload={beforeUpload}
+                                    >
+                                        {getFieldValue('page1') &&  getFieldValue('page1').length >=1 ? null : <Button>
+                                            <Icon type="upload" /> 上传图片
+                                        </Button>}
+                                    </Upload>
+                                </div>
+
                             )}
                         </FormItem>
-                        <FormItem label="上传H5包">
+                        {/* <FormItem label="上传H5包">
                             {getFieldDecorator('file', { rules: [{ required: true, message: "请上传图" }], valuePropName: 'fileList', })(
                                 <Upload customRequest={customRequest} showUploadList={false}>
                                     <Button type='text'  >上传H5包</Button>
                                 </Upload>
                             )}
-                        </FormItem>
+                        </FormItem> */}
                         <FormItem label="工程文件地址">
                             {getFieldDecorator('url1', { rules: [{ required: true }] })(
                                 <Input style={{ width: '100%' }} onPressEnter={() => searchList()}></Input>

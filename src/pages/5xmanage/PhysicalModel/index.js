@@ -4,20 +4,23 @@ import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
 import AddModal from './add'
 import './index.less'
-import { getList, getOrderType ,relData} from '../../../apis/physical'
+import { getList, getOrderType, relData } from '../../../apis/physical'
 import { DateTool } from '../../../util/utils';
 const FormItem = Form.Item
 
 function PhysicalModel({ form }) {
   const { getFieldDecorator, validateFields, getFieldsValue } = form;
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
   const [dataSource, setdataSource] = useState([])
   const [optionList, setOptionList] = useState([])
   const [addVis, setAddVis] = useState(false)
+  const [editId, setEditId] = useState(0)
   const column = [
     {
       title: '物模型ID',
       dataIndex: 'id',
       key: 'id',
+      width: '100px'
     },
     {
       title: '物模型名称',
@@ -70,24 +73,24 @@ function PhysicalModel({ form }) {
           {
             record.status == 1 ?
               <span >
-                <a style={{ marginRight: '10px' }} onClick={()=>{relPhy(record.id)}}>发布</a>
-                <a >编辑</a>
+                <a style={{ marginRight: '10px' }} onClick={() => { relPhy(record.id) }}>发布</a>
+                <a onClick={() => { editData(record.id) }}>编辑</a>
               </span>
               :
-              <a >更新</a>
+              <a onClick={() => { editData(record.id) }}>更新</a>
           }
         </span>
       ),
     }
   ]
-  const relPhy=(id)=>{
+  const relPhy = (id) => {
     Modal.confirm({
       title: '确认',
       okText: '确定',
       cancelText: '取消',
-      content:  '点击确定将发布数据，点击取消可取消发布。',
+      content: '点击确定将发布数据，点击取消可取消发布。',
       onOk: () => {
-        relData({id}).then(res=>{
+        relData({ id }).then(res => {
           message.success('发布成功');
           getData()
         })
@@ -95,9 +98,14 @@ function PhysicalModel({ form }) {
     })
   }
   useEffect(() => {
-    getData()
+
     getOption()
   }, [])
+  useEffect(() => {
+    getData()
+  }, [pager.pageRows, pager.pageIndex])
+  //列表
+  const [totalRows, setTotalRows] = useState(0)
   const getData = () => {
     let params = {}
     if (getFieldsValue().name && getFieldsValue().name.trim()) {
@@ -106,29 +114,54 @@ function PhysicalModel({ form }) {
     if (getFieldsValue().deviceTypeId) {
       params.deviceTypeId = getFieldsValue().deviceTypeId
     }
+    params = { ...params, ...pager }
     getList(params).then(res => {
-      setdataSource(res.data.data)
+      setdataSource(res.data.data.list)
+      setTotalRows(res.data.data.pager.totalRows)
     })
   }
+  //下拉
   const getOption = () => {
     getOrderType().then(res => {
       setOptionList(res.data.data)
     })
   }
 
-
+  //重置
   const onReset = () => {
     form.resetFields();
   }
 
-
-
   //=======
+  const openAdd = () => {
+    setEditId(0)
+    setAddVis(true)
+  }
   const handleOk = () => {
+
+    getData()
     setAddVis(false)
   }
   const handleCancel = () => {
     setAddVis(false)
+  }
+  const editData = (id) => {
+    setEditId(id)
+    setAddVis(true)
+  }
+  //页码改变
+  const pagerChange = (pageIndex, pageRows) => {
+    if (pageRows === pager.pageRows) {
+      setPager(pre => {
+        let obj = JSON.parse(JSON.stringify(pre))
+        return Object.assign(obj, { pageIndex, pageRows })
+      })
+    } else {
+      setPager(pre => {
+        let obj = JSON.parse(JSON.stringify(pre))
+        return Object.assign(obj, { pageIndex: 1, pageRows })
+      })
+    }
   }
   return (
     <div className="PhysicalModel-page">
@@ -161,16 +194,24 @@ function PhysicalModel({ form }) {
           </FormItem>
         </Form>
         <div className="PhysicalModel-title">
-          <Button type="primary" onClick={() => { setAddVis(true) }} >新增物模型</Button>
+          <Button type="primary" onClick={() => { openAdd() }} >新增物模型</Button>
           <Button  >批量导入</Button>
         </div>
       </TitleTab>
       <Card>
         <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
-          pager={false} />
+          pagination={{
+            defaultCurrent: 1,
+            current: pager.pageIndex,
+            onChange: pagerChange,
+            pageSize: pager.pageRows,
+            total: totalRows,
+            showQuickJumper: true,
+            showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+          }} />
       </Card>
       {
-        addVis && <AddModal addVis={addVis} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
+        addVis && <AddModal addVis={addVis} editId={editId} handleCancel={handleCancel} handleOk={handleOk} optionList={optionList} />
       }
     </div>
   )
