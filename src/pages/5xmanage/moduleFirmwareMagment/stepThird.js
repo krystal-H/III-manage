@@ -35,7 +35,7 @@ function StepThird({ form, commitAll }, ref) {
   const [burnFile, setBurnFile] = useState([]) // 烧录文件路径
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
-  const [readmePdf, setReadmepdf] = useState([])
+  const [readmePdf, setReadmepdf] = useState([]) // 说明文档
 
   const { getFieldDecorator, getFieldValue } = form
 
@@ -61,6 +61,7 @@ function StepThird({ form, commitAll }, ref) {
           customConfigJson: values.funcDefList || [],
           pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
         }
+        
         // mcu方案的参数
         const mcuParams = {
           burnFile: values.burnFile, // 烧录文件
