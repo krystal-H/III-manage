@@ -3,9 +3,10 @@ import { Card, Input, Button, Select, Form, Tooltip } from 'antd'
 import TitleTab from '../../../components/TitleTab'
 import TableCom from '../../../components/Table'
 import OperateSchemeModal from './addScheme'
-import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
 import { DateTool } from "../../../util/utils"
 import { cloneDeep } from "lodash"
+import { getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
+import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
 
 import './schemeList.less'
 
@@ -28,6 +29,7 @@ function SchemeList({ form }) {
   const [addSchemeModal, setAddSchemeModal] = useState(false)
   const [thirdCategoryList, setThirdCategoryList] = useState([])
   const { getFieldDecorator, getFieldsValue } = form
+  const [moduleCommonObj, setModuleCommonObj] = useState({})
   const column = [
     { title: "修改账号", dataIndex: 'account', key: 'account', render: (text) => <span title={text}>{text}</span> },
     { title: "品类", dataIndex: 'deviceType', key: 'deviceType', render: (text) => <span title={text}>{text}</span> },
@@ -135,8 +137,16 @@ function SchemeList({ form }) {
     })
   }
 
+  // 模组公共列表
+  const getCommonList = () => {
+    getModuleTypeMenuRequest().then(res => {
+      setModuleCommonObj(res.data.data)
+    })
+  }
+
   useEffect(() => {
     getThirdCategory()
+    getCommonList()
   }, [])
 
   // 重置
@@ -221,6 +231,9 @@ function SchemeList({ form }) {
         addSchemeModal &&
         <OperateSchemeModal
           visible={addSchemeModal}
+          thirdCategoryList={thirdCategoryList}
+          communicationMethodsList={moduleCommonObj.moduleTypeList}
+          getTableData={getTableData}
           handleOk={() => setAddSchemeModal(false)}
           handleCancel={() => setAddSchemeModal(false)} />
       }

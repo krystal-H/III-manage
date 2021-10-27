@@ -45,11 +45,11 @@ function ModuleList({ form }) {
     },
     {
       title: "状态",
-      key: "status",
-      dataIndex: "status",
-      render: (status) => {
+      key: "completeStatus",
+      dataIndex: "completeStatus",
+      render: (completeStatus) => {
         const color = ["green", "gray"]
-        return <span style={{ color: `${color[status]}` }}>{status == '1' ? "已发布" : "草稿"}</span>
+        return <span style={{ color: `${color[completeStatus]}` }}>{completeStatus == '1' ? "已发布" : "草稿"}</span>
       }
     },
     {
@@ -88,7 +88,7 @@ function ModuleList({ form }) {
   // 初始化表格按钮方法1
   const generateOperationBtn = (record) => {
     let btnarr = []
-    record.status === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
+    record.completeStatus === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
     return btnarr.map((item, index) => (
       createOperationBtn(item, record)
     ))
@@ -193,10 +193,10 @@ function ModuleList({ form }) {
   // 获取模组列表
   const getTableData = () => {
     setLoading(true)
-    let { moduleName, moduleTypeList } = getFieldsValue()
+    let { moduleName, moduleType } = getFieldsValue()
     const params = {
       moduleName: moduleName ? moduleName.trim() : '',
-      moduleTypeList: moduleTypeList ? moduleTypeList : '',
+      moduleType: moduleType ? moduleType : '',
       ...pager
     }
     ModuleListRequest(params).then(res => {
@@ -252,7 +252,7 @@ function ModuleList({ form }) {
             )}
           </Form.Item>
           <Form.Item label='通信方式'>
-            {getFieldDecorator('moduleTypeList', { initialValue: undefined })(
+            {getFieldDecorator('moduleType', { initialValue: undefined })(
               <Select style={{ width: 200, marginBottom: 0 }} placeholder="请选择通信方式"
                 showSearch
                 filterOption={(input, option) =>

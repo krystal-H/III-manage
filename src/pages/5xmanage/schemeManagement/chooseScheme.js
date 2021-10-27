@@ -23,7 +23,7 @@ function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
 
   // 选择三级品类
   const handleSelectChange = (val) => {
-    console.log('选择的品类')
+    sessionStorage.setItem('categoryId', val)
   }
 
   // 表单验证
@@ -48,6 +48,8 @@ function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
         })(
           <Select placeholder="请选择产品三级分类"
             style={{ width: 220 }}
+            showSearch
+            optionFilterProp="children"
             onChange={(val) => handleSelectChange(val)}>
             {
               thirdCategoryList && thirdCategoryList.length > 0 &&

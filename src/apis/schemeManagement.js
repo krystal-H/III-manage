@@ -3,13 +3,12 @@ const prefix = '/manage-open'
 // 查询方案列表
 export const schemeManageListRequest = (params) => {
   return axios.request({
-    method: 'post',
     url: prefix + '/scheme/search',
+    method: 'post',
     data: params,
     headers: {
       "Content-Type": "application/json",
-    },
-
+    }
   })
 }
 
@@ -19,5 +18,49 @@ export const getThirdCategoryRequest = (params) => {
     url: prefix + '/deviceCategory/deviceType/all',
     params,
     method: 'get'
+  })
+}
+
+// 根据品类查物模型
+export const getObjectModalRequest = (id) => {
+  return axios.request({
+    url: prefix + '/physicalModel/list/deviceTypeId/' + id,
+    method: 'get'
+  })
+}
+
+// 根据物模型id查功能列表
+export const getFuncListRequest = (params) => {
+  return axios.request({
+    url: prefix + '/physicalModel/func/list',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}
+
+// 根据通信方式查找模组
+export const getModuleByModuleTypeRequest = (params) => {
+  return axios.request({
+    url: prefix + '/module/listModuleByModuleType',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}
+
+// 保存方案
+export const saveSchemeRequest = (params) => {
+  return axios.request({
+    url: prefix + '/scheme/create',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
   })
 }

@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Button, Steps, Form, Tabs } from 'antd';
+import { Modal, Button, Steps, Form, Tabs, message } from 'antd';
 import ChooseScheme from './chooseScheme';
 import ConfigSchemeBrief from './configSchemeBrief'
 import ConfigSchemeDetail from './configSchemeDetail'
 import { cloneDeep } from "lodash"
-import { getThirdCategoryRequest } from '../../../apis/schemeManagement'
+import { saveSchemeRequest } from '../../../apis/schemeManagement'
 
 import './addScheme.less'
 
@@ -12,24 +12,12 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['选择品类方案', '配置方案简介', '配置方案详情']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
+function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCategoryList, communicationMethodsList, getTableData }) {
   const [stepcurrent, setStepcurrent] = useState(0)
   const refScheme = useRef()
   const refConfig = useRef()
   const refDetail = useRef()
   const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
-  const [thirdCategoryList, setThirdCategoryList] = useState([])
-
-  // 获取三级品类
-  const getCategory = () => {
-    getThirdCategoryRequest().then(res => {
-      setThirdCategoryList(res.data.data)
-    })
-  }
-
-  useEffect(() => {
-    getCategory()
-  }, [])
 
   // 上一步
   const clickPrevious = () => {
@@ -70,6 +58,14 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
   const commitAll = (values) => {
     let params = { ...subObj.one, ...subObj.two, ...values }
     console.log('提交的数据', params)
+    saveSchemeRequest(params).then(res => {
+      if (res.data.code === 0) {
+        message.success(`提交成功`, 2, () => {
+          handleCancel()
+          getTableData()
+        })
+      }
+    })
   }
 
   return (
@@ -99,6 +95,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel }) {
             </TabPane>
             <TabPane tab="配置方案简介" key={'1'}>
               <ConfigSchemeBrief
+                communicationMethodsList={communicationMethodsList}
                 wrappedComponentRef={refConfig}
                 setStepCur={setStepCur} />
             </TabPane>

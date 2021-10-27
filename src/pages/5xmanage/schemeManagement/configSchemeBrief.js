@@ -5,11 +5,10 @@ import { fileHost } from "../../../util/utils";
 const { Option } = Select
 const { TextArea } = Input
 
-function ConfigSchemeBrief({ setStepCur, form }, ref) {
+function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) {
   const [configInfo, setConfigInfo] = useState({})
   const [descPic, setDescPic] = useState('') // 简介图片
   const [previewVisible, setPreviewVisible] = useState(false)
-
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -79,10 +78,13 @@ function ConfigSchemeBrief({ setStepCur, form }, ref) {
           {getFieldDecorator('protocol', {
             rules: [{ required: true, message: '请选择通信协议' }],
           })(
-            <Select placeholder="请选择通信协议">
-              <Option value="china">China</Option>
-              <Option value="usa">U.S.A</Option>
-            </Select>,
+            <Select placeholder="请选择通信协议" onChange={(val) => sessionStorage.setItem('communicationType', val)}>
+              {
+                communicationMethodsList && communicationMethodsList.map((item, index) => (
+                  <Option value={item.moduleType} key={item.moduleType}>{item.moduleTypeName}</Option>
+                ))
+              }
+            </Select>
           )}
         </Form.Item>
         <Form.Item label="概况" hasFeedback>
