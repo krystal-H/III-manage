@@ -27,6 +27,7 @@ function PanelMn({ form }) {
       title: '面板ID',
       dataIndex: 'templateId',
       key: 'templateId',
+      width:100
     },
     {
       title: '标准面板名称',
@@ -42,6 +43,7 @@ function PanelMn({ form }) {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
+      width:100,
       render(status) {
         return <span>{status ? '正式' : '草稿'}</span>;
       }
