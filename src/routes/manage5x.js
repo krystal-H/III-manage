@@ -15,7 +15,8 @@ const bannerMagement = asyncComponent(() => import( /* webpackChunkName: "Firmwa
 const panelMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/panelMn'))
 // 物模型管理
 const PhysicalModelMagement = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/PhysicalModel'))
-
+// 用户免开发固件上传信息
+const UploadInformation = asyncComponent(() => import( /* webpackChunkName: "FirmwareMagement" */ '../pages/5xmanage/FreeDevelopment'))
 
 const applyModuleAuditing = asyncComponent(() => import('../pages/5xmanage/applyModuleAuditing'))
 
@@ -64,7 +65,12 @@ const route = {
       name: '申请&采购模组申请',
       path: '/5xmanage/applyModuleAuditing',
       component: applyModuleAuditing,
-    },    
+    },  
+    {
+      name: '用户免开发固件上传信息',
+      path: '/5xmanage/uploadInfo',
+      component: UploadInformation,
+    },   
   ]
 
 }
