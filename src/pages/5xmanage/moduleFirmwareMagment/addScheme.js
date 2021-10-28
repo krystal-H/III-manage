@@ -18,8 +18,8 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommonObj, getTableData }) {
-  const [stepcurrent, setStepcurrent] = useState(0)
+function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, getTableData, editData, type }) {
+  const [stepcurrent, setStepcurrent] = useState(2)
   const ref1 = useRef()
   const ref2 = useRef()
   const ref3 = useRef()
@@ -28,8 +28,6 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommo
   const [netList, setNetList] = useState([]) // 配网库
   const [protocolList, setProtocolList] = useState([]) // 支持协议
   const [bindSceneList, setBindSceneList] = useState([]) // 绑定场景
-
-  // const [communicationMethodList, setCommunicationMethodList] = useState([]) // 通信方式
 
   // 生产厂家列表
   const getBrandList = () => {
@@ -59,11 +57,19 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommo
     })
   }
 
+  // 编辑初始化
+  // const initFormData = () => {
+  //   form
+  // }
+
   useEffect(() => {
     getBrandList()
     getNetList()
     getProtocol()
     getBindSceneList()
+    if (type === 'edit') {
+      // initFormData()
+    }
   }, [])
 
 
@@ -138,7 +144,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommo
                 brandList={brandList}
                 netList={netList}
                 wrappedComponentRef={ref1}
-                setStepCur={setStepCur} />
+                setStepCur={setStepCur}
+                editData={editData} />
             </TabPane>
             <TabPane tab="功能参数" key={'1'}>
               <StepSecond
@@ -147,12 +154,15 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, moduleCommo
                 bindSceneList={bindSceneList}
                 moduleCommonObj={moduleCommonObj}
                 wrappedComponentRef={ref2}
-                setStepCur={setStepCur} />
+                setStepCur={setStepCur}
+                editData={editData} />
             </TabPane>
             <TabPane tab="功能参数" key={'2'}>
               <StepThird
                 wrappedComponentRef={ref3}
-                commitAll={commitAll} />
+                commitAll={commitAll}
+                editData={editData}
+                type={type} />
             </TabPane>
           </Tabs>
         </div>

@@ -5,12 +5,22 @@ import TitleTab from '../../../components/TitleTab'
 import { DateTool } from "../../../util/utils"
 import OperateSchemeModal from './addScheme'
 import { cloneDeep } from "lodash"
-import { ModuleListRequest, getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
-import { ModuleDeleteRequest } from '../../../apis/moduleManager';
+import {
+  ModuleListRequest,
+  getModuleTypeMenuRequest,
+  ModuleDeleteRequest,
+  ModuleReleaseRequest,
+  getModuleDetailRequest
+} from '../../../apis/moduleFirmwareMagment'
 import './moduleList.less'
 
 const { Option } = Select
 const { confirm } = Modal
+
+const statusMap = {
+  1: '已发布',
+  0: '草稿',
+}
 
 function ModuleList({ form }) {
   const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
@@ -20,6 +30,8 @@ function ModuleList({ form }) {
   const [addSchemeModal, setAddSchemeModal] = useState(false)
   const { getFieldDecorator, getFieldsValue } = form
   const [moduleCommonObj, setModuleCommonObj] = useState({})
+  const [editSchemeModal, setEditSchemeModal] = useState(false)
+  const [editData, setEditData] = useState({})
   const columns = [
     {
       title: "模组型号",
@@ -47,11 +59,11 @@ function ModuleList({ form }) {
     },
     {
       title: "状态",
-      key: "completeStatus",
-      dataIndex: "completeStatus",
-      render: (completeStatus) => {
+      key: "releaseStatus",
+      dataIndex: "releaseStatus",
+      render: (releaseStatus) => {
         const color = ["green", "gray"]
-        return <span style={{ color: `${color[completeStatus]}` }}>{completeStatus == '1' ? "已发布" : "草稿"}</span>
+        return <span style={{ color: `${color[releaseStatus]}` }}>{statusMap[releaseStatus]}</span>
       }
     },
     {
@@ -87,107 +99,7 @@ function ModuleList({ form }) {
     getCommonList()
   }, [])
 
-  // 初始化表格按钮方法1
-  const generateOperationBtn = (record) => {
-    let btnarr = []
-    record.completeStatus === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
-    return btnarr.map((item, index) => (
-      createOperationBtn(item, record)
-    ))
-  }
-
-  // 已上线操作按钮的数据源
-  const releaseBtnArr = () => {
-    return [
-      { title: "查看", icon: "info", key: 'View' },
-      { title: "下线", icon: "cloud-download", key: 'Offline' },
-    ]
-  }
-
-  // 未发布操作按钮数据源
-  const unReleaseBtnArr = () => {
-    return [
-      { title: "发布", icon: "cloud-upload", key: 'release' },
-      { title: "编辑", icon: "edit", key: 'edit' },
-      { title: "删除", icon: "delete", key: 'delete' }
-    ]
-  }
-
-  // 列表中的按钮点击触发
-  const handleOperation = (item, record) => {
-    switch (item.key) {
-      case "View":
-        // this.props.getModuleInfoPreview(record.moduleId, "view");
-        break;
-      case "Offline":
-        confirm({
-          title: '下线模组?',
-          content: '确认下线后，模组将同步从开放平台下线，确定要这样做吗？',
-          okText: '确定',
-          okType: 'danger',
-          cancelText: '取消',
-          onOk: () => {
-            // this.OfflineOperataion(record.moduleId, 0);
-          },
-          onCancel() { },
-        })
-        break;
-      case "release":
-        console.log(record.completeStatus);
-        record.completeStatus === 0 ? confirm({
-          title: '发布模组',
-          content: '当前模组信息不完整，请完善后提交发布',
-          okText: '确定',
-          cancelText: '取消',
-          onOk() { },
-          onCancel() { },
-        }) :
-          confirm({
-            title: '发布模组',
-            content: '确认发布后，模组信息将会同步到开放平台,确定要这样做吗？',
-            okText: '确定',
-            okType: 'danger',
-            cancelText: '取消',
-            onOk: () => {
-              // this.releaseOperation(record.moduleId, 1);
-            },
-            onCancel() { },
-          })
-        break;
-      case "edit":
-        let moduleId = record.moduleId;
-        // this.props.history.push({ pathname: `/config/ModuleManager/edit/${moduleId}` })
-        break;
-      case "delete":
-        confirm({
-          title: '删除模组',
-          content: '删除后，模组信息将同步删除，无法撤销，确定要这样做吗？',
-          okText: '确定',
-          okType: 'danger',
-          cancelText: '取消',
-          onOk: () => {
-            deleteOperation(record.moduleId);
-          },
-          onCancel() { },
-        });
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  // 删除操作
-  const deleteOperation = (moduleId) => {
-    ModuleDeleteRequest(moduleId).then(res => {
-      if (res.data.code === 0) {
-        message.success(`删除成功`)
-        getTableData()
-      }
-    })
-  }
-
-  // 初始化表格按钮方法2
+  // 按钮DOM生成
   const createOperationBtn = (item, record) => {
     return (
       <Tooltip key={item.key} placement="top" title={item.title}>
@@ -200,6 +112,121 @@ function ModuleList({ form }) {
         />
       </Tooltip>
     )
+  }
+
+  // 操作按钮判断显示
+  const generateOperationBtn = (record) => {
+    let btnarr = []
+    record.releaseStatus === 1 ? btnarr = releaseBtnArr() : btnarr = unReleaseBtnArr()
+    return btnarr.map((item) => (
+      createOperationBtn(item, record)
+    ))
+  }
+
+  // 已发布——展示按钮
+  const releaseBtnArr = () => {
+    return [
+      // { title: "查看", icon: "info", key: 'view' },
+      { title: "下线", icon: "cloud-download", key: 'offline' },
+    ]
+  }
+
+  // 未发布——展示按钮
+  const unReleaseBtnArr = () => {
+    return [
+      { title: "发布", icon: "cloud-upload", key: 'release' },
+      { title: "编辑", icon: "edit", key: 'edit' },
+      { title: "删除", icon: "delete", key: 'delete' }
+    ]
+  }
+
+  // 列表中的按钮点击触发
+  const handleOperation = (item, record) => {
+    switch (item.key) {
+      case "view":
+        // this.props.getModuleInfoPreview(record.moduleId, "view");
+        break;
+      case "offline":
+        confirm({
+          title: '下线模组?',
+          content: '确认下线后，模组将同步从开放平台下线，确定要这样做吗？',
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk: () => {
+            publishOrOffline(record.moduleId, 0)
+          },
+          onCancel() { },
+        })
+        break;
+      case "release":
+        console.log(record.completeStatus)
+        const msg = record.completeStatus === 0 ?
+          '当前模组信息不完整，请完善后提交发布' :
+          '确认发布后，模组信息将会同步到开放平台,确定要这样做吗？'
+        confirm({
+          title: '发布模组',
+          content: msg,
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            record.completeStatus === 1 && publishOrOffline(record.moduleId, 1)
+          },
+          onCancel() { },
+        })
+        break;
+      case "edit":
+        getModuleDetail(record.moduleId)
+        break;
+      case "delete":
+        confirm({
+          title: '删除模组',
+          content: '删除后，模组信息将同步删除，无法撤销，确定要这样做吗？',
+          okText: '确定',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk: () => {
+            deleteOperation(record.moduleId);
+          },
+          onCancel() { },
+        })
+        break;
+      default:
+        break;
+    }
+  }
+
+  // 获取模组详情
+  const getModuleDetail = (moduleId) => {
+    getModuleDetailRequest(moduleId).then(res => {
+      if (res.data.data) {
+        console.log('编辑数据', res.data.data)
+        setEditData(res.data.data)
+        setEditSchemeModal(true)
+      } else {
+        message.warning('返回数据不存在')
+      }
+    })
+  }
+
+  // 删除操作
+  const deleteOperation = (moduleId) => {
+    ModuleDeleteRequest(moduleId).then(res => {
+      if (res.data.code === 0) {
+        message.success(`删除成功`)
+        getTableData()
+      }
+    })
+  }
+
+  // 发布或者下线操作
+  const publishOrOffline = (moduleId, releaseStatus) => {
+    ModuleReleaseRequest(moduleId, releaseStatus).then(res => {
+      if (res.data.code === 0) {
+        message.success(releaseStatus === 1 ? `发布成功` : '下线成功')
+        getTableData()
+      }
+    })
   }
 
   // 获取模组列表
@@ -267,8 +294,7 @@ function ModuleList({ form }) {
             {getFieldDecorator('moduleType', { initialValue: undefined })(
               <Select style={{ width: 200, marginBottom: 0 }} placeholder="请选择通信方式"
                 showSearch
-                filterOption={(input, option) =>
-                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                optionFilterProp="children"
               >
                 {generateOptions(moduleCommonObj.moduleTypeList)}
               </Select>
@@ -309,8 +335,20 @@ function ModuleList({ form }) {
         <OperateSchemeModal
           visible={addSchemeModal}
           moduleCommonObj={moduleCommonObj}
+          type="add"
           getTableData={getTableData}
           handleCancel={() => setAddSchemeModal(false)} />
+      }
+      {/* 编辑模组 */}
+      {
+        editSchemeModal &&
+        <OperateSchemeModal
+          visible={editSchemeModal}
+          moduleCommonObj={moduleCommonObj}
+          type="edit"
+          editData={editData}
+          getTableData={getTableData}
+          handleCancel={() => setEditSchemeModal(false)} />
       }
     </div>
   )

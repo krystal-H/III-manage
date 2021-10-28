@@ -7,6 +7,7 @@ import { DateTool } from "../../../util/utils"
 import { cloneDeep } from "lodash"
 import { getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
 import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
+import ViewScheme from './viewScheme'
 
 import './schemeList.less'
 
@@ -30,6 +31,7 @@ function SchemeList({ form }) {
   const [thirdCategoryList, setThirdCategoryList] = useState([])
   const { getFieldDecorator, getFieldsValue } = form
   const [moduleCommonObj, setModuleCommonObj] = useState({})
+  const [detailSchemeModal, setDetailSchemeModal] = useState(false)
   const column = [
     { title: "修改账号", dataIndex: 'account', key: 'account', render: (text) => <span title={text}>{text}</span> },
     { title: "品类", dataIndex: 'deviceType', key: 'deviceType', render: (text) => <span title={text}>{text}</span> },
@@ -41,7 +43,7 @@ function SchemeList({ form }) {
       key: 'status',
       render: (status) => {
         const color = ["", "green", "gray"];
-        return <span style={{ color: `${color[status]}` }}>{status === 1 ? "草稿" : "已发布"}</span>
+        return <span style={{ color: `${color[status]}` }}>{statusMap[status]}</span>
       }
     },
     {
@@ -63,13 +65,13 @@ function SchemeList({ form }) {
     }
   ]
 
-  // 已发布操作按钮的数据源
+  // 已发布——按钮显示
   const releaseBtnArr = () => {
     return [
-      { title: "查看", icon: "info", key: 'View' },
+      { title: "查看", icon: "info", key: 'view' },
     ]
   }
-  // 未发布操作按钮数据源
+  // 未发布——按钮显示
   const unReleaseBtnArr = () => {
     return [
       { title: "发布", icon: "cloud-upload", key: 'release' },
@@ -95,9 +97,39 @@ function SchemeList({ form }) {
           size="small"
           icon={item.icon}
           key={item.templateId}
-          onClick={() => this.handleOperation(item, record)}
+          onClick={() => handleOperation(item, record)}
         />
       </Tooltip>)
+  }
+
+  // 列表操作
+  const handleOperation = (item, record) => {
+    console.log(item.key)
+    switch (item.key) {
+      case 'release':
+        confirm({
+          title: '发布方案',
+          content: '确认发布后，方案信息将会同步到开放平台,确定要这样做吗？',
+          okText: '确定',
+          cancelText: '取消',
+          onOk() {
+            publishScheme()
+          },
+          onCancel() { },
+        })
+        break;
+      case 'view':
+        setDetailSchemeModal(true)
+        break;
+      case 'edit':
+      default:
+        break;
+    }
+  }
+
+  // 发布方案
+  const publishScheme = () => {
+
   }
 
   // 查询
@@ -236,6 +268,14 @@ function SchemeList({ form }) {
           getTableData={getTableData}
           handleOk={() => setAddSchemeModal(false)}
           handleCancel={() => setAddSchemeModal(false)} />
+      }
+      {/* 查看详情 */}
+      {
+        detailSchemeModal &&
+        <ViewScheme
+          visible={detailSchemeModal}
+          handleOk={() => setDetailSchemeModal(false)}
+          handleCancel={() => setDetailSchemeModal(false)} />
       }
     </div>
   )

@@ -78,7 +78,8 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) 
           {getFieldDecorator('protocol', {
             rules: [{ required: true, message: '请选择通信协议' }],
           })(
-            <Select placeholder="请选择通信协议" onChange={(val) => sessionStorage.setItem('communicationType', val)}>
+            <Select placeholder="请选择通信协议" showSearch optionFilterProp="children"
+              onChange={(val) => sessionStorage.setItem('communicationType', val)}>
               {
                 communicationMethodsList && communicationMethodsList.map((item, index) => (
                   <Option value={item.moduleType} key={item.moduleType}>{item.moduleTypeName}</Option>

@@ -23,7 +23,7 @@ const StyleItem = {
   width: '60%'
 }
 
-function StepThird({ form, commitAll }, ref) {
+function StepThird({ form, commitAll, type, editData = {} }, ref) {
   const [schemeType, setSchemeType] = useState()
   const [valueType, setValueType] = useState([])
   const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
@@ -38,6 +38,20 @@ function StepThird({ form, commitAll }, ref) {
   const [readmePdf, setReadmepdf] = useState([]) // 说明文档
 
   const { getFieldDecorator, getFieldValue } = form
+
+  const [editInfo, setEditInfo] = useState(type === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
+
+  useEffect(() => {
+    if (type==='edit') {
+      const editObj = editData.firmwareDefList[0]
+      setSchemeType(editObj.schemeType)
+      if (editObj.schemeType === 1) { // 免开发
+        editObj.pinDiagram && setPindiagram([{url: editObj.pinDiagram, name: '可配置固件引脚示意图', uid: 1}])
+
+      }
+    }
+    console.log(editData.firmwareDefList[0], '-------------editData', JSON.parse(editData.firmwareDefList[0].customConfigJson))
+  }, [editData])
 
   // 表单提交
   const validData = () => {
@@ -60,7 +74,7 @@ function StepThird({ form, commitAll }, ref) {
           customConfigJson: JSON.stringify(values.funcDefList) || JSON.stringify([]),
           pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
         }
-        
+
         // mcu方案的参数
         const mcuParams = {
           burnFile: values.burnFile, // 烧录文件
@@ -278,7 +292,7 @@ function StepThird({ form, commitAll }, ref) {
     })
   }
 
-  getFieldDecorator('configList', { initialValue: [] })
+  getFieldDecorator('configList', { initialValue: type === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
   const list = getFieldValue('configList')
 
   // 新增可配置固件的DOM创建——外层
@@ -286,24 +300,28 @@ function StepThird({ form, commitAll }, ref) {
     <div className="free-scheme-block" key={index}>
       <Form.Item label="可配置模块" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].funcModule`, {
+          initialValue: item.funcModule,
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入可配置模块", }],
         })(<Input placeholder="请输入可配置模块" style={StyleItem} />)}
       </Form.Item>
       <Form.Item label="可配置功能名称" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].funcName`, {
+          initialValue: item.funcName,
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入可配置功能名称", },],
         })(<Input placeholder="请输入可配置功能名称" style={StyleItem} />)}
       </Form.Item>
       <Form.Item label="可配置功能标识" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].identifier`, {
+          initialValue: item.identifier,
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入可配置功能标识", },],
         })(<Input placeholder="请输入可配置功能标识" style={StyleItem} />)}
       </Form.Item>
       <Form.Item label="可配置功能数值" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].dataType.type`, {
+          initialValue: item.dataType.type,
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请选择可配置功能数值", },],
         })(
@@ -366,11 +384,13 @@ function StepThird({ form, commitAll }, ref) {
     <Form {...formItemLayout}>
       <Form.Item label="价格">
         {getFieldDecorator('price', {
+          initialValue: editData.price,
           rules: [{ required: true, message: '请输入价格', whitespace: true }],
         })(<Input placeholder="请输入价格" style={{ width: 350 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
         {getFieldDecorator("schemeType", {
+          initialValue: editInfo.schemeType,
           rules: [{ required: true, message: "请选择支持方案" }]
         })(
           <Radio.Group onChange={(e) => setSchemeType(e.target.value)}>
@@ -389,6 +409,7 @@ function StepThird({ form, commitAll }, ref) {
             extra="请上传尺寸为227*404px，格式为png的引脚示意图"
             wrapperCol={{ span: 10 }}>
             {getFieldDecorator("pinDiagram", {
+              initialValue: editInfo.pinDiagram,
               rules: [{ required: true, message: "请上传可配置固件引脚示意图" }]
             })(
               <div>

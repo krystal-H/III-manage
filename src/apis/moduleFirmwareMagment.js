@@ -28,7 +28,7 @@ export const getNetRequest = () => {
     method: 'post',
     data: [],
     headers: {
-      'Content-Type': "application/json;charset=UTF-8"
+      'Content-Type': "application/json"
     },
   })
 }
@@ -55,8 +55,8 @@ export const bindSceneListRequest = (moduleId) => {
 // 模组专用公共菜单
 export const getModuleTypeMenuRequest = () => {
   return axios.request({
-      url: prefix + '/module/type/getMenu',
-      method: 'get'
+    url: prefix + '/module/type/getMenu',
+    method: 'get'
   })
 }
 
@@ -69,5 +69,32 @@ export const saveModuleRequest = (params) => {
     headers: {
       "Content-Type": "application/json",
     },
+  })
+}
+
+// 发布/下线模组
+export const ModuleReleaseRequest = (moduleId, releaseStatus) => {
+  return axios.request({
+    url: prefix + '/module/type/release',
+    params: {
+      moduleId,
+      releaseStatus
+    },
+    method: 'get'
+  })
+}
+
+// 删除单个模组
+export const ModuleDeleteRequest = (moduleId) => {
+  return axios.request({
+    url: `${prefix}/module/delete/${moduleId}`,
+    method: 'get'
+  })
+}
+
+// 获取模组详情
+export const getModuleDetailRequest = (moduleId) => {
+  return axios.request({
+    url: `${prefix}/module/detail/${moduleId}`
   })
 }
