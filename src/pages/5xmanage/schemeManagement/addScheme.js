@@ -107,7 +107,8 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCatego
                 wrappedComponentRef={refDetail}
                 setStepCur={setStepCur}
                 commitAll={commitAll}
-                editData={editData} />
+                editData={editData}
+                opeType={opeType} />
             </TabPane>
           </Tabs>
         </div>

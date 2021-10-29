@@ -75,7 +75,7 @@ function SchemeList({ form }) {
   // 已发布——按钮显示
   const releaseBtnArr = () => {
     return [
-      { title: "查看", icon: "info", key: 'view' },
+      // { title: "查看", icon: "info", key: 'view' },
     ]
   }
   // 未发布——按钮显示
@@ -111,7 +111,7 @@ function SchemeList({ form }) {
 
   // 获取模组详情
   const getSchemeDetail = (id) => {
-    getSchemeDetailRequest({id}).then(res => {
+    getSchemeDetailRequest({ id }).then(res => {
       if (res.data.data) {
         setEditData(res.data.data)
         setEditSchemeModal(true)
@@ -138,7 +138,7 @@ function SchemeList({ form }) {
         })
         break;
       case 'view':
-        setDetailSchemeModal(true)
+        // setDetailSchemeModal(true)
         break;
       case 'edit':
         getSchemeDetail(record.id)
@@ -293,6 +293,7 @@ function SchemeList({ form }) {
 
       {/* 编辑 */}
       {
+        editSchemeModal &&
         <OperateSchemeModal
           opeType="edit"
           editData={editData}

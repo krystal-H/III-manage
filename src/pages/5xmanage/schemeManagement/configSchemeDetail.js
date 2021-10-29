@@ -10,7 +10,7 @@ const typeMap = {
   'rw': '可下发可上报'
 }
 
-function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
+function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
   const [objectModalList, setObjectModalList] = useState([]) // 物模型列表
   const [funcList, setFuncList] = useState([]) // 功能列表
   const [moduleIdsList, setModuleIdsList] = useState([]) // 模组列表
@@ -31,7 +31,6 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
       dataIndex: 'funcParamList',
       key: 'funcParamList',
       render: (record) => {
-        console.log(record)
         return <span>{typeMap[record[0].accessMode]}</span>
       }
     }
@@ -53,14 +52,14 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
     })
   }
 
-  // 选择三级品类
+  // 选择物模型
   const handleSelectChange = (val) => {
     getFuncList(val)
   }
 
   // 根据品类id查物模型列表
   const getObjectModal = () => {
-    const categoryId = sessionStorage.getItem('categoryId')
+    const categoryId = sessionStorage.getItem('categoryId') || editData.deviceTypeId
     getObjectModalRequest(categoryId).then(res => {
       if (res.data.data) {
         setObjectModalList(res.data.data)
@@ -79,9 +78,9 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
 
   // 根据通信方式查找模组
   const getModuleByModuleType = () => {
-    getModuleByModuleTypeRequest(sessionStorage.getItem('communicationType').split(''))
+    const val = sessionStorage.getItem('communicationType')
+    getModuleByModuleTypeRequest(val ? val.split('') : editData.protocol.toString().split(''))
       .then(res => {
-        console.log(res, '哈哈哈哈')
         if (res.data.data) {
           setModuleIdsList(res.data.data)
         }
@@ -91,7 +90,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
   // 获取面板列表
   const getPanelList = () => {
     const params = {
-      deviceTypeId: sessionStorage.getItem('categoryId') || '',
+      deviceTypeId: sessionStorage.getItem('categoryId') || editData.deviceTypeId || '',
       templateName: '',
       pageIndex: 1,
       pageRows: 5
@@ -107,6 +106,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
     getObjectModal()
     getModuleByModuleType()
     getPanelList()
+    opeType === 'edit' && getFuncList(editData.physicalModelId)
   }, [])
 
   const { getFieldDecorator, validateFields } = form;
@@ -146,7 +146,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
           <div className="control-panel-box">
             {
               panelList && panelList.map(item => (
-                <div className="panel-item">
+                <div className="panel-item" key={item.templateId}>
                   <div className="panel-item-pic">
                     <img src={item.page1} alt="pic" />
                   </div>
@@ -159,15 +159,14 @@ function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
         <Form.Item label="对应模组">
           {
             getFieldDecorator('moduleIds', {
-              initialValue: editData.moduleIds? editData.moduleIds.split('#') : [],
+              initialValue: editData.moduleIds ? editData.moduleIds.split('#').map(item => { return item - 0 }) : [],
               rules: [{ required: true, message: '请选择对应模组' }],
             })(
               <Select placeholder="请选择对应支持模组"
                 style={{ width: 250 }}
                 mode="multiple"
                 showSearch
-                optionFilterProp="children"
-              >
+                optionFilterProp="children">
                 {
                   moduleIdsList && moduleIdsList.map(item => (
                     <Select.Option value={item.moduleId} key={item.moduleId}>{item.moduleName}</Select.Option>

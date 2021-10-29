@@ -12,8 +12,6 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
   useEffect(() => {
     if (opeType === 'edit') {
       editData.picture && setDescPic([{ url: editData.picture, name: '见截图', uid: 1 }])
-      editData.protocol && sessionStorage.setItem('communicationType', editData.protocol)
-      console.log(editData.picture, '11111111111111')
     }
   }, [editData])
 
@@ -134,7 +132,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
         extra="支持格式：png、jpg 建议尺寸：134 * 188px"
         wrapperCol={{ span: 10 }}>
         {getFieldDecorator("picture", {
-          initialValue: editData.picture || '',
+          initialValue: editData.picture,
           rules: [{ required: true, message: "请上传简介图" }]
         })(
           <div>

@@ -17,13 +17,6 @@ function ChooseScheme({ form, setStepCur, thirdCategoryList, editData={}, opeTyp
     }
   })
 
-  useEffect(() => {
-    if (opeType === 'edit') {
-      editData.deviceTypeId && sessionStorage.setItem('categoryId', editData.deviceTypeId)
-    }
-    
-  }, [])
-
   const changeRadio = e => {
     console.log('radio checked', e.target.value)
   }
