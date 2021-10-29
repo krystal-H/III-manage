@@ -6,7 +6,6 @@ import { getOrderType } from '../../../apis/physical'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import AddDia from './add'
-import EditDia from './edit'
 import './index.less'
 
 const FormItem = Form.Item
