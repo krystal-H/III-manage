@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Modal, Button, Steps, Form, Tabs, Input, Select, InputNumber, Checkbox, Radio, Upload, Icon, message } from 'antd';
-import { fileHost } from "../../../util/utils";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
+import { Modal, Button, Form, Input, Select, Radio, Upload, Icon, message } from 'antd'
+import { fileHost } from "../../../util/utils"
 import { cloneDeep } from 'lodash'
 import './stepThird.less'
 
@@ -23,7 +23,7 @@ const StyleItem = {
   width: '60%'
 }
 
-function StepThird({ form, commitAll, type, editData = {} }, ref) {
+function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   const [schemeType, setSchemeType] = useState()
   const [valueType, setValueType] = useState([])
   const [previewVisible, setPreviewVisible] = useState(false) // 图片预览
@@ -36,21 +36,24 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
   const [readmePdf, setReadmepdf] = useState([]) // 说明文档
-
   const { getFieldDecorator, getFieldValue } = form
-
-  const [editInfo, setEditInfo] = useState(type === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
+  const [editInfo, setEditInfo] = useState(opeType === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
 
   useEffect(() => {
-    if (type==='edit') {
+    if (opeType === 'edit') {
       const editObj = editData.firmwareDefList[0]
       setSchemeType(editObj.schemeType)
       if (editObj.schemeType === 1) { // 免开发
-        editObj.pinDiagram && setPindiagram([{url: editObj.pinDiagram, name: '可配置固件引脚示意图', uid: 1}])
-
+        editObj.pinDiagram && setPindiagram([{ url: editObj.pinDiagram, name: '可配置固件引脚示意图', uid: 1 }])
+        let arr = []
+        const data = JSON.parse(editData.firmwareDefList[0].customConfigJson)
+        data.forEach(ele => {
+          arr.push(ele.dataType.type)
+        })
+        setValueType(arr)
       }
+      // console.log(editData.firmwareDefList[0], '-------------editData', JSON.parse(editData.firmwareDefList[0].customConfigJson))
     }
-    console.log(editData.firmwareDefList[0], '-------------editData', JSON.parse(editData.firmwareDefList[0].customConfigJson))
   }, [editData])
 
   // 表单提交
@@ -108,6 +111,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
             break;
         }
         commitAll(firmwareDefReqList)
+        console.log('第三步提交的数据', firmwareDefReqList)
       }
     })
   }
@@ -201,7 +205,6 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
   const chooseValueType = (val, index) => {
     let copyVal = cloneDeep(valueType)
     copyVal[index] = val
-    console.log('copyVal', copyVal)
     setValueType(copyVal)
   }
   // --------------------------------------------------------------------
@@ -227,10 +230,11 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
   }
 
   // 枚举的DOM创建——内层
-  const createInnerHtml = (name, index1) => {
+  const createInnerHtml = (name, index1, item) => {
     const html1 = <div className="inline-form-item" key={index1}>
       <Form.Item label="默认值" {...formItemLayout}>
         {getFieldDecorator(`${name}.defaultValue[${index1}].k`, {
+          initialValue: item.dataType.specs && item.dataType.specs.defaultValue[0].k ? item.dataType.specs.defaultValue[0].k : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入key值" }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -238,18 +242,27 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
       <Form.Item className="right-item">
         -&nbsp;&nbsp;&nbsp;&nbsp;
         {getFieldDecorator(`${name}.defaultValue[${index1}].v`, {
+          initialValue: item.dataType.specs && item.dataType.specs.defaultValue[0].v ? item.dataType.specs.defaultValue[0].v : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入value值", }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
       </Form.Item>
     </div>
 
-    getFieldDecorator(`innerList${index1}`, { initialValue: [{ uniquekey: 0 }] })
+    const changeList = item.dataType.specs.def.map(item => {
+      return {
+        uniquekey: uniquekey++,
+        k: item.k,
+        v: item.v
+      }
+    })
+    getFieldDecorator(`innerList${index1}`, { initialValue: opeType === "edit" && schemeType === 1 ? changeList : [{ uniquekey: 0 }] })
     const innerList = getFieldValue(`innerList${index1}`)
     const html2 = innerList.map((item, index2) => (
       <div className="inline-form-item" key={index2}>
         <Form.Item label="key-value" {...formItemLayout}>
           {getFieldDecorator(`${name}.def[${item.uniquekey}].k`, {
+            initialValue: item.k,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入key值" }],
           })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -257,6 +270,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
         <Form.Item label="" className="right-item">
           -&nbsp;&nbsp;&nbsp;&nbsp;
           {getFieldDecorator(`${name}.def[${item.uniquekey}].v`, {
+            initialValue: item.v,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入value值", }],
           })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -292,7 +306,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
     })
   }
 
-  getFieldDecorator('configList', { initialValue: type === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
+  getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
   const list = getFieldValue('configList')
 
   // 新增可配置固件的DOM创建——外层
@@ -321,7 +335,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
       </Form.Item>
       <Form.Item label="可配置功能数值" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].dataType.type`, {
-          initialValue: item.dataType.type,
+          initialValue: item.dataType ? item.dataType.type : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请选择可配置功能数值", },],
         })(
@@ -339,6 +353,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
           <div className="inline-form-item">
             <Form.Item label="数值范围" {...formItemLayout}>
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.min`, {
+                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.min.toString() : '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
               })(<Input style={{ width: 90, marginRight: 8 }} />)}
@@ -346,6 +361,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
             <Form.Item label="" className="right-item">
               至&nbsp;&nbsp;&nbsp;&nbsp;
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.max`, {
+                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.max.toString() : '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
               })(<Input style={{ width: 90, marginRight: 8 }} />)}
@@ -353,6 +369,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
           </div>
           <Form.Item label="默认值" {...formItemLayout}>
             {getFieldDecorator(`funcDefList[${index}].dataType.specs.defaultValue`, {
+              initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.defaultValue.toString() : '',
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, whitespace: true, message: "请输入默认值", }],
             })(<Input style={{ width: '60%', marginRight: 8 }} />)}
@@ -363,15 +380,18 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
       {
         valueType[index] === 'enum' &&
         <>
-          <div>{createInnerHtml(`funcDefList[${index}].dataType.specs`, index)}</div>
+          <div>{createInnerHtml(`funcDefList[${index}].dataType.specs`, index, item)}</div>
           <div className="add-enmu-btn">
             <Button type="primary" icon="plus" onClick={() => addEnum(index)}>新增</Button>
           </div>
         </>
       }
-      <div className="del-btn" key={index} onClick={() => removeConfig(index)}>
-        删除&nbsp;&nbsp;<Icon type="delete" />
-      </div>
+      {
+        index > 0 &&
+        <div className="del-btn" key={index} onClick={() => removeConfig(index)}>
+          删除&nbsp;&nbsp;<Icon type="delete" />
+        </div>
+      }
     </div>
   ))
 
@@ -384,7 +404,7 @@ function StepThird({ form, commitAll, type, editData = {} }, ref) {
     <Form {...formItemLayout}>
       <Form.Item label="价格">
         {getFieldDecorator('price', {
-          initialValue: editData.price,
+          initialValue: editData.price ? editData.price.toString() : '',
           rules: [{ required: true, message: '请输入价格', whitespace: true }],
         })(<Input placeholder="请输入价格" style={{ width: 350 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>

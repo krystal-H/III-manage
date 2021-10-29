@@ -9,7 +9,8 @@ import {
   getNetRequest,
   getModuleProtocolRequest,
   bindSceneListRequest,
-  saveModuleRequest
+  saveModuleRequest,
+  updateModuleRequest
 } from '../../../apis/moduleFirmwareMagment'
 
 import './addScheme.less'
@@ -18,8 +19,8 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
-function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, getTableData, editData, type }) {
-  const [stepcurrent, setStepcurrent] = useState(2)
+function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, getTableData, editData, opeType }) {
+  const [stepcurrent, setStepcurrent] = useState(0)
   const ref1 = useRef()
   const ref2 = useRef()
   const ref3 = useRef()
@@ -67,9 +68,6 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
     getNetList()
     getProtocol()
     getBindSceneList()
-    if (type === 'edit') {
-      // initFormData()
-    }
   }, [])
 
 
@@ -110,14 +108,24 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   // 提交所有数据
   const commitAll = (values) => {
     let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
-    console.log('提交的数据', params)
-    saveModuleRequest(params).then(res => {
-      if (res.data.code == 0) {
-        message.success(`提交成功`)
-        handleCancel()
-        getTableData()
-      }
-    })
+    if (opeType === 'edit') {
+      params.moduleId = editData.firmwareDefList[0].moduleId
+      updateModuleRequest(params).then(res => {
+        if (res.data.code === 0) {
+          message.success(`提交成功`)
+          handleCancel()
+          getTableData()
+        }
+      })
+    } else {
+      saveModuleRequest(params).then(res => {
+        if (res.data.code === 0) {
+          message.success(`提交成功`)
+          handleCancel()
+          getTableData()
+        }
+      })
+    }
   }
 
   return (
@@ -162,7 +170,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
                 wrappedComponentRef={ref3}
                 commitAll={commitAll}
                 editData={editData}
-                type={type} />
+                opeType={opeType} />
             </TabPane>
           </Tabs>
         </div>

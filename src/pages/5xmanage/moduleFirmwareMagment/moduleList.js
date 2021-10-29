@@ -71,8 +71,8 @@ function ModuleList({ form }) {
       key: "modifyTime",
       dataIndex: "modifyTime",
       render: (modifyTime) => {
-        let time = DateTool.utcToDev(modifyTime)
-        return <span title={time}>{time}</span>
+        // let time = DateTool.utcToDev(modifyTime)
+        return <span title={modifyTime}>{modifyTime}</span>
       }
     },
     {
@@ -335,7 +335,7 @@ function ModuleList({ form }) {
         <OperateSchemeModal
           visible={addSchemeModal}
           moduleCommonObj={moduleCommonObj}
-          type="add"
+          opeType="add"
           getTableData={getTableData}
           handleCancel={() => setAddSchemeModal(false)} />
       }
@@ -345,7 +345,7 @@ function ModuleList({ form }) {
         <OperateSchemeModal
           visible={editSchemeModal}
           moduleCommonObj={moduleCommonObj}
-          type="edit"
+          opeType="edit"
           editData={editData}
           getTableData={getTableData}
           handleCancel={() => setEditSchemeModal(false)} />

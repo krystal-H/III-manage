@@ -72,6 +72,18 @@ export const saveModuleRequest = (params) => {
   })
 }
 
+// 更新模组&固件
+export const updateModuleRequest = (params) => {
+  return axios.request({
+    url: prefix + '/module/update',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+}
+
 // 发布/下线模组
 export const ModuleReleaseRequest = (moduleId, releaseStatus) => {
   return axios.request({
