@@ -10,7 +10,7 @@ const typeMap = {
   'rw': '可下发可上报'
 }
 
-function ConfigSchemeDetail({ form, commitAll }, ref) {
+function ConfigSchemeDetail({ form, commitAll, editData = {} }, ref) {
   const [objectModalList, setObjectModalList] = useState([]) // 物模型列表
   const [funcList, setFuncList] = useState([]) // 功能列表
   const [moduleIdsList, setModuleIdsList] = useState([]) // 模组列表
@@ -117,6 +117,7 @@ function ConfigSchemeDetail({ form, commitAll }, ref) {
           {/* 此三级品类关联的物模型如下 */}
           {
             getFieldDecorator('physicalModelId', {
+              initialValue: editData.physicalModelId,
               rules: [{ required: true, message: '请选择此三级品类关联的物模型' }],
             })(
               <Select placeholder="请选择此三级品类关联的物模型"
@@ -158,6 +159,7 @@ function ConfigSchemeDetail({ form, commitAll }, ref) {
         <Form.Item label="对应模组">
           {
             getFieldDecorator('moduleIds', {
+              initialValue: editData.moduleIds? editData.moduleIds.split('#') : [],
               rules: [{ required: true, message: '请选择对应模组' }],
             })(
               <Select placeholder="请选择对应支持模组"

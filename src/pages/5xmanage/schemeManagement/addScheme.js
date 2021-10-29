@@ -12,7 +12,7 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['选择品类方案', '配置方案简介', '配置方案详情']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCategoryList, communicationMethodsList, getTableData }) {
+function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCategoryList, communicationMethodsList, getTableData, opeType, editData }) {
   const [stepcurrent, setStepcurrent] = useState(0)
   const refScheme = useRef()
   const refConfig = useRef()
@@ -90,19 +90,24 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCatego
               <ChooseScheme
                 thirdCategoryList={thirdCategoryList}
                 wrappedComponentRef={refScheme}
-                setStepCur={setStepCur} />
+                setStepCur={setStepCur}
+                editData={editData}
+                opeType={opeType} />
             </TabPane>
             <TabPane tab="配置方案简介" key={'1'}>
               <ConfigSchemeBrief
                 communicationMethodsList={communicationMethodsList}
                 wrappedComponentRef={refConfig}
-                setStepCur={setStepCur} />
+                setStepCur={setStepCur}
+                editData={editData}
+                opeType={opeType} />
             </TabPane>
             <TabPane tab="配置方案详情" key={'2'}>
               <ConfigSchemeDetail
                 wrappedComponentRef={refDetail}
                 setStepCur={setStepCur}
-                commitAll={commitAll} />
+                commitAll={commitAll}
+                editData={editData} />
             </TabPane>
           </Tabs>
         </div>

@@ -5,10 +5,17 @@ import { fileHost } from "../../../util/utils";
 const { Option } = Select
 const { TextArea } = Input
 
-function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) {
-  const [configInfo, setConfigInfo] = useState({})
-  const [descPic, setDescPic] = useState('') // 简介图片
+function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editData = {}, opeType }, ref) {
+  const [descPic, setDescPic] = useState([]) // 简介图片
   const [previewVisible, setPreviewVisible] = useState(false)
+
+  useEffect(() => {
+    if (opeType === 'edit') {
+      editData.picture && setDescPic([{ url: editData.picture, name: '见截图', uid: 1 }])
+      editData.protocol && sessionStorage.setItem('communicationType', editData.protocol)
+      console.log(editData.picture, '11111111111111')
+    }
+  }, [editData])
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
@@ -33,7 +40,12 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) 
     console.log('上传的info', info)
     const { file, fileList } = info;
     if (file.status === "done") {
-      setDescPic(file.response.data.url)
+      setDescPic([{
+        status: 'done',
+        name: file.name,
+        url: file.response.data.url
+      }])
+      form.setFieldsValue({ picture: file.response.data.url })
     } else if (file.status === "error") {
       message.error(`${info.file.name} 上传失败`);
       setDescPic('')
@@ -46,7 +58,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) 
   const validData = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        values.picture = descPic
+        values.picture = descPic[0].url || ''
         console.log('Received values of form: ', values);
         setStepCur(2, values)
       }
@@ -66,78 +78,84 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList }, ref) 
     data: file => ({ appId: 31438, domainType: 4 })
   }
   const { getFieldDecorator } = form
+
+  const uploadButton = (type = '上传文档') => {
+    return (<Button><Icon type="upload" />{type}</Button>)
+  }
   return (
-    <div>
-      <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
-        <Form.Item label="方案名称">
-          {getFieldDecorator('name', {
-            rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
-          })(<Input placeholder="请输入方案名称" />)}
-        </Form.Item>
-        <Form.Item label="通信协议" hasFeedback>
-          {getFieldDecorator('protocol', {
-            rules: [{ required: true, message: '请选择通信协议' }],
-          })(
-            <Select placeholder="请选择通信协议" showSearch optionFilterProp="children"
-              onChange={(val) => sessionStorage.setItem('communicationType', val)}>
-              {
-                communicationMethodsList && communicationMethodsList.map((item, index) => (
-                  <Option value={item.moduleType} key={item.moduleType}>{item.moduleTypeName}</Option>
-                ))
-              }
-            </Select>
-          )}
-        </Form.Item>
-        <Form.Item label="概况" hasFeedback>
-          {getFieldDecorator('summarize', {
-            rules: [{ required: true, message: '请输入概况' }]
-          })(
-            <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )}
-        </Form.Item>
-        <Form.Item label="特点" hasFeedback>
-          {getFieldDecorator('feature', {
-            rules: [{ required: true, message: '请输入特点' }]
-          })(
-            <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )}
-        </Form.Item>
-        <Form.Item label="适合场景" hasFeedback>
-          {getFieldDecorator('illustrate', {
-            rules: [{ required: true, message: '请输入适合' }]
-          })(
-            <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
-          )}
-        </Form.Item>
-        <Form.Item
-          label="简介图"
-          extra="支持格式：png、jpg 建议尺寸：134 * 188px"
-          wrapperCol={{ span: 10 }}>
-          {getFieldDecorator("picture", {
-            rules: [{ required: true, message: "请上传简介图" }]
-          })(
-            <div>
-              <Upload
-                {...uploadConfigs}
-                listType="picture"
-                defaultFileList={configInfo.descPic || []}
-                onPreview={() => setPreviewVisible(true)}
-                beforeUpload={modulePictureBeforeUpload}
-                accept="image/png,image/jpeg"
-                onChange={handleChange}>
-                {descPic && descPic.length >= 1 ?
-                  null : (<Button><Icon type="upload" /> 上传图片</Button>)
-                }
-              </Upload>
-              <Modal visible={previewVisible} footer={null}
-                onCancel={() => setPreviewVisible(false)}>
-                <img alt="example" style={{ width: "100%" }} src={descPic} />
-              </Modal>
-            </div>
-          )}
-        </Form.Item>
-      </Form>
-    </div>
+    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
+      <Form.Item label="方案名称">
+        {getFieldDecorator('name', {
+          initialValue: editData.name,
+          rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
+        })(<Input placeholder="请输入方案名称" />)}
+      </Form.Item>
+      <Form.Item label="通信协议" hasFeedback>
+        {getFieldDecorator('protocol', {
+          initialValue: editData.protocol,
+          rules: [{ required: true, message: '请选择通信协议' }],
+        })(
+          <Select placeholder="请选择通信协议" showSearch optionFilterProp="children"
+            onChange={(val) => sessionStorage.setItem('communicationType', val)}>
+            {
+              communicationMethodsList && communicationMethodsList.map((item, index) => (
+                <Option value={item.moduleType} key={item.moduleType}>{item.moduleTypeName}</Option>
+              ))
+            }
+          </Select>
+        )}
+      </Form.Item>
+      <Form.Item label="概况" hasFeedback>
+        {getFieldDecorator('summarize', {
+          initialValue: editData.summarize,
+          rules: [{ required: true, message: '请输入概况' }]
+        })(
+          <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
+        )}
+      </Form.Item>
+      <Form.Item label="特点" hasFeedback>
+        {getFieldDecorator('feature', {
+          initialValue: editData.feature,
+          rules: [{ required: true, message: '请输入特点' }]
+        })(
+          <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
+        )}
+      </Form.Item>
+      <Form.Item label="适合场景" hasFeedback>
+        {getFieldDecorator('illustrate', {
+          initialValue: editData.illustrate,
+          rules: [{ required: true, message: '请输入适合' }]
+        })(
+          <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
+        )}
+      </Form.Item>
+      <Form.Item
+        label="简介图"
+        extra="支持格式：png、jpg 建议尺寸：134 * 188px"
+        wrapperCol={{ span: 10 }}>
+        {getFieldDecorator("picture", {
+          initialValue: editData.picture || '',
+          rules: [{ required: true, message: "请上传简介图" }]
+        })(
+          <div>
+            <Upload
+              {...uploadConfigs}
+              listType="picture"
+              defaultFileList={descPic || []}
+              onPreview={() => setPreviewVisible(true)}
+              beforeUpload={() => modulePictureBeforeUpload}
+              accept="image/png,image/jpeg"
+              onChange={handleChange}>
+              {descPic && descPic.length >= 1 ? null : uploadButton('上传图片')}
+            </Upload>
+          </div>
+        )}
+      </Form.Item>
+      <Modal visible={previewVisible} footer={null}
+        onCancel={() => setPreviewVisible(false)}>
+        <img alt="example" style={{ width: "100%" }} src={descPic && descPic.length && descPic[0].url} />
+      </Modal>
+    </Form>
   )
 }
 

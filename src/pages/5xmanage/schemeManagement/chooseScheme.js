@@ -9,13 +9,20 @@ const radioStyle = {
   lineHeight: '30px',
 }
 
-function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
+function ChooseScheme({ form, setStepCur, thirdCategoryList, editData={}, opeType }, ref) {
   // 用于定义暴露给父组件的ref方法
   useImperativeHandle(ref, () => {
     return {
       onFinish: handleSubmit
     }
   })
+
+  useEffect(() => {
+    if (opeType === 'edit') {
+      editData.deviceTypeId && sessionStorage.setItem('categoryId', editData.deviceTypeId)
+    }
+    
+  }, [])
 
   const changeRadio = e => {
     console.log('radio checked', e.target.value)
@@ -44,6 +51,7 @@ function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
       onSubmit={() => handleSubmit()}>
       <Form.Item label="产品三级分类">
         {getFieldDecorator('deviceTypeId', {
+          initialValue: editData.deviceTypeId,
           rules: [{ required: true, message: '请选择产品三级分类' }],
         })(
           <Select placeholder="请选择产品三级分类"
@@ -63,6 +71,7 @@ function ChooseScheme({ form, setStepCur, thirdCategoryList }, ref) {
       <Form.Item label="品类可支持方案">
         {
           getFieldDecorator('type', {
+            initialValue: editData.type,
             rules: [{ required: true, message: '请选择品类可支持方案' }],
           })(
             <Radio.Group onChange={(e) => changeRadio(e)}>

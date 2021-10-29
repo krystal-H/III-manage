@@ -6,7 +6,11 @@ import OperateSchemeModal from './addScheme'
 import { DateTool } from "../../../util/utils"
 import { cloneDeep } from "lodash"
 import { getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
-import { schemeManageListRequest, getThirdCategoryRequest } from '../../../apis/schemeManagement'
+import {
+  schemeManageListRequest,
+  getThirdCategoryRequest,
+  getSchemeDetailRequest
+} from '../../../apis/schemeManagement'
 import ViewScheme from './viewScheme'
 
 import './schemeList.less'
@@ -32,6 +36,9 @@ function SchemeList({ form }) {
   const { getFieldDecorator, getFieldsValue } = form
   const [moduleCommonObj, setModuleCommonObj] = useState({})
   const [detailSchemeModal, setDetailSchemeModal] = useState(false)
+  const [editSchemeModal, setEditSchemeModal] = useState(false) // 编辑
+  const [editData, setEditData] = useState(false) // 编辑数据
+
   const column = [
     { title: "修改账号", dataIndex: 'account', key: 'account', render: (text) => <span title={text}>{text}</span> },
     { title: "品类", dataIndex: 'deviceType', key: 'deviceType', render: (text) => <span title={text}>{text}</span> },
@@ -102,6 +109,18 @@ function SchemeList({ form }) {
       </Tooltip>)
   }
 
+  // 获取模组详情
+  const getSchemeDetail = (id) => {
+    getSchemeDetailRequest({id}).then(res => {
+      if (res.data.data) {
+        setEditData(res.data.data)
+        setEditSchemeModal(true)
+      } else {
+        message.warning('返回数据不存在')
+      }
+    })
+  }
+
   // 列表操作
   const handleOperation = (item, record) => {
     console.log(item.key)
@@ -122,6 +141,7 @@ function SchemeList({ form }) {
         setDetailSchemeModal(true)
         break;
       case 'edit':
+        getSchemeDetail(record.id)
       default:
         break;
     }
@@ -262,6 +282,7 @@ function SchemeList({ form }) {
       {
         addSchemeModal &&
         <OperateSchemeModal
+          opeType="add"
           visible={addSchemeModal}
           thirdCategoryList={thirdCategoryList}
           communicationMethodsList={moduleCommonObj.moduleTypeList}
@@ -269,6 +290,20 @@ function SchemeList({ form }) {
           handleOk={() => setAddSchemeModal(false)}
           handleCancel={() => setAddSchemeModal(false)} />
       }
+
+      {/* 编辑 */}
+      {
+        <OperateSchemeModal
+          opeType="edit"
+          editData={editData}
+          visible={editSchemeModal}
+          thirdCategoryList={thirdCategoryList}
+          communicationMethodsList={moduleCommonObj.moduleTypeList}
+          getTableData={getTableData}
+          handleOk={() => setEditSchemeModal(false)}
+          handleCancel={() => setEditSchemeModal(false)} />
+      }
+
       {/* 查看详情 */}
       {
         detailSchemeModal &&

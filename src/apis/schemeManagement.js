@@ -64,3 +64,15 @@ export const saveSchemeRequest = (params) => {
     }
   })
 }
+
+// 获取方案详情
+export const getSchemeDetailRequest = (params) => {
+  return axios.request({
+    url: prefix + '/scheme/detail',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}
