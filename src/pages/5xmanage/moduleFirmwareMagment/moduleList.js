@@ -200,7 +200,6 @@ function ModuleList({ form }) {
   const getModuleDetail = (moduleId) => {
     getModuleDetailRequest(moduleId).then(res => {
       if (res.data.data) {
-        console.log('编辑数据', res.data.data)
         setEditData(res.data.data)
         setEditSchemeModal(true)
       } else {

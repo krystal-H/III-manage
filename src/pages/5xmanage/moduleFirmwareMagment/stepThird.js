@@ -31,36 +31,50 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   const [pinDiagram, setPindiagram] = useState([]) // 引脚示意图
   const [sourceCode, setSourcecode] = useState([]) // 源码路径
-  const [libraryFile, setLibraryFile] = useState([]) // 库文件路径
-  const [burnFile, setBurnFile] = useState([]) // 烧录文件路径
+  const [libraryFile, setLibraryfile] = useState([]) // 库文件路径
+  const [burnFile, setBurnfile] = useState([]) // 烧录文件路径
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
   const [readmePdf, setReadmepdf] = useState([]) // 说明文档
   const { getFieldDecorator, getFieldValue } = form
   const [editInfo, setEditInfo] = useState(opeType === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
+  const [radiosDisabled, setRadiosDisabled] = useState(false) // 编辑  方案不可切换
 
   useEffect(() => {
     if (opeType === 'edit') {
-      const editObj = editData.firmwareDefList[0]
-      setSchemeType(editObj.schemeType)
-      if (editObj.schemeType === 1) { // 免开发
-        editObj.pinDiagram && setPindiagram([{ url: editObj.pinDiagram, name: '可配置固件引脚示意图', uid: 1 }])
+      setSchemeType(editInfo.schemeType)
+      setRadiosDisabled(true)
+      editData.modulePicture && setModulepicture([{ url: editData.modulePicture, name: editData.modulePictureName || '模组图片', uid: 2 }])
+      if (editInfo.schemeType === 1) { // 免开发
+        editInfo.pinDiagram && setPindiagram([{ url: editInfo.pinDiagram, name: '可配置固件引脚示意图', uid: 1 }])
         let arr = []
         const data = JSON.parse(editData.firmwareDefList[0].customConfigJson)
         data.forEach(ele => {
           arr.push(ele.dataType.type)
         })
         setValueType(arr)
+      } else if (editInfo.schemeType === 2 || editInfo.schemeType === 3) { // mcu方案
+        editInfo.burnFile && setBurnfile([{ url: editInfo.burnFile, name: editInfo.burnFileName || '烧录文件', uid: 1 }])
+        editInfo.referenceCircuitDiagram && setReferencecircuitdiagram([{
+          url: editInfo.referenceCircuitDiagram,
+          name: editInfo.referenceCircuitDiagramName || '参考电路图',
+          uid: 3
+        }])
+        editInfo.readmePdf && setReadmepdf([{ url: editData.readmePdf, name: editData.readmePdfName || '说明文档', uid: 4 }])
+        editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '源码', uid: 4 }])
+        editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName ||  '库文件', uid: 5}])
       }
-      // console.log(editData.firmwareDefList[0], '-------------editData', JSON.parse(editData.firmwareDefList[0].customConfigJson))
+      // console.log(editData.firmwareDefList[0], '-------------editData')
     }
   }, [editData])
+
+  useEffect(() => {console.log(burnFile, 'burnFileburnFileburnFile')}, [burnFile])
 
   // 表单提交
   const validData = () => {
     form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        // console.log('Received values of form: ', values);
         if (values.funcDefList && values.funcDefList.length > 0) {
           values.funcDefList = values.funcDefList.map(item => {
             if (item.dataType.type === 'enum') {
@@ -70,35 +84,41 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           })
         }
 
-        // 免开发的参数
-        const freeParams = {
+        const firmwareDefReqList = []
+        const commonParam = {
           price: values.price,
           schemeType: values.schemeType,
+          modulePicture: modulePicture && modulePicture.length ? modulePicture[0].url : '',
+          modulePictureName: modulePicture && modulePicture.length ? modulePicture[0].name : '',
+        }
+        // 免开发的参数
+        const freeParams = {
+          ...commonParam,
           customConfigJson: JSON.stringify(values.funcDefList) || JSON.stringify([]),
           pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
         }
-
         // mcu方案的参数
         const mcuParams = {
-          burnFile: values.burnFile, // 烧录文件
+          ...commonParam,
+          burnFile: burnFile && burnFile.length ? burnFile[0].url : '', // 烧录文件
+          burnFileVersion: values.burnFileVersion, // 烧录文件版本
           burnFileName: values.burnFileName, // 烧录文件名称
-          modulePicture: modulePicture && modulePicture.length ? modulePicture[0].url : '',
           referenceCircuitDiagram: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].url : '',
+          referenceCircuitDiagramName: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].name : '',
           readmePdf: readmePdf && readmePdf.length ? readmePdf[0].url : '',
-          readmePdfName: '',
+          readmePdfName: readmePdf && readmePdf.length ? readmePdf[0].name : '',
         }
-
         // Soc方案参数
         const socParams = {
+          ...commonParam,
+          ...mcuParams,
           sourceCode: sourceCode && sourceCode.length ? sourceCode[0].url : '',
           sourceCodeVersion: values.sourceCodeVersion,
-          sourceCodeName: '',
+          sourceCodeName: sourceCode && sourceCode.length ? sourceCode[0].name : '',
           libraryFile: libraryFile && libraryFile.length ? libraryFile[0].url : '',
-          burnFileVersion: values.burnFileVersion,
-          burnFileName: '',
-          ...mcuParams
+          libraryFileVersion: values.libraryFileVersion,
+          libraryFileName: libraryFile && libraryFile.length ? libraryFile[0].name : ''
         }
-        const firmwareDefReqList = []
         switch (schemeType) {
           case 1:
             firmwareDefReqList.push(freeParams)
@@ -111,7 +131,9 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             break;
         }
         commitAll(firmwareDefReqList)
-        console.log('第三步提交的数据', firmwareDefReqList)
+        // console.log('第三步提交的数据', firmwareDefReqList)
+      } else {
+        console.log('err', err)
       }
     })
   }
@@ -138,7 +160,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   // 上传文件修改
   const handleChange = (info, type) => {
-    console.log('上传的info', info, type)
+    // console.log('上传的info', info, type)
     // type首字母转大写，赋值 setAaa(xxx)
     const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
     const { file, fileList } = info
@@ -146,6 +168,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       const arr = []
       const uploadObj = {
         status: 'done',
+        name: file.name,
         url: file.response.data.url
       }
       arr.push(uploadObj)
@@ -306,11 +329,14 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
     })
   }
 
-  getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
-  const list = getFieldValue('configList')
+  let list = []
+  if (schemeType === 1) {
+    getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
+    list = getFieldValue('configList')
+  }
 
-  // 新增可配置固件的DOM创建——外层
-  const firmwareFormHtml = list.map((item, index) => (
+  // 免开发方案——新增可配置固件的DOM创建——外层
+  const firmwareFormHtml = list && list.map((item, index) => (
     <div className="free-scheme-block" key={index}>
       <Form.Item label="可配置模块" {...formItemLayout}>
         {getFieldDecorator(`funcDefList[${index}].funcModule`, {
@@ -406,14 +432,14 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         {getFieldDecorator('price', {
           initialValue: editData.price ? editData.price.toString() : '',
           rules: [{ required: true, message: '请输入价格', whitespace: true }],
-        })(<Input placeholder="请输入价格" style={{ width: 350 }} />)}&nbsp;&nbsp;人民币/个
+        })(<Input placeholder="请输入价格" style={{ width: 405 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
         {getFieldDecorator("schemeType", {
           initialValue: editInfo.schemeType,
           rules: [{ required: true, message: "请选择支持方案" }]
         })(
-          <Radio.Group onChange={(e) => setSchemeType(e.target.value)}>
+          <Radio.Group onChange={(e) => setSchemeType(e.target.value)} disabled={radiosDisabled}>
             <Radio value={1}>免开发</Radio>
             <Radio value={2}>MCU方案</Radio>
             <Radio value={3}>Soc方案</Radio>
@@ -446,6 +472,25 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               </div>
             )}
           </Form.Item>
+          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 10 }}>
+            {getFieldDecorator("modulePicture", {
+              initialValue: editData.modulePicture || '',
+              rules: [{ required: true, message: "请上传一张图片" }]
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  listType="picture"
+                  defaultFileList={modulePicture || []}
+                  onPreview={() => handlePreview(true, modulePicture)}
+                  beforeUpload={() => modulePictureBeforeUpload}
+                  accept="image/png"
+                  onChange={(info) => handleChange(info, 'modulePicture')}>
+                  {modulePicture && modulePicture.length >= 1 ? null : uploadButton('上传图片')}
+                </Upload>
+              </div>
+            )}
+          </Form.Item>
           <Form.Item label="可配置固件功能部分">
             {/* 创建DOM */}
             {firmwareFormHtml}
@@ -464,8 +509,9 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         schemeType === 3 &&
         <>
           <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("sourceCode", {
+                initialValue: editInfo.sourceCode,
                 rules: [{ required: true, message: "请上传源码" }]
               })(
                 <div>
@@ -485,14 +531,16 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               <div>
                 版本号：
                 {getFieldDecorator("sourceCodeVersion", {
+                  initialValue: editInfo.sourceCodeVersion,
                   rules: [{ required: true, message: "请输入源码版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
           </Form.Item>
           <Form.Item label="库文件" extra="（请上传格式为.a的库文件）">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("libraryFile", {
+                initialValue: editInfo.libraryFile,
                 rules: [{ required: true, message: "请上传库文件" }]
               })(
                 <div>
@@ -512,7 +560,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               <div>
                 版本号：
                 {getFieldDecorator("libraryFileVersion", {
-                  initialValue: '',
+                  initialValue: editInfo.libraryFileVersion,
                   rules: [{ required: true, message: "请输入库文件版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
@@ -524,10 +572,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         (schemeType === 2 || schemeType === 3) &&
         <>
-
           <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("burnFile", {
+                initialValue: editInfo.burnFile,
                 rules: [{ required: true, message: "请上传烧录文件" }]
               })(
                 <div>
@@ -536,8 +584,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     beforeUpload={(file) => uploadDocumentLimit(file, '烧录文件', 32)}
                     onChange={(info) => handleChange(info, 'burnFile')}
                     defaultFileList={burnFile || []}
-                    accept=".bin"
-                  >
+                    accept=".bin">
                     {burnFile && burnFile.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
@@ -548,20 +595,22 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               <div>
                 版本号：
                 {getFieldDecorator("burnFileVersion", {
-                  initialValue: '',
+                  initialValue: editInfo.burnFileVersion,
                   rules: [{ required: true, message: "请输入烧录文件版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
           </Form.Item>
           <Form.Item label="烧录文件名称">
-            {getFieldDecorator('name', {
+            {getFieldDecorator('burnFileName', {
+              initialValue: editInfo.burnFileName ? editInfo.burnFileName.split('.')[0] : '',
               rules: [{ required: true, message: '烧录文件名称', whitespace: true }],
-            })(<Input placeholder="烧录文件名称" style={{ width: 350 }} />)}
+            })(<Input placeholder="烧录文件名称" style={{ width: 460 }} />)}
           </Form.Item>
-          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 9 }}>
+          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 13 }}>
             {getFieldDecorator("modulePicture", {
-              rules: [{ required: false, message: "请上传一张图片" }]
+              initialValue: editData.modulePicture || '',
+              rules: [{ required: true, message: "请上传一张图片" }]
             })(
               <div>
                 <Upload
@@ -581,10 +630,11 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           <Form.Item
             label="参考电路"
             extra="（请上传格式为.png，小于500k图片）"
-            wrapperCol={{ span: 9 }}
+            wrapperCol={{ span: 13 }}
           >
             {getFieldDecorator("referenceCircuitDiagram", {
-              rules: [{ required: false, message: "请上传一张图片" }]
+              initialValue: editData.referenceCircuitDiagram || '',
+              rules: [{ required: true, message: "请上传一张图片" }]
             })(
               <div>
                 <Upload
@@ -604,9 +654,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           <Form.Item
             label="说明文档"
             extra="（请上传格式为.pdf，大小2M说明文件)"
-            wrapperCol={{ span: 9 }}
+            wrapperCol={{ span: 13 }}
           >
             {getFieldDecorator("readmePdf", {
+              initialValue: editData.readmePdf || '',
               rules: [{ required: true, message: "请上传文档" }]
             })(
               <div>

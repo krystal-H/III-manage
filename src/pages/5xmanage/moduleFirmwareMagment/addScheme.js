@@ -108,6 +108,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   // 提交所有数据
   const commitAll = (values) => {
     let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
+    console.log(params, 'params')
     if (opeType === 'edit') {
       params.moduleId = editData.firmwareDefList[0].moduleId
       updateModuleRequest(params).then(res => {
@@ -129,7 +130,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   }
 
   return (
-    <Modal title="新增" width={900}
+    <Modal title="新增" width={900} style={{ top: 20 }}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
