@@ -19,8 +19,8 @@ function PanelMn({ form }) {
     const column = [
         {
             title: '提交账号',
-            dataIndex: 'templateId',
-            key: 'templateId',
+            dataIndex: 'developerId',
+            key: 'developerId',
             width: 100
         },
         {
@@ -30,8 +30,8 @@ function PanelMn({ form }) {
         },
         {
             title: '归属产品',
-            dataIndex: 'allCategoryName',
-            key: 'allCategoryName',
+            dataIndex: 'productName',
+            key: 'productName',
         },
         {
             title: '方案',
@@ -44,16 +44,16 @@ function PanelMn({ form }) {
         },
         {
             title: '模组名称',
-            dataIndex: 'createTime',
-            key: 'createTime',
+            dataIndex: 'moduleName',
+            key: 'moduleName',
             render(createTime) {
                 return createTime && DateTool.utcToDev(createTime);
             }
         },
         {
             title: '上传的固件名称',
-            dataIndex: 'modifyTime',
-            key: 'modifyTime',
+            dataIndex: 'burnFileName',
+            key: 'burnFileName',
             render(modifyTime) {
                 return modifyTime && DateTool.utcToDev(modifyTime);
             }
@@ -67,15 +67,15 @@ function PanelMn({ form }) {
             }
         }, {
             title: '固件版本',
-            dataIndex: 'modifyTime',
-            key: 'modifyTime',
+            dataIndex: 'burnFileVersion',
+            key: 'burnFileVersion',
             render(modifyTime) {
                 return modifyTime && DateTool.utcToDev(modifyTime);
             }
         }, {
             title: '状态',
-            dataIndex: 'modifyTime',
-            key: 'modifyTime',
+            dataIndex: 'status',
+            key: 'status',
             render(modifyTime) {
                 return modifyTime && DateTool.utcToDev(modifyTime);
             }

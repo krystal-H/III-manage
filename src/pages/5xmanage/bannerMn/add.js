@@ -16,11 +16,10 @@ const uploadConfigs = {
     data: file => ({ appId: 31438, domainType: 4 })
 }
 function Addmodal({ form, addVis, handleCancel, handleOk }) {
-    const { getFieldDecorator, validateFields } = form;
+    const { getFieldDecorator, validateFields, getFieldValue } = form;
     const sundata = () => {
         validateFields().then(val => {
-            console.log(val, '======')
-            let params = { ...val, imageUrl: descPic }
+            let params = { ...val }
             params.showStartTime = moment(params.showStartTime).format('YYYY-MM-DD HH:mm:ss')
             params.showEndTime = moment(params.showEndTime).format('YYYY-MM-DD HH:mm:ss')
             addData(params).then(res => {
@@ -35,27 +34,19 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
     };
-    const [descPic, setDescPic] = useState('') // 简介图片
-    const handleChange = (info, type) => {
-        console.log('上传的info', info)
-        const { file, fileList } = info;
+    const onChangeFile = ({ file, fileList }) => {
         if (file.status === "done") {
-            setDescPic(file.response.data.url)
+            let file = fileList[0];
+            // 给最外层添加一个url ,不然upload组件不会点击下载
+            file.url = file.response.data.url;
+            form.setFieldsValue({ imageUrl: file.response.data.url })
         } else if (file.status === "error") {
-            message.error(`${info.file.name} 上传失败`);
-            setDescPic('')
-        } else {
-            setDescPic('')
+            message.error(`上传失败`);
+        } else if (file.status === "removed") {
+            form.setFieldsValue({ imageUrl: '' })
         }
     }
-    const normFile = e => {
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e && e.fileList;
-    };
-    const onRemove = file => {
+    const beforeUpload = (file) => {
     }
     return (
         <div>
@@ -83,39 +74,37 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                                 <DatePicker showTime style={{ width: '100%' }} />
                             )}
                         </FormItem>
-                        <FormItem label="上传图片">
-                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
-                                // <Upload customRequest={customRequest} name="avatar"
-                                //     listType="picture-card" accept=".png,.jpeg,.jpg" showUploadList={false}>
-                                //     <span>上传</span>
-                                // </Upload>
-                                // <Upload
-                                //     {...uploadConfigs}
-                                //     listType="picture"
-                                //     accept=".png,.jpeg,.jpg"
-                                //     className="avatar-uploader"
-                                //     showUploadList={false}
-                                //     onRemove ={onRemove }
-                                //     onChange={(info) => handleChange(info, 'modulePicture')}
-                                // >
-                                //     {
-                                //         descPic ? <div> <img src={descPic}  style={{ maxWidth: '380px' }}/></div> : <div>
-                                //             <Icon type='plus' />
-                                //             <div className="ant-upload-text">Upload</div>
-                                //         </div>
-                                //     }
-
-                                // </Upload>
+                        <FormItem label="上传图片" extra="支持格式：png、jpg 尺寸：1440x * 1334px">
+                            {/* {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
                                 <Upload
                                     listType="picture-card"
                                     className="avatar-uploader"
-                                    showUploadList={false}
                                     {...uploadConfigs}
                                     onChange={handleChange}
-                                    accept=".png,.jpeg,.jpg"
+                                    accept=".png,.jpg"
+                                    beforeUpload={beforeUpload}
                                 >
-                                    {descPic ? <img src={descPic} alt="avatar" style={{ width: '100%' }} /> : '上传'}
+                                    {form.getFieldValue('imageUrl') && form.getFieldValue('imageUrl').length? null : <span>
+                                        <Icon type="upload" /> 上传图片
+                                    </span>}
                                 </Upload>
+                            )} */}
+                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
+                                <div>
+                                    <Upload
+                                        className="avatar-uploader"
+                                        {...uploadConfigs}
+                                        accept=".png,.jpeg,.jpg"
+                                        onChange={onChangeFile}
+                                        listType="picture-card"
+                                        beforeUpload={beforeUpload}
+                                    >
+                                        {getFieldValue('imageUrl') ? null : <span>
+                                            <Icon type="upload" /> 上传图片
+                                        </span>}
+                                    </Upload>
+                                </div>
+
                             )}
                         </FormItem>
                         <FormItem label="跳转URL">
