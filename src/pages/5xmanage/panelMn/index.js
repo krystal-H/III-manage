@@ -27,7 +27,7 @@ function PanelMn({ form }) {
       title: '面板ID',
       dataIndex: 'templateId',
       key: 'templateId',
-      width:100
+      width: 100
     },
     {
       title: '标准面板名称',
@@ -43,7 +43,7 @@ function PanelMn({ form }) {
       title: '状态',
       dataIndex: 'status',
       key: 'status',
-      width:100,
+      width: 100,
       render(status) {
         return <span>{status ? '正式' : '草稿'}</span>;
       }
@@ -138,7 +138,7 @@ function PanelMn({ form }) {
     if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
       params.templateName = getFieldsValue().templateName.trim()
     }
-    if (getFieldsValue().deviceTypeId ) {
+    if (getFieldsValue().deviceTypeId) {
       params.deviceTypeId = getFieldsValue().deviceTypeId
     }
     params = { ...params, ...pager }
@@ -190,36 +190,35 @@ function PanelMn({ form }) {
   return (
     <div className="panelMn-page">
       <TitleTab title="平台标准面板管理">
-        <Form layout="inline" >
+        <div className='title-space'>
+          <Form layout="inline" >
 
-          <FormItem label="所属分类">
-            {getFieldDecorator('deviceTypeId')(
-              <Select style={{ width: 160 }} placeholder="请选择所属分类">
-                {
-                  optionList.map((item, index) => (
-                    <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
-                      {item.deviceTypeName}
-                    </Select.Option>
-                  ))
-                }
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="面板名称">
-            {getFieldDecorator('templateName', {})(
-              <Input placeholder="请输入面板名称" style={{ width: 240 }} ></Input>
-            )}
-          </FormItem>
-          <FormItem  >
-            <Button type="primary" onClick={() => searchList()} >查询</Button>
-          </FormItem>
-          <FormItem >
-            <Button onClick={() => handleReset()}>重置</Button>
-          </FormItem>
-        </Form>
-        <div className="panelMn-title">
+            <FormItem label="所属分类">
+              {getFieldDecorator('deviceTypeId')(
+                <Select style={{ width: 160 }} placeholder="请选择所属分类">
+                  {
+                    optionList.map((item, index) => (
+                      <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                        {item.deviceTypeName}
+                      </Select.Option>
+                    ))
+                  }
+                </Select>
+              )}
+            </FormItem>
+            <FormItem label="面板名称">
+              {getFieldDecorator('templateName', {})(
+                <Input placeholder="请输入面板名称" style={{ width: 240 }} ></Input>
+              )}
+            </FormItem>
+            <FormItem  >
+              <Button type="primary" onClick={() => searchList()} >查询</Button>
+            </FormItem>
+            <FormItem >
+              <Button onClick={() => handleReset()}>重置</Button>
+            </FormItem>
+          </Form>
           <Button type="primary" onClick={() => { openAdd() }} >新增标准面板</Button>
-          <Button  >批量导入</Button>
         </div>
       </TitleTab>
       <Card>

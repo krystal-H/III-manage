@@ -166,36 +166,35 @@ function PhysicalModel({ form }) {
   return (
     <div className="PhysicalModel-page">
       <TitleTab title="平台物模型管理">
-        <Form layout="inline" >
+        <div className='title-space'>
+          <Form layout="inline" >
 
-          <FormItem label="所属分类">
-            {getFieldDecorator('deviceTypeId', {})(
-              <Select style={{ width: 160 }} placeholder="请选择所属分类" allowClear>
-                {
-                  optionList.map((item, index) => (
-                    <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
-                      {item.deviceTypeName}
-                    </Select.Option>
-                  ))
-                }
-              </Select>
-            )}
-          </FormItem>
-          <FormItem label="物模型名称">
-            {getFieldDecorator('name', {})(
-              <Input placeholder="请输入物模型名称" style={{ width: 240 }} allowClear></Input>
-            )}
-          </FormItem>
-          <FormItem  >
-            <Button type="primary" onClick={() => getData()} >查询</Button>
-          </FormItem>
-          <FormItem >
-            <Button onClick={() => onReset()}>重置</Button>
-          </FormItem>
-        </Form>
-        <div className="PhysicalModel-title">
+            <FormItem label="所属分类">
+              {getFieldDecorator('deviceTypeId', {})(
+                <Select style={{ width: 160 }} placeholder="请选择所属分类" allowClear>
+                  {
+                    optionList.map((item, index) => (
+                      <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>
+                        {item.deviceTypeName}
+                      </Select.Option>
+                    ))
+                  }
+                </Select>
+              )}
+            </FormItem>
+            <FormItem label="物模型名称">
+              {getFieldDecorator('name', {})(
+                <Input placeholder="请输入物模型名称" style={{ width: 240 }} allowClear></Input>
+              )}
+            </FormItem>
+            <FormItem  >
+              <Button type="primary" onClick={() => getData()} >查询</Button>
+            </FormItem>
+            <FormItem >
+              <Button onClick={() => onReset()}>重置</Button>
+            </FormItem>
+          </Form>
           <Button type="primary" onClick={() => { openAdd() }} >新增物模型</Button>
-          <Button  >批量导入</Button>
         </div>
       </TitleTab>
       <Card>
