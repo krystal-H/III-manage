@@ -1,20 +1,29 @@
 @import './variables.scss';
 
-.comm-title-search-box{
-  .labeknam{
-    font-size: 14px;
-    
-  }
-  input{
-    width: 120px;
-  }
-  select{
-    width: 100px;
-  }
-}
-
 .td-break{
   white-space: normal;
   word-break: break-word;
+}
+
+.comm-title-search-box{
+  .labeknam{
+    margin-right: 10px;
+    
+  }
+  input{
+    margin-right: 24px;
+    width: 240px;
+  }
+  .select{
+    width: 160px;
+  }
+  .btn{
+    margin-left: 16px;
+  }
+}
+
+.comm-contont-card{
+  padding: 24px;
+  background-color: #fff;
 }
 
