@@ -181,13 +181,13 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                         <div style={{ paddingLeft: '162px', marginBottom: '20px' }}><TableCom rowKey={"funcIdentifier"} columns={column} dataSource={dataSource}
                             scroll={{ y: 340 }} pager={false} /></div>
 
-                        <FormItem label="封面">
+                        <FormItem label="封面" extra="支持格式：png、jpg 尺寸：247px * 439px,170*302px">
                             {getFieldDecorator('page1', { rules: [{ required: true }], })(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"
                                         {...uploadConfigs}
-                                        accept=".png,.jpeg,.jpg"
+                                        accept=".png,.jpg"
                                         onChange={onChangeFile}
                                         listType="picture-card"
                                         beforeUpload={beforeUpload}

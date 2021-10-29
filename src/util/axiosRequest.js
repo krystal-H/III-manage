@@ -162,10 +162,13 @@ class HttpRequest {
       if(loadingList.length === 0){
         store.dispatch(loadingShowStatu(true));
       }
-      loadingList.push(`${this.baseUrl}/${url}`);
+      // loadingList.push(`${this.baseUrl}/${url}`);
+      loadingList.push(url);
     }
 
     delete option.loading;
+    
+    
 
     if (option.method && option.method.toLowerCase() === 'post') {
 
@@ -236,7 +239,7 @@ class HttpRequest {
         method:'post',
         url:url,
         data:data,
-        params:params,
+        // params:params,
         ...option
       }
       return this.request(defaultOption)
