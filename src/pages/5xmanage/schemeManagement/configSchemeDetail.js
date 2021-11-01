@@ -163,7 +163,6 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
               rules: [{ required: true, message: '请选择对应模组' }],
             })(
               <Select placeholder="请选择对应支持模组"
-                style={{ width: 250 }}
                 mode="multiple"
                 showSearch
                 optionFilterProp="children">

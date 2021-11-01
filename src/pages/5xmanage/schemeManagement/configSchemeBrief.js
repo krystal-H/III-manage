@@ -89,7 +89,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
         {getFieldDecorator('name', {
           initialValue: editData.name,
           rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
-        })(<Input placeholder="请输入方案名称" />)}
+        })(<Input placeholder="请输入方案名称" maxLength={50} />)}
       </Form.Item>
       <Form.Item label="通信协议" hasFeedback>
         {getFieldDecorator('protocol', {
@@ -125,7 +125,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
       <Form.Item label="适合场景" hasFeedback>
         {getFieldDecorator('illustrate', {
           initialValue: editData.illustrate,
-          rules: [{ required: true, message: '请输入适合' }]
+          rules: [{ required: true, message: '请输入适合场景' }]
         })(
           <TextArea rows={3} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>
         )}

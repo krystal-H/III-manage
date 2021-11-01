@@ -82,6 +82,7 @@ function ViewScheme({ visible, handleOk, handleCancel, editData = {}, thirdCateg
       <br />
       <Descriptions title="方案详情" size="small" column={1}>
         <Descriptions.Item label="方案物模型" span={2}>{objectModalList}</Descriptions.Item>
+        <br />
         <Descriptions.Item label="对应模组" span={2}>{moduleIdsList}</Descriptions.Item>
       </Descriptions>
     </Modal>
