@@ -59,8 +59,8 @@ function SchemeList({ form }) {
       dataIndex: 'updateTime',
       key: 'updateTime',
       render: (updateTime) => {
-        let time = DateTool.utcToDev(updateTime);
-        return <span title={time}>{time}</span>
+        // let time = DateTool.utcToDev(updateTime);
+        return <span title={updateTime}>{updateTime}</span>
       }
     },
     {
@@ -267,7 +267,7 @@ function SchemeList({ form }) {
             </Form.Item>
           </div>
           <div>
-            <Form.Item><Button type="primary">批量导入</Button></Form.Item>
+            {/* <Form.Item><Button type="primary">批量导入</Button></Form.Item> */}
             <Form.Item><Button type="primary" onClick={() => setAddSchemeModal(true)}>新增</Button></Form.Item>
           </div>
         </Form>
