@@ -89,3 +89,15 @@ export const updateSchemeRequest = (params) => {
   })
 }
 
+// 发布方案
+export const publishSchemeRequest = (params) => {
+  return axios.request({
+    url: prefix + '/scheme/publish',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}
+

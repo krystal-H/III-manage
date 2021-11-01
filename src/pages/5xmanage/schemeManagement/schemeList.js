@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import { Card, Input, Button, Select, Form, Tooltip } from 'antd'
 import TitleTab from '../../../components/TitleTab'
 import TableCom from '../../../components/Table'
 import OperateSchemeModal from './addScheme'
 import { DateTool } from "../../../util/utils"
 import { cloneDeep } from "lodash"
+import { Card, Form, Button, Select, Tooltip, Modal, message } from 'antd'
 import { getModuleTypeMenuRequest } from '../../../apis/moduleFirmwareMagment'
+import { publishSchemeRequest } from '../../../apis/schemeManagement'
 import {
   schemeManageListRequest,
   getThirdCategoryRequest,
   getSchemeDetailRequest
 } from '../../../apis/schemeManagement'
 import ViewScheme from './viewScheme'
-
 import './schemeList.less'
+const { confirm } = Modal
 
 const statusMap = {
   1: '草稿',
@@ -75,7 +76,7 @@ function SchemeList({ form }) {
   // 已发布——按钮显示
   const releaseBtnArr = () => {
     return [
-      // { title: "查看", icon: "info", key: 'view' },
+      { title: "查看", icon: "info", key: 'view' },
     ]
   }
   // 未发布——按钮显示
@@ -110,11 +111,15 @@ function SchemeList({ form }) {
   }
 
   // 获取模组详情
-  const getSchemeDetail = (id) => {
+  const getSchemeDetail = (id, type) => {
     getSchemeDetailRequest({ id }).then(res => {
       if (res.data.data) {
         setEditData(res.data.data)
-        setEditSchemeModal(true)
+        if (type === 'view') {
+          setDetailSchemeModal(true)
+        } else {
+          setEditSchemeModal(true)
+        } 
       } else {
         message.warning('返回数据不存在')
       }
@@ -132,24 +137,29 @@ function SchemeList({ form }) {
           okText: '确定',
           cancelText: '取消',
           onOk() {
-            publishScheme()
+            publishScheme(record)
           },
           onCancel() { },
         })
         break;
       case 'view':
-        // setDetailSchemeModal(true)
+        getSchemeDetail(record.id, 'view')
         break;
       case 'edit':
-        getSchemeDetail(record.id)
+        getSchemeDetail(record.id, 'edit')
       default:
         break;
     }
   }
 
   // 发布方案
-  const publishScheme = () => {
-
+  const publishScheme = (record) => {
+    publishSchemeRequest({id:record.id}).then(res => {
+      if (res.data.code === 0) {
+        message.success(`发布成功`)
+        getTableData()
+      }
+    })
   }
 
   // 查询
@@ -310,6 +320,9 @@ function SchemeList({ form }) {
         detailSchemeModal &&
         <ViewScheme
           visible={detailSchemeModal}
+          editData={editData}
+          thirdCategoryList={thirdCategoryList}
+          communicationMethodsList={moduleCommonObj.moduleTypeList}
           handleOk={() => setDetailSchemeModal(false)}
           handleCancel={() => setDetailSchemeModal(false)} />
       }

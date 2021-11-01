@@ -15,10 +15,6 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
     }
   }, [editData])
 
-  useEffect(() => {
-    console.log(descPic, '11111111')
-  }, [descPic])
-
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {

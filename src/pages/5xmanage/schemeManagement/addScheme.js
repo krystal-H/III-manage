@@ -12,7 +12,7 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['选择品类方案', '配置方案简介', '配置方案详情']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel,
+function OperateSchemeModal({ visible, handleOk, handleCancel,
   thirdCategoryList,
   communicationMethodsList,
   getTableData,
@@ -62,11 +62,10 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel,
   // 提交所有数据
   const commitAll = (values) => {
     let params = { ...subObj.one, ...subObj.two, ...values }
-    console.log('提交的数据', params)
+    console.log(params)
     if (opeType === 'edit') {
       params.id = editData.id
       console.log(params)
-      // return
       updateSchemeRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
@@ -86,7 +85,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel,
   }
 
   return (
-    <Modal title="新增" width={900}
+    <Modal title={opeType === 'edit' ? '编辑' : '新增'} width={900}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
