@@ -59,7 +59,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
 
   // 根据品类id查物模型列表
   const getObjectModal = () => {
-    const categoryId = sessionStorage.getItem('categoryId') || editData.deviceTypeId
+    const categoryId = opeType === 'edit' ? editData.deviceTypeId : sessionStorage.getItem('categoryId')
     getObjectModalRequest(categoryId).then(res => {
       if (res.data.data) {
         setObjectModalList(res.data.data)
@@ -79,12 +79,12 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
   // 根据通信方式查找模组
   const getModuleByModuleType = () => {
     const val = sessionStorage.getItem('communicationType')
-    getModuleByModuleTypeRequest(val ? val.split('') : editData.protocol.toString().split(''))
-      .then(res => {
-        if (res.data.data) {
-          setModuleIdsList(res.data.data)
-        }
-      })
+    const temp = opeType === 'edit' ? editData.protocol.toString().split('') : val.split('')
+    getModuleByModuleTypeRequest(temp).then(res => {
+      if (res.data.data) {
+        setModuleIdsList(res.data.data)
+      }
+    })
   }
 
   // 获取面板列表
@@ -117,7 +117,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
           {/* 此三级品类关联的物模型如下 */}
           {
             getFieldDecorator('physicalModelId', {
-              initialValue: editData.physicalModelId ? Number(editData.physicalModelId) : '',
+              initialValue: editData.physicalModelId ? editData.physicalModelId : '',
               rules: [{ required: true, message: '请选择此三级品类关联的物模型' }],
             })(
               <Select placeholder="请选择此三级品类关联的物模型"

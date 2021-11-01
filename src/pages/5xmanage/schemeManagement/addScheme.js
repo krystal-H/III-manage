@@ -66,7 +66,7 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel,
     if (opeType === 'edit') {
       params.id = editData.id
       console.log(params)
-      return
+      // return
       updateSchemeRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
