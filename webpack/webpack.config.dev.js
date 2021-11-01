@@ -24,9 +24,10 @@ const dev = {
     },
     proxy: {
       '/v1/web': {
-      // target: 'https://dp.clife.net',
+      target: 'https://dp.clife.net',
       // target: 'https://itest.clife.net/',
-        target: 'http://10.6.50.96:8080',//dyl
+        // target: 'http://10.6.50.96:8080',//dyl
+        // target:'http://10.6.50.121:8080/',
         
         
         changeOrigin: true,

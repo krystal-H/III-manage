@@ -7,6 +7,7 @@ import axios from '../../../util/api.request';
 import './style.scss'
 import Detail from './detail';
 import FirmwareInfo from './firmwareInfo';
+import { TIMECHANGE } from '../../dataAnalysis/historicalTrend/store/actionNames';
 const { Option } = Select
 
 const modeList = {
@@ -27,6 +28,7 @@ class List extends Component {
     this.state = {
       searchName: undefined,
       searchType: "undefined",
+      pageIndex:1,
       list:[],
       pager:{},
       id:undefined,// 审核或者查看 的id，同时用来控制弹窗是否可见
@@ -44,7 +46,10 @@ class List extends Component {
         { title: '模组名称', dataIndex: 'moduleName'},
         { title: '数量', dataIndex: 'num',width:'50px'},
         { title: '固件名称', dataIndex: 'firmwareName', // 仅免开发方案可查看固件
-          render: (text, {schemeType,productId })=>schemeType==1?<a onClick={()=>{this.setState({productId})}}>{"text"}</a>:<span>{text}</span>
+          render: (t, {schemeType,productId })=>{
+            t = t||"--";
+            return schemeType==1?<a onClick={()=>{this.setState({productId})}}>{t}</a>:<span>{t}</span>
+          }
         },
         { title: '状态', dataIndex: 'status', width:'76px', render:s=><span>{ {'1':'待审核','2':'未通过','3':'通过'}[s]}</span>},
         { title: '操作', key: 'id', width:'60px',
@@ -67,19 +72,23 @@ class List extends Component {
     this.setState({[t]:v})
   }
 
-getList=(pageIndex = 1)=>{
-    let {searchName,searchType} = this.state;
-    let param = {
-        pageIndex,
-        pageRows:10,
-        productName:searchName,
-        mode:searchType=="undefined"? undefined : searchType
-    }
-    axios.Post('manage-open/moduleApplyVerify/getModuleApplyListByPage',param,{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
-      let res = data.data || {};
-      let { list=[] , pager={} } = res
-      this.setState({list,pager})
-    });
+getList=(index)=>{
+  if(index){
+    this.setState({pageIndex:index})
+  }
+  let {searchName,searchType,pageIndex} = this.state;
+  let param = {
+      pageIndex:index||pageIndex,
+      pageRows:10,
+      productName:searchName,
+      mode:searchType=="undefined"? undefined : searchType
+  }
+  axios.Post('manage-open/moduleApplyVerify/getModuleApplyListByPage',param,{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+    let res = data.data || {};
+    let { list=[] , pager={} } = res
+    this.setState({list,pager})
+  });
+    
 
 }
 

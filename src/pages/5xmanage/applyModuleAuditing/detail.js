@@ -13,7 +13,7 @@ const mailTy = {
 
 function Detail({
     id,status,form:{ getFieldDecorator, validateFields, resetFields },
-    closeDetail
+    closeDetail,getList
 }){
     const [info, setInfo] = useState({})
     useEffect(() => {
@@ -29,13 +29,12 @@ function Detail({
     const checkOk = ()=>{
         validateFields((err, value) => {
             if(!err){
-                console.log(7777,value)
                 let param= {...value,id},
                     url = 'manage-open/moduleApplyVerify/flowCheckModuleApply';  
                 axios.Post(url,param,{},{ headers: {"Content-Type":"application/json"}}).then((res) => {
                     console.log(1111,res)
-                    
-                    closeDetail()
+                    closeDetail();
+                    getList();
                     
                 });
 
