@@ -11,7 +11,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
 
   useEffect(() => {
     if (opeType === 'edit') {
-      editData.picture && setDescPic([{ url: editData.picture, name: '见截图', uid: 1 }])
+      editData.picture && setDescPic([{ url: editData.picture, name: '简介图', uid: 1 }])
     }
   }, [editData])
 
@@ -55,19 +55,6 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
       form.setFieldsValue({ picture: '' })
     } else {
       setDescPic('')
-      form.setFieldsValue({ picture: '' })
-    }
-  }
-
-  const onChangeFile = ({ file, fileList }) => {
-    if (file.status === "done") {
-      let file = fileList[0];
-      // 给最外层添加一个url ,不然upload组件不会点击下载
-      file.url = file.response.data.url;
-      form.setFieldsValue({ picture: file.response.data.url })
-    } else if (file.status === "error") {
-      message.error(`上传失败`);
-    } else if (file.status === "removed") {
       form.setFieldsValue({ picture: '' })
     }
   }
@@ -159,7 +146,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
             <Upload
               {...uploadConfigs}
               listType="picture"
-              defaultFileList={descPic || []}
+              defaultFileList={opeType === 'edit' ? [{ url: editData.picture, name: '简介图', uid: 1 }] : []}
               onPreview={() => setPreviewVisible(true)}
               beforeUpload={() => modulePictureBeforeUpload}
               accept="image/png,image/jpeg"
@@ -169,10 +156,10 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
           </div>
         )}
       </Form.Item>
-      {/* <Modal visible={previewVisible} footer={null}
+      <Modal visible={previewVisible} footer={null}
         onCancel={() => setPreviewVisible(false)}>
         <img alt="example" style={{ width: "100%" }} src={descPic && descPic.length && descPic[0].url} />
-      </Modal> */}
+      </Modal>
     </Form>
   )
 }
