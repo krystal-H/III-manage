@@ -31,7 +31,7 @@ function Detail({
             if(!err){
                 console.log(7777,value)
                 let param= {...value,id},
-                    url = 'manage-open/module/apply/flowCheckModuleApply';
+                    url = 'manage-open/moduleApplyVerify/flowCheckModuleApply';  
                 axios.Post(url,param,{},{ headers: {"Content-Type":"application/json"}}).then((res) => {
                     console.log(1111,res)
                     
