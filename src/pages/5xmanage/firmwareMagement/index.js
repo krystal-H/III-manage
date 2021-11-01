@@ -116,6 +116,7 @@ function PanelMn({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
+        return
         let params = {}
         if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
             params.templateName = getFieldsValue().templateName.trim()
