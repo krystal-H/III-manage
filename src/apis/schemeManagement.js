@@ -76,3 +76,16 @@ export const getSchemeDetailRequest = (params) => {
     }
   })
 }
+
+// 更新保存方案
+export const updateSchemeRequest = (params) => {
+  return axios.request({
+    url: prefix + '/scheme/update',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}
+

@@ -4,7 +4,7 @@ import ChooseScheme from './chooseScheme';
 import ConfigSchemeBrief from './configSchemeBrief'
 import ConfigSchemeDetail from './configSchemeDetail'
 import { cloneDeep } from "lodash"
-import { saveSchemeRequest } from '../../../apis/schemeManagement'
+import { saveSchemeRequest, updateSchemeRequest } from '../../../apis/schemeManagement'
 
 import './addScheme.less'
 
@@ -12,7 +12,12 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['选择品类方案', '配置方案简介', '配置方案详情']
 
-function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCategoryList, communicationMethodsList, getTableData, opeType, editData }) {
+function OperateSchemeModal({ form, visible, handleOk, handleCancel,
+  thirdCategoryList,
+  communicationMethodsList,
+  getTableData,
+  opeType,
+  editData }) {
   const [stepcurrent, setStepcurrent] = useState(0)
   const refScheme = useRef()
   const refConfig = useRef()
@@ -58,13 +63,26 @@ function OperateSchemeModal({ form, visible, handleOk, handleCancel, thirdCatego
   const commitAll = (values) => {
     let params = { ...subObj.one, ...subObj.two, ...values }
     console.log('提交的数据', params)
-    saveSchemeRequest(params).then(res => {
-      if (res.data.code === 0) {
-        message.success(`提交成功`)
-        handleCancel()
-        getTableData()
-      }
-    })
+    if (opeType === 'edit') {
+      params.id = editData.id
+      console.log(params)
+      return
+      updateSchemeRequest(params).then(res => {
+        if (res.data.code === 0) {
+          message.success(`提交成功`)
+          handleCancel()
+          getTableData()
+        }
+      })
+    } else {
+      saveSchemeRequest(params).then(res => {
+        if (res.data.code === 0) {
+          message.success(`提交成功`)
+          handleCancel()
+          getTableData()
+        }
+      })
+    }
   }
 
   return (

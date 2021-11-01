@@ -15,6 +15,11 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
     }
   }, [editData])
 
+  useEffect(() => {
+    console.log(descPic, '11111111')
+  }, [descPic])
+
+
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -47,8 +52,23 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
     } else if (file.status === "error") {
       message.error(`${info.file.name} 上传失败`);
       setDescPic('')
+      form.setFieldsValue({ picture: '' })
     } else {
       setDescPic('')
+      form.setFieldsValue({ picture: '' })
+    }
+  }
+
+  const onChangeFile = ({ file, fileList }) => {
+    if (file.status === "done") {
+      let file = fileList[0];
+      // 给最外层添加一个url ,不然upload组件不会点击下载
+      file.url = file.response.data.url;
+      form.setFieldsValue({ picture: file.response.data.url })
+    } else if (file.status === "error") {
+      message.error(`上传失败`);
+    } else if (file.status === "removed") {
+      form.setFieldsValue({ picture: '' })
     }
   }
 
@@ -75,7 +95,7 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
     className: "upload-list-inline",
     data: file => ({ appId: 31438, domainType: 4 })
   }
-  const { getFieldDecorator } = form
+  const { getFieldDecorator, getFieldValue } = form
 
   const uploadButton = (type = '上传文档') => {
     return (<Button><Icon type="upload" />{type}</Button>)
@@ -149,10 +169,10 @@ function ConfigSchemeBrief({ setStepCur, form, communicationMethodsList, editDat
           </div>
         )}
       </Form.Item>
-      <Modal visible={previewVisible} footer={null}
+      {/* <Modal visible={previewVisible} footer={null}
         onCancel={() => setPreviewVisible(false)}>
         <img alt="example" style={{ width: "100%" }} src={descPic && descPic.length && descPic[0].url} />
-      </Modal>
+      </Modal> */}
     </Form>
   )
 }

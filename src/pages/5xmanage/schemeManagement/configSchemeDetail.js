@@ -117,7 +117,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
           {/* 此三级品类关联的物模型如下 */}
           {
             getFieldDecorator('physicalModelId', {
-              initialValue: editData.physicalModelId,
+              initialValue: editData.physicalModelId ? Number(editData.physicalModelId) : '',
               rules: [{ required: true, message: '请选择此三级品类关联的物模型' }],
             })(
               <Select placeholder="请选择此三级品类关联的物模型"
