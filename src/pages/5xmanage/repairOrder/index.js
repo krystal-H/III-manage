@@ -238,7 +238,7 @@ function rapairModel({ form }) {
                     <div className='my-order-detail'>
                         <div className='order-item'>
                             <div className='order-item-label'>提交账号：</div>
-                            <div className='order-item-text'>{detailInfo.workOrderId} </div>
+                            <div className='order-item-text'>{detailInfo.creator} </div>
                         </div>
                         <div className='order-item'>
                             <div className='order-item-label'>内容分类：</div>

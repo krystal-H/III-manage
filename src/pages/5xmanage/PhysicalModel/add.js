@@ -169,7 +169,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             {getFieldDecorator('file', { rules: [{ required: true }], valuePropName: 'fileList', getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} beforeUpload={beforeUpload} listType="picture"
                                     onChange={handleChange} onRemove={onRemove}>
-                                    <Icon type="upload" /> 选择模板
+                                    <Button>
+                                        <Icon type="upload" /> 选择模板
+                                    </Button>
                                 </Upload>
                             )}
                         </FormItem>

@@ -14,18 +14,18 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
     const { getFieldDecorator, validateFields, setFieldsValue, getFieldValue } = form;
     const [dataSource, setdataSource] = useState([])
     const [phyList, setPhyList] = useState([])
-    const [initImg,setInitImg]= useState([])
-    const [initImg2,setInitImg2]= useState([])
+    const [initImg, setInitImg] = useState([])
+    const [initImg2, setInitImg2] = useState([])
     const sundata = () => {
         validateFields().then(val => {
             let params = { ...val, isFree: 1 }
-            if(modelType=='edit'){
-                params.status=actionData.status
-                params.templateId=actionData.templateId
+            if (modelType == 'edit') {
+                params.status = actionData.status
+                params.templateId = actionData.templateId
             }
             delete params.filePath
             delete params.deviceSubtypeId2
-            params.deviceSubtypeId=0
+            params.deviceSubtypeId = 0
             relData(params).then(res => {
                 if (res.data.code == 0) {
                     message.success('新增成功');
@@ -48,8 +48,8 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             page1: actionData.page1,
             htmlPath: actionData.htmlPath,
         })
-        setInitImg([{ url: actionData.page1,uid:1,name:'id' }])
-        setInitImg2([{ url: actionData.htmlPath,uid:2,name:'H5包' }])
+        setInitImg([{ url: actionData.page1, uid: 1, name: 'id' }])
+        setInitImg2([{ url: actionData.htmlPath, uid: 2, name: 'H5包' }])
         getPhyList(actionData.deviceTypeId).then(res => {
             if (res.data.code == 0) {
                 setPhyList(res.data.data)
@@ -103,11 +103,18 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
         // return isJpgOrPng
     }
     const onChangeFile = ({ file, fileList }) => {
+
         if (file.status === "done") {
-            let file = fileList[0];
-            // 给最外层添加一个url ,不然upload组件不会点击下载
-            file.url = file.response.data.url;
-            form.setFieldsValue({ page1: file.response.data.url })
+            if (file.response.code == 0) {
+                let file = fileList[0];
+                // 给最外层添加一个url ,不然upload组件不会点击下载
+                file.url = file.response.data.url;
+                form.setFieldsValue({ page1: file.response.data.url })
+            } else {
+                message.error(`上传失败`);
+                fileList = []
+            }
+
         } else if (file.status === "error") {
             message.error(`上传失败`);
         } else if (file.status === "removed") {
@@ -123,11 +130,17 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
     }
     const onChangeFile2 = ({ file, fileList }) => {
         if (file.status === "done") {
-            let file = fileList[0];
-            // 给最外层添加一个url ,不然upload组件不会点击下载
-            file.url = file.response.data.url;
-            form.setFieldsValue({ htmlPath: file.response.data.url })
-            form.setFieldsValue({ filePath: file.response.data.url })
+            if (file.response.code == 0) {
+                let file = fileList[0];
+                // 给最外层添加一个url ,不然upload组件不会点击下载
+                file.url = file.response.data.url;
+                form.setFieldsValue({ htmlPath: file.response.data.url })
+                form.setFieldsValue({ filePath: file.response.data.url })
+            } else {
+                message.error(`上传失败`);
+                fileList = []
+            }
+
         } else if (file.status === "error") {
             message.error(`上传失败`);
         } else if (file.status === "removed") {
