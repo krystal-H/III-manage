@@ -51,8 +51,8 @@ function rapairModel({ form }) {
         {
             title: "操作",
             render: (text, record) => <span>
-                <a onClick={() => { openApiDetail(record) }} style={{ marginRight: '10px' }}>详情</a>
-                {!record.status && <a onClick={() => { openReply(record) }}>回复</a>}
+                <a onClick={() => { openApiDetail(record, true) }} style={{ marginRight: '10px' }}>详情</a>
+                {!record.status && <a onClick={() => { openApiDetail(record, false) }}>回复</a>}
             </span>
         }
     ];
@@ -64,8 +64,15 @@ function rapairModel({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     const [options, setOptions] = useState([])
     const [showImg, setShowImg] = useState(false)
+    const [isDetail, setIsDetail] = useState(false)
+    const [showImgDetail, setShowImgDetail] = useState(false)
+    const [detailImg, setDetailImg] = useState('')
+    const openImg = (src) => {
+        setDetailImg(src)
+        setShowImgDetail(true)
+    }
     const lookImg = (detailInfo) => {
-        // setShowImg(true)
+        setDetailInfo(detailInfo)
         if (detailInfo.image) {
             setShowImg(true)
         } else {
@@ -120,7 +127,8 @@ function rapairModel({ form }) {
         getTableData()
     }
     //=======详情
-    const openApiDetail = (data) => {
+    const openApiDetail = (data, type) => {
+        setIsDetail(type)
         setDetailInfo(data)
         setAddVis(true)
     }
@@ -130,15 +138,10 @@ function rapairModel({ form }) {
     const handleCancel = () => {
         setAddVis(false)
     }
-    //====回复
-    const [replyVis, setReplyVis] = useState(false)
-    const openReply = (record) => {
-        setDetailInfo(record)
-        setReplyVis(true)
-    }
     //回复
     const handlereplyOk = () => {
         if (!replyContent && !replyContent.trim()) {
+            message.info("请输入回复内容");
             return
         }
         let params = {
@@ -147,15 +150,12 @@ function rapairModel({ form }) {
         }
         getCallback(params).then(res => {
             if (res.data.code == 0) {
-                setReplyVis(false)
+                setAddVis(false)
                 message.success("回复成功");
                 getTableData()
             }
         })
 
-    }
-    const handlereplyCancel = () => {
-        setReplyVis(false)
     }
     //列表
     const getTableData = () => {
@@ -168,7 +168,7 @@ function rapairModel({ form }) {
             params.problemTypeOneLevel = id[0]
             params.problemTypeTwoLevel = id[1]
         }
-        params = { ...params, ...pager}
+        params = { ...params, ...pager }
         getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.list)
@@ -223,23 +223,26 @@ function rapairModel({ form }) {
             </Card>
             {
                 addVis && <Modal
-                    title="详情"
+                    title={isDetail ? "详情" : '回复'}
                     visible={addVis}
-                    onOk={handleOk}
                     onCancel={handleCancel}
                     width='700px'
-                    footer={false}
+                    footer={
+                        isDetail ? <div className='repair-model-footer'><Button type="primary" block onClick={handleOk}>
+                            确认
+                        </Button></div> : <div className='repair-model-footer'><Button type="primary" block onClick={handlereplyOk}>
+                            确认回复
+                        </Button></div>
+                    }
                 >
                     <div className='my-order-detail'>
                         <div className='order-item'>
-                            <div className='order-item-label'>问题分类：</div>
-                            <div className='order-item-text'>{detailInfo.problemTypeOneName}-{detailInfo.problemTypeTwoName}
-                                <span className='order-item-span' style={{ color: detailInfo.status ? '#15C054' : '#2F78FF' }}>{detailInfo.status ? '已回复' : '待回复'}</span>
-                            </div>
+                            <div className='order-item-label'>提交账号：</div>
+                            <div className='order-item-text'>{detailInfo.workOrderId} </div>
                         </div>
                         <div className='order-item'>
-                            <div className='order-item-label'>提交时间：</div>
-                            <div className='order-item-text'>{detailInfo.createTime && DateTool.utcToDev(detailInfo.createTime)}</div>
+                            <div className='order-item-label'>内容分类：</div>
+                            <div className='order-item-text'>{detailInfo.problemTypeOneName}-{detailInfo.problemTypeTwoName}  </div>
                         </div>
                         <div className='order-item'>
                             <div className='order-item-label'>问题描述：</div>
@@ -250,7 +253,7 @@ function rapairModel({ form }) {
                             <div className='order-item-text'>
                                 {
                                     detailInfo.image && detailInfo.image.split(',').map((item, index) => {
-                                        return <img key={index} src={item} width={100} />
+                                        return <img key={index} src={item} width={100} onClick={() => { openImg(item) }} />
                                     })
                                 }
                             </div>
@@ -260,31 +263,26 @@ function rapairModel({ form }) {
                             <div className='order-item-text'>{detailInfo.phone}</div>
                         </div>
                         {
-                            detailInfo.status == 1 ? (<div className='order-feedback'>
+                            detailInfo.status == 1 && isDetail ? (<div className='order-feedback'>
                                 <div style={{ margin: '0 -24px' }}>
-                                    <Divider />
                                 </div>
                                 <div className='order-item'>
-                                    <div className='feedback-title'>回复详情：</div>
+                                    <div className='feedback-title'>回复内容：</div>
                                     <div className='feedback-dec'>
                                         {detailInfo.replyContent}
                                     </div>
                                 </div>
                             </div>) : null
                         }
+                        {
+                            !isDetail && <div className='reply-footer'>
+                                <div className='label'>回复内容：</div>
+                                <TextArea rows={4} onChange={inputChange} />
+                            </div>
+
+                        }
 
                     </div>
-                </Modal>
-            }
-            {
-                replyVis && <Modal
-                    title="回复"
-                    visible={replyVis}
-                    onOk={handlereplyOk}
-                    onCancel={handlereplyCancel}
-                    width='700px'
-                >
-                    <TextArea rows={4} onChange={inputChange} />
                 </Modal>
             }
             {
@@ -296,11 +294,27 @@ function rapairModel({ form }) {
                     footer={false}
 
                 >
-                    {
-                        detailInfo.image && detailInfo.image.split(',').map((item, index) => {
-                            return <img key={index} src={item} width={100} />
-                        })
-                    }
+                    <div style={{ textAlign: 'center' }}>
+                        {
+                            detailInfo.image && detailInfo.image.split(',').map((item, index) => {
+                                return <img key={index} src={item} width={100} style={{ marginRight: '10px' }} onClick={() => { openImg(item) }} />
+                            })
+                        }
+                    </div>
+                </Modal>
+            }
+            {
+                showImgDetail && <Modal
+                    title="图片预览"
+                    visible={showImgDetail}
+                    onCancel={() => { setShowImgDetail(false) }}
+                    width='1000px'
+                    footer={false}
+
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <img src={detailImg} style={{ maxWidth: 850 }} />
+                    </div>
                 </Modal>
             }
         </div>

@@ -1,61 +1,77 @@
 @charset 'utf-8';
+
 .my-order-detail {
-    .order-item {
-      display: flex;
-      margin-bottom: 22px;
-  
-      .order-item-label {
-        font-size: 12px;
-        font-weight: 400;
-        color: #323232;
-        line-height: 17px;
-        width: 120px;
-        min-width: 120px;
-        text-align: right;
-      }
-  
-      .order-item-text {
-        font-size: 12px;
-        font-weight: 400;
-        color: #666666;
-        line-height: 17px;
-        flex: 1;
-        position: relative;
-        width: calc( 100% - 120px);
-  
-        .order-item-span {
-          width: 68px;
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          display: inline-block;
-          background: #F8F9FB;
-          position: absolute;
-          right: 0;
-          top: -7px;
-        }
-      }
+  .order-item {
+    display: flex;
+    margin-bottom: 22px;
+font-size: 14px;
+    .order-item-label {
+      font-weight: 400;
+      color: #323232;
+      line-height: 17px;
+      width: 140px;
+      min-width: 120px;
+      text-align: right;
     }
-  
-    .order-feedback {
-      .feedback-title {
-        font-size: 12px;
-        font-weight: 400;
-        color: #323232;
-        line-height: 17px;
-        margin-bottom: 13px;
-      }
-  
-      .feedback-dec {
-        font-size: 12px;
-        font-weight: 400;
-        color: #666666;
-        line-height: 20px;
+
+    .order-item-text {
+      font-weight: 400;
+      color: #666666;
+      line-height: 17px;
+      flex: 1;
+      position: relative;
+      width: calc(100% - 120px);
+
+      .order-item-span {
+        width: 68px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        display: inline-block;
+        background: #F8F9FB;
+        position: absolute;
+        right: 0;
+        top: -7px;
       }
     }
   }
-  .order-Cascader {
-    .ant-cascader-menu {
-      min-width: 306px;
+
+  .order-feedback {
+    .feedback-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: #323232;
+      line-height: 17px;
+      margin-bottom: 13px;
+      margin-left: 70px;
+    }
+
+    .feedback-dec {
+      font-size: 14px;
+      font-weight: 400;
+      color: #666666;
+      line-height: 20px;
     }
   }
+}
+
+.order-Cascader {
+  .ant-cascader-menu {
+    min-width: 306px;
+  }
+}
+
+.repair-model-footer {
+  padding: 10px 0;
+  text-align: center;
+  button{
+    width: 100px;
+  }
+}
+.reply-footer{
+  display: flex;
+  .label{
+    width: 179px;
+    text-align: right;
+  }
+}
