@@ -322,7 +322,8 @@ function ModuleList({ form }) {
             onChange: pagerChange,
             pageSize: pager.pageRows,
             total: totalRows,
-            showQuickJumper: false,
+            showQuickJumper: true,
+            pageSizeOptions: [10],
             showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
           }}
         />

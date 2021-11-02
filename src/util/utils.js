@@ -12,7 +12,8 @@ export const fileHost = (function () {
         "dp.clife.net": "https://dp.clife.net",
         "pre.cms.clife.cn": "https://pre.cms.clife.cn",
         "open.clife.cn": "https://cms.clife.cn",
-        "cms.clife.cn": "https://cms.clife.cn"
+        "cms.clife.cn": "https://cms.clife.cn",
+        "itest.clife.net": "https://cms.clife.cn"
     }[hostname];
     let upfileurl = upfiledomain + fileTourl;
     return upfileurl;
