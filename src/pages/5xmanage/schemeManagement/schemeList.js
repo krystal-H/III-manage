@@ -115,11 +115,13 @@ function SchemeList({ form }) {
     getSchemeDetailRequest({ id }).then(res => {
       if (res.data.data) {
         setEditData(res.data.data)
+        sessionStorage.setItem('categoryId', res.data.data.deviceTypeId)
+        sessionStorage.setItem('communicationType', res.data.data.protocol)
         if (type === 'view') {
           setDetailSchemeModal(true)
         } else {
           setEditSchemeModal(true)
-        } 
+        }
       } else {
         message.warning('返回数据不存在')
       }
@@ -154,7 +156,7 @@ function SchemeList({ form }) {
 
   // 发布方案
   const publishScheme = (record) => {
-    publishSchemeRequest({id:record.id}).then(res => {
+    publishSchemeRequest({ id: record.id }).then(res => {
       if (res.data.code === 0) {
         message.success(`发布成功`)
         getTableData()
@@ -209,6 +211,8 @@ function SchemeList({ form }) {
   useEffect(() => {
     getThirdCategory()
     getCommonList()
+    sessionStorage.removeItem('categoryId')
+    sessionStorage.removeItem('communicationType')
   }, [])
 
   // 重置
@@ -285,7 +289,7 @@ function SchemeList({ form }) {
             pageSize: pager.pageRows,
             total: totalRows,
             showQuickJumper: true,
-            pageSizeOptions: [10],
+            pageSizeOptions: ["10"],
             showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
           }} />
       </Card>

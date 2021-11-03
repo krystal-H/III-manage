@@ -15,6 +15,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
   const [funcList, setFuncList] = useState([]) // 功能列表
   const [moduleIdsList, setModuleIdsList] = useState([]) // 模组列表
   const [panelList, setPanelList] = useState([]) // 面板列表
+  const { getFieldDecorator, validateFields } = form
   const columns = [
     {
       title: '功能名称',
@@ -59,7 +60,8 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
 
   // 根据品类id查物模型列表
   const getObjectModal = () => {
-    const categoryId = opeType === 'edit' ? editData.deviceTypeId : sessionStorage.getItem('categoryId')
+    const categoryId = editData.deviceTypeId == sessionStorage.getItem('categoryId') ?
+      editData.deviceTypeId : sessionStorage.getItem('categoryId')
     getObjectModalRequest(categoryId).then(res => {
       if (res.data.data) {
         setObjectModalList(res.data.data)
@@ -79,13 +81,33 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
   // 根据通信方式查找模组
   const getModuleByModuleType = () => {
     const val = sessionStorage.getItem('communicationType')
-    const temp = opeType === 'edit' ? editData.protocol.toString().split('') : val.split('')
+    const temp = val == editData.protocol ? editData.protocol.toString().split('') : val.split('')
     getModuleByModuleTypeRequest(temp).then(res => {
       if (res.data.data) {
         setModuleIdsList(res.data.data)
       }
     })
   }
+
+  useEffect(() => {
+    if (opeType === 'edit' && editData.deviceTypeId == sessionStorage.getItem('categoryId')) {
+      getFuncList(editData.physicalModelId)
+    } else {
+      setFuncList([])
+      form.setFields({ 'physicalModelId': '' })
+    }
+    getObjectModal()
+  }, [sessionStorage.getItem('categoryId')])
+
+  useEffect(() => {
+    if (opeType === 'edit' && editData.deviceTypeId == sessionStorage.getItem('communicationType')) {
+      getModuleByModuleType()
+    } else {
+      setModuleIdsList([])
+      form.setFields({ 'moduleIds': [] })
+      getModuleByModuleType()
+    }
+  }, [sessionStorage.getItem('communicationType')])
 
   // 获取面板列表
   const getPanelList = () => {
@@ -103,13 +125,9 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
   }
 
   useEffect(() => {
-    getObjectModal()
-    getModuleByModuleType()
     getPanelList()
-    opeType === 'edit' && getFuncList(editData.physicalModelId)
   }, [])
 
-  const { getFieldDecorator, validateFields } = form;
   return (
     <div className="config-scheme-detail">
       <Form labelCol={{ span: 3 }} wrapperCol={{ span: 19 }} onSubmit={() => onSubmit()}>
@@ -117,7 +135,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
           {/* 此三级品类关联的物模型如下 */}
           {
             getFieldDecorator('physicalModelId', {
-              initialValue: editData.physicalModelId ? editData.physicalModelId : '',
+              initialValue: editData.deviceTypeId == sessionStorage.getItem('categoryId') ? editData.physicalModelId : '',
               rules: [{ required: true, message: '请选择此三级品类关联的物模型' }],
             })(
               <Select placeholder="请选择此三级品类关联的物模型"
@@ -141,25 +159,28 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
             scroll={{ y: 140 }}
             pagination={false} />
         </Form.Item>
-        <Form.Item label="方案控制面板">
-          此三级品类关联的控制面板如下
-          <div className="control-panel-box">
-            {
-              panelList && panelList.map(item => (
-                <div className="panel-item" key={item.templateId}>
-                  <div className="panel-item-pic">
-                    <img src={item.page1} alt="pic" />
+        {
+          panelList.length > 0 &&
+          <Form.Item label="方案控制面板">
+            此三级品类关联的控制面板如下
+            <div className="control-panel-box">
+              {
+                panelList && panelList.map(item => (
+                  <div className="panel-item" key={item.templateId}>
+                    <div className="panel-item-pic">
+                      <img src={item.page1} alt="pic" />
+                    </div>
+                    <div className="panel-item-tip">{item.templateName}</div>
                   </div>
-                  <div className="panel-item-tip">{item.templateName}</div>
-                </div>
-              ))
-            }
-          </div>
-        </Form.Item>
+                ))
+              }
+            </div>
+          </Form.Item>
+        }
         <Form.Item label="对应模组">
           {
             getFieldDecorator('moduleIds', {
-              initialValue: editData.moduleIds ? editData.moduleIds.split('#').map(item => { return item - 0 }) : [],
+              initialValue: editData.protocol == sessionStorage.getItem('communicationType') ? editData.moduleIds.split('#').map(item => { return item - 0 }) : [],
               rules: [{ required: true, message: '请选择对应模组' }],
             })(
               <Select placeholder="请选择对应支持模组"
@@ -176,7 +197,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
           }
         </Form.Item>
       </Form>
-    </div>
+    </div >
   )
 }
 
