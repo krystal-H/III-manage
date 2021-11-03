@@ -104,7 +104,6 @@ function Detail({
                 <FormItem label="收件人" > {account} </FormItem>
                 <FormItem label="收件人电话" > {tel} </FormItem>
                 <FormItem label="收件地址" > {address} </FormItem>
-                <FormItem label="邮寄通道" > {address} </FormItem>
                 {dhtml}
             </Form>
         </Modal>
