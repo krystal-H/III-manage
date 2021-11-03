@@ -323,7 +323,7 @@ function ModuleList({ form }) {
             pageSize: pager.pageRows,
             total: totalRows,
             showQuickJumper: true,
-            pageSizeOptions: [10],
+            pageSizeOptions: ['10'],
             showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
           }}
         />

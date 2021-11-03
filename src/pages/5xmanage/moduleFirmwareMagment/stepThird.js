@@ -62,13 +62,13 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         }])
         editInfo.readmePdf && setReadmepdf([{ url: editData.readmePdf, name: editData.readmePdfName || '说明文档', uid: 4 }])
         editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '源码', uid: 4 }])
-        editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName ||  '库文件', uid: 5}])
+        editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName || '库文件', uid: 5 }])
       }
       // console.log(editData.firmwareDefList[0], '-------------editData')
     }
   }, [editData])
 
-  useEffect(() => {console.log(burnFile, 'burnFileburnFileburnFile')}, [burnFile])
+  useEffect(() => { console.log(burnFile, 'burnFileburnFileburnFile') }, [burnFile])
 
   // 表单提交
   const validData = () => {
@@ -257,7 +257,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
     const html1 = <div className="inline-form-item" key={index1}>
       <Form.Item label="默认值" {...formItemLayout}>
         {getFieldDecorator(`${name}.defaultValue[${index1}].k`, {
-          initialValue: item.dataType.specs && item.dataType.specs.defaultValue[0].k ? item.dataType.specs.defaultValue[0].k : '',
+          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0].k ? item.dataType.specs.defaultValue[0].k : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入key值" }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -265,20 +265,23 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       <Form.Item className="right-item">
         -&nbsp;&nbsp;&nbsp;&nbsp;
         {getFieldDecorator(`${name}.defaultValue[${index1}].v`, {
-          initialValue: item.dataType.specs && item.dataType.specs.defaultValue[0].v ? item.dataType.specs.defaultValue[0].v : '',
+          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0].v ? item.dataType.specs.defaultValue[0].v : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入value值", }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
       </Form.Item>
     </div>
 
-    const changeList = item.dataType.specs.def.map(item => {
-      return {
-        uniquekey: uniquekey++,
-        k: item.k,
-        v: item.v
-      }
-    })
+    let changeList = []
+    if (item.dataType && item.dataType.specs && item.dataType.specs.def) {
+      changeList = item.dataType.specs.def.map(item => {
+        return {
+          uniquekey: uniquekey++,
+          k: item.k,
+          v: item.v
+        }
+      })
+    }
     getFieldDecorator(`innerList${index1}`, { initialValue: opeType === "edit" && schemeType === 1 ? changeList : [{ uniquekey: 0 }] })
     const innerList = getFieldValue(`innerList${index1}`)
     const html2 = innerList.map((item, index2) => (
@@ -379,7 +382,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           <div className="inline-form-item">
             <Form.Item label="数值范围" {...formItemLayout}>
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.min`, {
-                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.min.toString() : '',
+                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs && item.dataType.specs.min ? item.dataType.specs.min.toString() : '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
               })(<Input style={{ width: 90, marginRight: 8 }} />)}
@@ -387,7 +390,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             <Form.Item label="" className="right-item">
               至&nbsp;&nbsp;&nbsp;&nbsp;
               {getFieldDecorator(`funcDefList[${index}].dataType.specs.max`, {
-                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.max.toString() : '',
+                initialValue: opeType === 'edit' && item.dataType && item.dataType.specs && item.dataType.specs.max ? item.dataType.specs.max.toString() : '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值范围", }],
               })(<Input style={{ width: 90, marginRight: 8 }} />)}
@@ -395,7 +398,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </div>
           <Form.Item label="默认值" {...formItemLayout}>
             {getFieldDecorator(`funcDefList[${index}].dataType.specs.defaultValue`, {
-              initialValue: opeType === 'edit' && item.dataType && item.dataType.specs ? item.dataType.specs.defaultValue.toString() : '',
+              initialValue: opeType === 'edit' && item.dataType && item.dataType.specs && (!Array.isArray(item.dataType.specs.defaultValue)) ? item.dataType.specs.defaultValue.toString() : '',
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, whitespace: true, message: "请输入默认值", }],
             })(<Input style={{ width: '60%', marginRight: 8 }} />)}
