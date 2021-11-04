@@ -511,7 +511,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         schemeType === 3 &&
         <>
-          <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）">
+          <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）" className="required-icon">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("sourceCode", {
                 initialValue: editInfo.sourceCode,
@@ -531,7 +531,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             </Form.Item>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
-              <div>
+              <div className="required-icon2">
                 版本号：
                 {getFieldDecorator("sourceCodeVersion", {
                   initialValue: editInfo.sourceCodeVersion,
@@ -540,7 +540,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               </div>
             </Form.Item>
           </Form.Item>
-          <Form.Item label="库文件" extra="（请上传格式为.a的库文件）">
+          <Form.Item label="库文件" extra="（请上传格式为.a的库文件）" className="required-icon">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("libraryFile", {
                 initialValue: editInfo.libraryFile,
@@ -560,7 +560,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             </Form.Item>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
-              <div>
+              <div className="required-icon2">
                 版本号：
                 {getFieldDecorator("libraryFileVersion", {
                   initialValue: editInfo.libraryFileVersion,
@@ -575,8 +575,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         (schemeType === 2 || schemeType === 3) &&
         <>
-          <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
+          <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）" className="required-icon">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
               {getFieldDecorator("burnFile", {
                 initialValue: editInfo.burnFile,
                 rules: [{ required: true, message: "请上传烧录文件" }]
@@ -594,8 +594,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               )}
             </Form.Item>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
-              <div>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }} > 
+              <div className="required-icon2">
                 版本号：
                 {getFieldDecorator("burnFileVersion", {
                   initialValue: editInfo.burnFileVersion,
