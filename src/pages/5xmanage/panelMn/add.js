@@ -24,7 +24,6 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 params.templateId = actionData.templateId
             }
             delete params.filePath
-            delete params.deviceSubtypeId2
             params.deviceSubtypeId = 0
             relData(params).then(res => {
                 if (res.data.code == 0) {
@@ -47,6 +46,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             templateName: actionData.templateName,
             page1: actionData.page1,
             htmlPath: actionData.htmlPath,
+            physicalModelId:actionData.physicalModelId,
         })
         setInitImg([{ url: actionData.page1, uid: 1, name: 'id' }])
         setInitImg2([{ url: actionData.htmlPath, uid: 2, name: 'H5包' }])
@@ -55,6 +55,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 setPhyList(res.data.data)
             }
         })
+        if(actionData.physicalModelId){
+            getableFn(actionData.physicalModelId)
+        }
+        
     }
     const formItemLayout = {
         labelCol: { span: 6 },
@@ -65,11 +69,13 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             title: '功能类型',
             dataIndex: 'funcTypeCN',
             key: 'funcTypeCN',
+            width:120
         },
         {
             title: '功能点名称',
             dataIndex: 'funcName',
             key: 'funcName',
+            width:180
         },
         {
             title: '标识符',
@@ -79,7 +85,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
     ]
     const typeChange = (val) => {
         setFieldsValue({
-            deviceSubtypeId2: ''
+            physicalModelId: ''
         })
         setdataSource([])
         getPhyList(val).then(res => {
@@ -179,7 +185,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                             )}
                         </FormItem>
                         <FormItem label="物模型选择">
-                            {getFieldDecorator('deviceSubtypeId2')(
+                            {getFieldDecorator('physicalModelId')(
                                 <Select placeholder="请选择" onChange={getableFn}>
                                     {
                                         phyList.map((item, index) => (
