@@ -101,3 +101,15 @@ export const publishSchemeRequest = (params) => {
   })
 }
 
+
+// 产品审核
+export const getProfuctDetailRequest = (params) => {
+  return axios.request({
+    url: prefix + '/product/info',
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+}

@@ -4,13 +4,24 @@ import { Card, Button, Modal } from 'antd'
 import ProductDetailInfo from '../../businessdata/Product/ProductDetailInfo'
 import { actionCreators } from './store';
 import ProductAuditRadio from './ProductAuditRadio'
-
+import { getProfuctDetailRequest } from '../../../apis/schemeManagement'
 class AuditRelease extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            showProductDetail: {}, // 产品详情
+        }
+    }
     componentDidMount() {
         const { productId, id } = this.props.match.params;
 
         // 获取产品
         this.props.getAuditData({ productId, id })
+        getProfuctDetailRequest({ productId }).then(res => {
+            this.setState({
+                showProductDetail: res.data.data
+            })
+        })
     }
 
     // 审核
@@ -30,7 +41,7 @@ class AuditRelease extends Component {
             onOk() {
                 _this.props.updateAuditStatus({ id, ..._this.refDadio.state })
             },
-            onCancel(){}
+            onCancel() { }
         });
     }
 
@@ -38,6 +49,7 @@ class AuditRelease extends Component {
         const { productId } = this.props.match.params;
         const { auditDetail } = this.props;
         const { statu, statuName, remark } = auditDetail;
+        const { showProductDetail } = this.state
 
         return (
             <div className="product-audit">
@@ -46,7 +58,7 @@ class AuditRelease extends Component {
                     <Button type="primary" className="btn-back" onClick={() => this.props.history.go(-1)}>返回</Button>
                 </Card>
                 <Card>
-                    <ProductDetailInfo productId={productId} audit={statu} clearProductInfo={this.props.clearProductInfo}/>
+                    <ProductDetailInfo productId={productId} audit={statu} showProductDetail={showProductDetail} clearProductInfo={this.props.clearProductInfo} />
                 </Card>
                 {
                     statu === 0 ?
@@ -62,7 +74,7 @@ class AuditRelease extends Component {
                                 statu === 2 ?
                                     <div className="info-item">
                                         <span className="label">驳回说明：</span>
-                                        <span>{ remark || '--'}</span>
+                                        <span>{remark || '--'}</span>
                                     </div>
                                     : null
                             }

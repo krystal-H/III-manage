@@ -4,73 +4,102 @@ import { Tabs, Table } from 'antd';
 import { actionCreators } from './store';
 import './productDetailInfo.less';
 import LabelVisible from '../../../components/form-com/LabelVisible';
+import { getDetailTable } from '../../../apis/physical'
+import TableCom from './TableCom'
 
 const { TabPane } = Tabs;
 
+const productClassMap = {
+    0: '普通设备',
+    1: '网关设备'
+}
+
+const authorityMap = {
+    0: '初级鉴权',
+    1: '中级鉴权',
+    2: '高级鉴权'
+}
+
 const LabelItem = ({ label, value, visible }) => {
     return (
-        visible ?
         <div className="info-item" >
             <span className="label">{label}：</span>
-            <LabelVisible label={value}/>
-        </div> 
-        : 
-        <div className="info-item" >
-            <span className="label">{label}：</span>
-            <span>{value}</span>
-        </div> 
-    );
-};
+            {
+                visible ? <LabelVisible label={value} /> : <span>{value}</span>
+            }
+        </div>
+    )
+}
 
-class ProductDetailInfo extends Component {
+class ProductDetailInfo1 extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            showPhysicalList: [], // 物模型
+            currentPhysicalTab: '1', // 物模型协议切换
+            dataSource: [], // 物模型table
+            physicalModelId: props.showProductDetail.physicalModelId
+        }
+    }
+
     componentDidMount() {
-        const { productId} = this.props;
+        const { productId } = this.props;
         this.props.getProduct(productId);
     }
 
-    componentWillUnmount(){
+    componentDidUpdate(prevProps) {
+        const pId = this.props.showProductDetail.physicalModelId
+        const preId = prevProps.showProductDetail.physicalModelId
+        if (preId !== pId) { this.getPhysicalData(pId) }
+    }
+
+    componentWillUnmount() {
         this.props.clearProductInfo();
     }
 
-    columns = [
-        { title: "数据名称", dataIndex: "propertyName", width: "20%" },
-        { title: "数据标识", dataIndex: "property", width: "20%" },
-        { title: "数据单位", dataIndex: "unit", width: "10%" },
-        {
-            title: "数据类型", width: "10%", render: (item) => {
-                let { functionDataType, propertyValueType, propertyValueDesc, javaType } = item;
-                const types = ["字符型", "数值型", "枚举型", "布尔型", "绝对时间", "相对时间", "循环时间", "RGB颜色", "二进制"];
+    //处理数据
+    delaData = (data) => {
+        let newData = []
+        data.forEach(item => {
+            if (!item.funcParamList || !item.funcParamList.length) return
+            item.funcParamList.forEach(item2 => {
+                let newItem = JSON.parse(JSON.stringify(item))
+                newData.push({ ...newItem, ...item2 })
+            })
+        })
+        newData.forEach((item, index) => {
+            item.key = index
+        })
+        return newData
+    }
 
-                if (functionDataType && types[functionDataType - 1]) {
-                    return types[functionDataType - 1];
-                } else if (javaType && (javaType === "STRING" || javaType === "HEXSTRING")) {
-                    return javaType === "STRING" ? "字符型" : "十六进制";
-                } else if (propertyValueType) {
-                    return propertyValueType === "RANGE" ? "数值型" : "枚举型";
-                } else if (propertyValueDesc) {
-                    if (propertyValueDesc.indexOf('~') > -1 || propertyValueDesc.indexOf('～') > -1) {
-                        return "数值型";
-                    } else {
-                        return "枚举型";
-                    }
-                }
+    // 拉取物模型数据
+    getPhysicalData = (id) => {
+        getDetailTable({ id }).then(res => {
+            if (res.data.code == 0) {
+                let data = this.delaData(res.data.data.standard || [])
+                this.setState({ showPhysicalList: data })
+                this.tabcallback('1', data)
             }
-        },
-        { title: "数据长度", dataIndex: "length", width: "10%" },
-        {
-            title: "数据属性", dataIndex: "propertyValueDesc", width: "20%", render: (item) => (
-                <span title={item}>{item}</span>
-            )
-        },
-        {
-            title: "保留字", dataIndex: "ignore", width: "10%", render: (item) => {
-                return item ? '是' : '否';
+        })
+    }
+
+    // 切换过滤table数据
+    tabcallback = (val, data) => {
+        data = data || this.state.showPhysicalList
+        this.setState({ currentPhysicalTab: val })
+        let funcType = ['properties', 'events', 'services']
+        let arr = data.filter(item => {
+            if (item.funcType == funcType[val - 1]) {
+                return item
             }
-        },
-    ]
+        })
+        this.setState({ dataSource: arr })
+    }
 
     render() {
-        let { productDetail, audit } = this.props;
+        let { showPhysicalList, currentPhysicalTab, dataSource } = this.state
+        let { productDetail, audit, showProductDetail } = this.props;
         let { productName, allCategoryName, bindTypeName, productCode, productClassName, protocolFormatName, productClassId, productIdHex, deviceKey, ssid, ssidPassword,
             accessModeName, barCode, radiocastName, gatewayCommTypeName, isRelatedGateway, netTypeName, productId, accessModeId, authorityType } = productDetail.product || {};
         let { modulePicture, modulePictureName, hetModuleTypeName, originalModuleTypeName,
@@ -78,15 +107,15 @@ class ProductDetailInfo extends Component {
             burnFileName, burnFileVersion, burnFile, commFreq, supportSocProject, sourceCode, sourceCodeName, sourceCodeVersion } = productDetail.communicateModule || {};
         let { productPic, size, weight, introduction, productParam, instruction,
             supplier, contact, tel } = productDetail.productCommerceInfo || {};
-            
-            productPic = productPic && (/^\[.*\]$/).test(productPic.toString()) ? JSON.parse(productPic).filter(item => item) : [];
-            instruction = instruction && (/^\[.*\]$/).test(instruction.toString()) ? JSON.parse(instruction).filter(item => item) : [];
+
+        productPic = productPic && (/^\[.*\]$/).test(productPic.toString()) ? JSON.parse(productPic).filter(item => item) : [];
+        instruction = instruction && (/^\[.*\]$/).test(instruction.toString()) ? JSON.parse(instruction).filter(item => item) : [];
         let authorityText = '';
-        if(accessModeId === 0){
+        if (accessModeId === 0) {
             authorityText = authorityType === 2 ? '高级认证' : authorityType === 1 ? '中级认证' : '初级认证';
-        }else if(accessModeId === 1){
+        } else if (accessModeId === 1) {
             authorityText = authorityType === 0 ? '无认证' : '有认证';
-        }else{
+        } else {
             authorityText = '初级认证';
         }
         return (
@@ -94,51 +123,46 @@ class ProductDetailInfo extends Component {
                 <div className="info-item product-info-detail">
                     <h3>产品信息</h3>
                     <div className="product-info-msg">
-                        <LabelItem label="产品名称" value={productName} />
-                        <LabelItem label="产品型号" value={productCode} />
-                        <LabelItem label="产品ID" value={productId} />
-                        <LabelItem label="所属分类" value={allCategoryName} />
-                        <LabelItem label="接入方式" value={accessModeName} />
-                        <LabelItem label="产品类型" value={productClassName} />
-                        {/* <LabelItem label="产品条码" value={barCode} />
-                        <LabelItem label="广播名" value={radiocastName} /> */}
+                        <LabelItem label="产品名称" value={showProductDetail.productName || ''} />
+                        <LabelItem label="产品型号" value={showProductDetail.productCode || ''} />
+                        <LabelItem label="产品ID" value={showProductDetail.productId || ''} />
+                        <LabelItem label="所属分类" value={showProductDetail.deviceTypeName || ''} />
+                        <LabelItem label="产品类型" value={productClassMap[showProductDetail.productClassId]} />
                     </div>
-                    {/* <div className="product-info-img"></div> */}
                 </div>
 
                 <div className="info-item technical-detail" style={{ display: `${audit ? "none" : "block"}` }}>
                     <h3>技术方案</h3>
                     <div className="product-info-msg">
-                        <LabelItem label="通信方式" value={bindTypeName} />
-                        <LabelItem label="协议格式" value={protocolFormatName} />
-                        <LabelItem label="配网方式" value={netTypeName} />
+                        <LabelItem label="通信方式" value={showProductDetail.bindTypeName} />
+                        <LabelItem label="配网方式" value={showProductDetail.netTypeName} />
                         {/* 非网关设备才有此属性 */}
                         {
-                             productClassId === 1 ?  <LabelItem label="是否接入网关" value={isRelatedGateway && isRelatedGateway === 1 ? '是' : '否'} /> : null
+                            productClassId === 1 ? <LabelItem label="是否接入网关" value={isRelatedGateway && isRelatedGateway === 1 ? '是' : '否'} /> : null
                         }
-                        <LabelItem label="产品编码" value={productIdHex} />
-                        <LabelItem label="产品密钥" value={deviceKey} visible={true}/>
-                        <LabelItem label="安全认证级别" value={authorityText} />
-                        <LabelItem label="通信模组" value={hetModuleTypeName} />
-                        <LabelItem label="AP-SSID" value={ssid} />
-                        <LabelItem label="AP-密码" value={ssidPassword ? "******" : ""} />
-                        <LabelItem label="广播名" value={radiocastName} />
+                        <LabelItem label="产品编码" value={showProductDetail.productIdHex} />
+                        <LabelItem label="产品密钥" value={showProductDetail.deviceKey} visible={true} />
+                        <LabelItem label="安全认证级别" value={authorityMap[showProductDetail.authorityType]} />
+                        <LabelItem label="通信模组" value={showProductDetail.moduleName} />
+                        <LabelItem label="AP-SSID/广播名" value={radiocastName} />
                     </div>
                 </div>
 
                 <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}` }}>
                     <h3>产品协议</h3>
-                    <Tabs defaultActiveKey="1" size="large">
-                        {
-                            productDetail && productDetail.protocolList ?
-                                productDetail.protocolList.map((item) => (
-                                    <TabPane tab={item.dataTypeName} key={item.dataTypeId}>
-                                        <Table bordered pagination={false} rowKey={"property"} columns={this.columns} dataSource={item.list} scroll={{ y: 300, x: 1000 }} />
-                                    </TabPane>
-                                ))
-                                : undefined
-                        }
-                    </Tabs>
+                    {
+                        showPhysicalList.length ?
+                            <div>
+                                <Tabs activeKey={currentPhysicalTab} onChange={(activeKey) => this.tabcallback(activeKey)}>
+                                    <TabPane tab="属性" key="1"></TabPane>
+                                    <TabPane tab="事件" key="2"></TabPane>
+                                    <TabPane tab="服务" key="3"></TabPane>
+                                </Tabs>
+                                <div>
+                                    <TableCom dataSource={dataSource} pagination={false} />
+                                </div>
+                            </div> : null
+                    }
                 </div>
 
                 <div className="info-item module-detail" style={{ display: `${audit ? "none" : "block"}` }}>
@@ -189,7 +213,7 @@ class ProductDetailInfo extends Component {
                                 <span>{supportSocProject ? sourceCodeVersion : burnFileVersion}</span>
                             </div>
                         </div>
-                        {audit ? undefined :  <a className="ant-btn ant-btn-primary module-download" href={supportSocProject ? sourceCode : burnFile} target="_blank" rel="noopener noreferrer">下载固件程序</a> }
+                        {audit ? undefined : <a className="ant-btn ant-btn-primary module-download" href={supportSocProject ? sourceCode : burnFile} target="_blank" rel="noopener noreferrer">下载固件程序</a>}
                     </div>
                 </div>
 
@@ -199,12 +223,12 @@ class ProductDetailInfo extends Component {
                         <span className="label">产品图片：</span>
                         <span>
                             {
-                                productPic.map((item, index) => 
+                                productPic.map((item, index) =>
                                     <img key={index} className="product-img" src={item.filesrc} alt={item.filename || ''} />
                                 )
                             }
                         </span>
-                        
+
                     </div>
                     <LabelItem label="尺寸" value={`${size || 0} mm`} />
                     <LabelItem label="重量" value={`${weight || 0} kg`} />
@@ -216,7 +240,7 @@ class ProductDetailInfo extends Component {
                     <div className="info-item">
                         <span className="label">说明书：</span>
                         {
-                            instruction.map((item, index) => <a key={index} href={item.filesrc || ''} target="blank" style={{marginRight: "5px"}}>{item.filename}</a>)
+                            instruction.map((item, index) => <a key={index} href={item.filesrc || ''} target="blank" style={{ marginRight: "5px" }}>{item.filename}</a>)
                         }
                     </div>
                     <LabelItem label="供应商" value={supplier} />
@@ -238,4 +262,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductDetailInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductDetailInfo1);
