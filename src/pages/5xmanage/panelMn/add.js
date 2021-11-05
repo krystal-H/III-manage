@@ -230,7 +230,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
 
                             )}
                         </FormItem>
-                        <FormItem label="上传H5包">
+                        <FormItem label="上传H5包" extra="支持格式：zix">
                             {getFieldDecorator('htmlPath', { rules: [{ required: true }], getValueFromEvent: normFile })(
                                 <div>
                                     <Upload
