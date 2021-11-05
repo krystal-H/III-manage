@@ -147,15 +147,34 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   // 图片格式校验
   const modulePictureBeforeUpload = (file) => {
-    const isJpgOrPng = file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("只能上传PNG格式");
-    }
-    const fileLength = file.name.length <= 50;
-    if (!fileLength) {
-      message.error("文件名称长度不超过50个字符");
-    }
-    return isJpgOrPng && fileLength;
+    return new Promise((resolve, reject) => {
+      const isJpgOrPng = file.type === "image/png";
+      if (!isJpgOrPng) {
+        message.error("只能上传PNG格式");
+        return reject(false)
+      }
+      const isLt2M = file.size / 1024 / 1024 <= 0.5;
+      if (!isLt2M) {
+        message.error("图片必须小于500KB!");
+        return reject(false)
+      }
+      const fileLength = file.name.length <= 50;
+      if (!fileLength) {
+        message.error("文件名称长度不超过50个字符");
+        return reject(false)
+      }
+      return resolve(true)
+    })
+  }
+
+
+  // 移除图片
+  const removePic = (file, type) => {
+    // console.log(file, '移除', type)
+    const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
+    eval(`set${upperType}`)([])
+    form.setFieldsValue({[type]: '' })
+    console.log(form.getFieldValue(type))
   }
 
   // 上传文件修改
@@ -169,7 +188,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       const uploadObj = {
         status: 'done',
         name: file.name,
-        url: file.response.data.url
+        url: file.response.data.url,
+        uid: file.uid
       }
       arr.push(uploadObj)
       setTimeout(() => {
@@ -473,6 +493,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   defaultFileList={pinDiagram || []}
                   onPreview={() => handlePreview(true, pinDiagram)}
                   beforeUpload={modulePictureBeforeUpload}
+                  onRemove={(file) => removePic(file, 'pinDiagram')}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'pinDiagram')}>
                   {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
@@ -491,7 +512,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   listType="picture"
                   defaultFileList={modulePicture || []}
                   onPreview={() => handlePreview(true, modulePicture)}
-                  beforeUpload={() => modulePictureBeforeUpload}
+                  beforeUpload={modulePictureBeforeUpload}
+                  onRemove={(file) => removePic(file, 'modulePicture')}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'modulePicture')}>
                   {modulePicture && modulePicture.length >= 1 ? null : uploadButton('上传图片')}
@@ -626,7 +648,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   listType="picture"
                   defaultFileList={modulePicture || []}
                   onPreview={() => handlePreview(true, modulePicture)}
-                  beforeUpload={() => modulePictureBeforeUpload}
+                  beforeUpload={modulePictureBeforeUpload}
+                  onRemove={(file) => removePic(file, 'modulePicture')}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'modulePicture')}
                 >
@@ -651,6 +674,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   defaultFileList={referenceCircuitDiagram || []}
                   onPreview={() => handlePreview(true, referenceCircuitDiagram)}
                   beforeUpload={modulePictureBeforeUpload}
+                  onRemove={(file) => removePic(file, 'referenceCircuitDiagram')}
                   accept="image/png"
                   onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
                 >
@@ -662,8 +686,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           <Form.Item
             label="说明文档"
             extra="（请上传格式为.pdf，大小2M说明文件)"
-            wrapperCol={{ span: 13 }}
-          >
+            wrapperCol={{ span: 13 }}>
             {getFieldDecorator("readmePdf", {
               initialValue: editData.readmePdf || '',
               rules: [{ required: true, message: "请上传文档" }]
@@ -674,8 +697,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   defaultFileList={readmePdf || []}
                   beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 2)}
                   accept=".pdf"
-                  onChange={(info) => handleChange(info, 'readmePdf')}
-                >
+                  onChange={(info) => handleChange(info, 'readmePdf')}>
                   {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
                 </Upload>
               </div>
