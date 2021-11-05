@@ -74,7 +74,7 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
           <Input type="text" placeholder="请输入模组适用范围，如：家电产品" maxLength={50} />
         )}
       </Form.Item>
-      <Form.Item className="moduleSize" label="模组尺寸">
+      <Form.Item className="moduleSize" label="模组尺寸" className="required-icon">
         <Form.Item style={{ display: 'inline-block', width: '100px', marginBottom: 0 }}>
           {getFieldDecorator("sizeThickness", {
             initialValue: editData.sizeThickness,
