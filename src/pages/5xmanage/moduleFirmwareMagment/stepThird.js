@@ -550,6 +550,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     beforeUpload={(file) => uploadDocumentLimit(file, '源码', 512)}
                     onChange={(info) => handleChange(info, 'sourceCode')}
                     defaultFileList={sourceCode || []}
+                    onRemove={(file) => removePic(file, 'sourceCode')}
                     accept=".zip ">
                     {sourceCode && sourceCode.length >= 1 ? null : uploadButton()}
                   </Upload>
@@ -578,6 +579,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     {...uploadConfigs}
                     beforeUpload={(file) => uploadDocumentLimit(file, '库文件', 512)}
                     onChange={(info) => handleChange(info, 'libraryFile')}
+                    onRemove={(file) => removePic(file, 'libraryFile')}
                     defaultFileList={libraryFile || []}
                     accept=".a">
                     {libraryFile && libraryFile.length >= 1 ? null : uploadButton()}
@@ -614,6 +616,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     beforeUpload={(file) => uploadDocumentLimit(file, '烧录文件', 32)}
                     onChange={(info) => handleChange(info, 'burnFile')}
                     defaultFileList={burnFile || []}
+                    onRemove={(file) => removePic(file, 'burnFile')}
                     accept=".bin">
                     {burnFile && burnFile.length >= 1 ? null : uploadButton()}
                   </Upload>
@@ -696,6 +699,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                   {...uploadConfigs}
                   defaultFileList={readmePdf || []}
                   beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 2)}
+                  onRemove={(file) => removePic(file, 'readmePdf')}
                   accept=".pdf"
                   onChange={(info) => handleChange(info, 'readmePdf')}>
                   {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
