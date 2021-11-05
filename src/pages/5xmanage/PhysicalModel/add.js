@@ -124,6 +124,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
     const onRemove = file => {
     }
     const handleChange = ({ file, fileList }) => {
+        console.log(file)
         if (fileList.length > 1) {
             fileList.splice(1)
         }

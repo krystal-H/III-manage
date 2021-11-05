@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, message, Radio, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import { getList, relData } from '../../../apis/panelMn'
-import { getOrderType } from '../../../apis/physical'
+import { getList, relData } from '../../../apis/firmwareMagement'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 
 const FormItem = Form.Item
-const optionArr = [{ value: 1, label: '待审核' }, { value: 1, label: '已通过' }, { value: 1, label: '不通过' }]
+const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }, { value: 3, label: '不通过' }]
 
 function PanelMn({ form }) {
     const { getFieldDecorator, validateFields, getFieldsValue } = form;
@@ -25,8 +24,11 @@ function PanelMn({ form }) {
         },
         {
             title: '提交时间',
-            dataIndex: 'templateName',
-            key: 'templateName',
+            dataIndex: 'createTime',
+            key: 'createTime',
+            render(createTime) {
+                return createTime && DateTool.utcToDev(createTime);
+            }
         },
         {
             title: '归属产品',
@@ -35,20 +37,21 @@ function PanelMn({ form }) {
         },
         {
             title: '方案',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'schemeType',
+            key: 'schemeType',
             width: 100,
-            render(status) {
-                return <span>{status ? '正式' : '草稿'}</span>;
+            render(schemeType) {
+                if (schemeType == 1) {
+                    return <span>免开发</span>
+                }
+                return <span>阿迪斯</span>;
             }
         },
         {
             title: '模组名称',
             dataIndex: 'moduleName',
             key: 'moduleName',
-            render(createTime) {
-                return createTime && DateTool.utcToDev(createTime);
-            }
+
         },
         {
             title: '上传的固件名称',
@@ -60,41 +63,40 @@ function PanelMn({ form }) {
         },
         {
             title: '固件标识',
-            dataIndex: 'modifyTime',
-            key: 'modifyTime',
-            render(modifyTime) {
-                return modifyTime && DateTool.utcToDev(modifyTime);
-            }
+            dataIndex: 'firmwareId',
+            key: 'firmwareId',
         }, {
             title: '固件版本',
             dataIndex: 'burnFileVersion',
-            key: 'burnFileVersion',
-            render(modifyTime) {
-                return modifyTime && DateTool.utcToDev(modifyTime);
-            }
+            key: 'burnFileVersion'
         }, {
             title: '状态',
             dataIndex: 'status',
             key: 'status',
-            render(modifyTime) {
-                return modifyTime && DateTool.utcToDev(modifyTime);
+            render: (text, record) => {
+                if (text == 1) {
+                    return <span>待审核</span>
+                } else if (text == 2) {
+                    return <span>已通过</span>
+                } else if (text == 3) {
+                    return <span>未通过</span>
+                }
+                return ''
             }
         },
         {
             title: '操作',
-            key: 'action',
             width: 180,
-            render: (text, record) => (
-                <span>
-                    {
-                        <a onClick={() => { openEdit(record) }}>更新</a>
-
-                    }
-                </span>
-            ),
+            key: 'status2',
+            render: (val, record) => {
+                let text = record.status
+                if (text == 1) {
+                    return <a onClick={()=>{openEdit(records)}}>审核</a>
+                }
+                return ''
+            }
         }
     ]
-
 
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
@@ -116,19 +118,18 @@ function PanelMn({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        return
         let params = {}
-        if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
-            params.templateName = getFieldsValue().templateName.trim()
+        if (getFieldsValue().productId && getFieldsValue().productId.trim()) {
+            params.productId = getFieldsValue().productId.trim()
         }
-        if (getFieldsValue().deviceTypeId) {
-            params.deviceTypeId = getFieldsValue().deviceTypeId
+        if (getFieldsValue().status) {
+            params.status = getFieldsValue().status
         }
         params = { ...params, ...pager }
         getList(params).then(res => {
             if (res.data.code == 0) {
-                setdataSource(res.data.data.list)
-                setTotalRows(res.data.data.pager.totalRows)
+                setdataSource(res.data.data.records)
+                setTotalRows(res.data.data.totalRows)
             }
 
         })
@@ -152,12 +153,23 @@ function PanelMn({ form }) {
         setCheckVisible(true)
     }
     const handleOk = () => {
-        setCheckVisible(false)
+        let params = {
+            status,
+            id: actionData.id
+        }
+        relData(params).then(res => {
+            if (res.data.code == 0) {
+                getTableData()
+                message.success('审核成功')
+                setCheckVisible(false)
+            }
+        })
+
     }
     const handleCancel = () => {
         setCheckVisible(false)
     }
-    const [status, setStatus] = useState('a')
+    const [status, setStatus] = useState(2)
     const changeStatus = val => {
         setStatus(val.target.value)
     }
@@ -166,7 +178,7 @@ function PanelMn({ form }) {
             <TitleTab title="用户免开发固件上传信息">
                 <Form layout="inline" >
                     <FormItem label="产品ID">
-                        {getFieldDecorator('templateName', {
+                        {getFieldDecorator('productId', {
                             getValueFromEvent: (e) => {
                                 const val = e.target.value;
                                 return val.replace(/[^\d]/g, '');
@@ -176,7 +188,7 @@ function PanelMn({ form }) {
                         )}
                     </FormItem>
                     <FormItem label="状态">
-                        {getFieldDecorator('deviceTypeId')(
+                        {getFieldDecorator('status')(
                             <Select style={{ width: 160 }} placeholder="请选择状态">
                                 {
                                     optionArr.map((item, index) => (
@@ -198,7 +210,7 @@ function PanelMn({ form }) {
                 </Form>
             </TitleTab>
             <Card>
-                <TableCom rowKey={"templateId"} columns={column} dataSource={dataSource}
+                <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,
@@ -219,8 +231,8 @@ function PanelMn({ form }) {
                     <div style={{ textAlign: 'center', padding: '20px' }}>
                         <span>审核结果：</span>
                         <Radio.Group value={status} buttonStyle="solid" onChange={changeStatus}>
-                            <Radio.Button value="a">通过</Radio.Button>
-                            <Radio.Button value="b">不通过</Radio.Button>
+                            <Radio.Button value={2}>通过</Radio.Button>
+                            <Radio.Button value={3}>不通过</Radio.Button>
                         </Radio.Group>
                     </div>
                 </Modal>
