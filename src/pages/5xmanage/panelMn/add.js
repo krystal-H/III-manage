@@ -16,6 +16,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
     const [phyList, setPhyList] = useState([])
     const [initImg, setInitImg] = useState([])
     const [initImg2, setInitImg2] = useState([])
+    const [fileList, setFileList] = useState([])
     const sundata = () => {
         validateFields().then(val => {
             let params = { ...val, isFree: 1 }
@@ -46,7 +47,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             templateName: actionData.templateName,
             page1: actionData.page1,
             htmlPath: actionData.htmlPath,
-            physicalModelId:actionData.physicalModelId,
+            physicalModelId: actionData.physicalModelId,
         })
         setInitImg([{ url: actionData.page1, uid: 1, name: 'id' }])
         setInitImg2([{ url: actionData.htmlPath, uid: 2, name: 'H5包' }])
@@ -55,10 +56,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 setPhyList(res.data.data)
             }
         })
-        if(actionData.physicalModelId){
+        if (actionData.physicalModelId) {
             getableFn(actionData.physicalModelId)
         }
-        
+
     }
     const formItemLayout = {
         labelCol: { span: 6 },
@@ -69,13 +70,13 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             title: '功能类型',
             dataIndex: 'funcTypeCN',
             key: 'funcTypeCN',
-            width:120
+            width: 120
         },
         {
             title: '功能点名称',
             dataIndex: 'funcName',
             key: 'funcName',
-            width:180
+            width: 180
         },
         {
             title: '标识符',
@@ -101,15 +102,8 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             }
         })
     }
-    const beforeUpload = (file) => {
-        // const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-        // if (!isJpgOrPng) {
-        //     message.error("只能上传JPG或者PNG格式");
-        // }
-        // return isJpgOrPng
-    }
     const onChangeFile = ({ file, fileList }) => {
-
+        // console.log(file, fileList, '好神奇')
         if (file.status === "done") {
             if (file.response.code == 0) {
                 let file = fileList[0];
@@ -118,33 +112,39 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                 form.setFieldsValue({ page1: file.response.data.url })
             } else {
                 message.error(`上传失败`);
-                fileList = []
+                fileList.splice(0)
             }
 
         } else if (file.status === "error") {
             message.error(`上传失败`);
         } else if (file.status === "removed") {
             form.setFieldsValue({ page1: '' })
+        } else if (!file.status) {
+            fileList.splice(0)
+
         }
+        // setFileList([...fileList])
     }
-    const beforeUpload2 = (file) => {
-        // const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-        // if (!isJpgOrPng) {
-        //     message.error("只能上传JPG或者PNG格式");
-        // }
-        // return isJpgOrPng
+    const beforeUpload2 = (file, type) => {
+        return new Promise((resolve, reject) => {
+            let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
+            if (!isFormal) {
+                message.error(`只能上传${type.join(',')}格式`);
+                return reject(false)
+            }
+            return resolve(true)
+        })
     }
     const onChangeFile2 = ({ file, fileList }) => {
         if (file.status === "done") {
             if (file.response.code == 0) {
                 let file = fileList[0];
-                // 给最外层添加一个url ,不然upload组件不会点击下载
                 file.url = file.response.data.url;
-                form.setFieldsValue({ htmlPath: file.response.data.url })
-                form.setFieldsValue({ filePath: file.response.data.url })
+                form.setFieldsValue({ htmlPath: file.response.data.url, filePath: file.response.data.url })
             } else {
                 message.error(`上传失败`);
-                fileList = []
+                fileList.splice(0)
+                form.setFieldsValue({ filePath: '', htmlPath: '' })
             }
 
         } else if (file.status === "error") {
@@ -154,6 +154,14 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
             form.setFieldsValue({ filePath: '' })
         }
     }
+    const normFile = e => {
+        // console.log('Upload event:', e);
+        // if (Array.isArray(e)) {
+        //     return e;
+        // }
+        // return e && e.fileList;
+    };
+
     return (
         <div>
             <Modal
@@ -201,7 +209,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                             scroll={{ y: 340 }} pager={false} /></div>
 
                         <FormItem label="封面" extra="支持格式：png、jpg 尺寸：247px * 439px,170*302px">
-                            {getFieldDecorator('page1', { rules: [{ required: true }], })(
+                            {getFieldDecorator('page1', {
+                                rules: [{ required: true }], getValueFromEvent: normFile
+                            })(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"
@@ -209,7 +219,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                                         accept=".png,.jpg"
                                         onChange={onChangeFile}
                                         listType="picture-card"
-                                        beforeUpload={beforeUpload}
+                                        beforeUpload={(file) => { return beforeUpload2(file, ['png', 'jpg']) }}
                                         defaultFileList={initImg}
                                     >
                                         {getFieldValue('page1') ? null : <span>
@@ -220,15 +230,15 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
 
                             )}
                         </FormItem>
-                        <FormItem label="上传H5包">
-                            {getFieldDecorator('htmlPath', { rules: [{ required: true }], })(
+                        <FormItem label="上传H5包" extra="支持格式：zix">
+                            {getFieldDecorator('htmlPath', { rules: [{ required: true }], getValueFromEvent: normFile })(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"
                                         {...uploadConfigs}
                                         accept=".zix"
                                         onChange={onChangeFile2}
-                                        beforeUpload={beforeUpload2}
+                                        beforeUpload={(file) => { return beforeUpload2(file, ['zix']) }}
                                         defaultFileList={initImg2}
                                     >
                                         {getFieldValue('htmlPath') ? null : <Button>

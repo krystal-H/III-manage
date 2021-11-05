@@ -46,8 +46,23 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
             form.setFieldsValue({ imageUrl: '' })
         }
     }
-    const beforeUpload = (file) => {
+    const beforeUpload = (file,type) => {
+        return new Promise((resolve, reject) => {
+            let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
+            if (!isFormal) {
+                message.error(`只能上传${type.join(',')}格式`);
+                return reject(false)
+            }
+            return resolve(true)
+        })
     }
+    const normFile = e => {
+        // console.log('Upload event:', e);
+        // if (Array.isArray(e)) {
+        //     return e;
+        // }
+        // return e && e.fileList;
+    };
     return (
         <div>
             <Modal
@@ -75,29 +90,15 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                             )}
                         </FormItem>
                         <FormItem label="上传图片" extra="支持格式：png、jpg 尺寸：1440x * 1334px">
-                            {/* {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
-                                <Upload
-                                    listType="picture-card"
-                                    className="avatar-uploader"
-                                    {...uploadConfigs}
-                                    onChange={handleChange}
-                                    accept=".png,.jpg"
-                                    beforeUpload={beforeUpload}
-                                >
-                                    {form.getFieldValue('imageUrl') && form.getFieldValue('imageUrl').length? null : <span>
-                                        <Icon type="upload" /> 上传图片
-                                    </span>}
-                                </Upload>
-                            )} */}
-                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], })(
+                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], getValueFromEvent: normFile})(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"
                                         {...uploadConfigs}
-                                        accept=".png,.jpeg,.jpg"
+                                        accept=".png,.jpg"
                                         onChange={onChangeFile}
                                         listType="picture-card"
-                                        beforeUpload={beforeUpload}
+                                        beforeUpload={(file) => { return beforeUpload(file, ['png', 'jpg']) }}
                                     >
                                         {getFieldValue('imageUrl') ? null : <span>
                                             <Icon type="upload" /> 上传图片

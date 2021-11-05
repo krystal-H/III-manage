@@ -28,6 +28,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
     const [currentTab, setCurrentTab] = useState('1')
     const [tableData, setTableData] = useState([])
     const [showData, setShowData] = useState([])
+    const [fileListS,setFileListS]= useState([])
     useEffect(() => {
         if (editId) {
             initData()
@@ -86,9 +87,13 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         }
         upFile({ file: option.file }).then(res => {
             if (res.data.code == 0) {
+                form.setFieldsValue({ file: [''] })
                 let data = delaData(res.data.data.standard || [])
                 setTableData(data)
                 tabcallback('1', data)
+            }else{
+                setFileListS([])
+                form.setFieldsValue({ file: ''})
             }
         })
     }
@@ -109,11 +114,20 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         })
         setShowData(arr)
     }
-    const beforeUpload = (file, fileList) => {
-        if (fileList.length > 1) {
-            return false
-        }
-        return true
+    const beforeUpload = (file, fileList, type) => {
+        return new Promise((resolve, reject) => {
+            let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
+            if (!isFormal) {
+                message.error(`只能上传${type.join(',')}格式`);
+                return reject(false)
+            }
+            const lenMax = getFieldValue('file') && getFieldValue('file').length
+            if (lenMax) {
+                message.error(`请删除原文件再上传`);
+                return reject(false)
+            }
+            return resolve(true)
+        })
     }
     const normFile = e => {
         if (Array.isArray(e)) {
@@ -121,12 +135,34 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         }
         return e && e.fileList;
     };
-    const onRemove = file => {
-    }
     const handleChange = ({ file, fileList }) => {
-        if (fileList.length > 1) {
-            fileList.splice(1)
-        }
+        // if (getFieldValue('file') && getFieldValue('file').length) {
+        //     fileList.splice(1)
+        // }
+        setFileListS(fileList)
+        // if (file.status === "done") {
+        //     if (file.response.code == 0) {
+        //         let file = fileList[0];
+        //         // 给最外层添加一个url ,不然upload组件不会点击下载
+        //         // file.url = file.response.data.url;
+        //         // form.setFieldsValue({ page1: file.response.data.url })
+        //     } else {
+        //         alert(1)
+        //         message.error(`上传失败`);
+        //         fileList.splice(0)
+        //     }
+
+        // } else if (file.status === "error") {
+        //     message.error(`上传失败`);
+        // } else if (file.status === "removed") {
+        //     // form.setFieldsValue({ page1: '' })
+        // } else if (!file.status) {
+        //     fileList.splice(0)
+
+        // }
+        // if (fileList.length > 1) {
+        //     fileList.splice(1)
+        // }
     };
     return (
         <div>
@@ -166,9 +202,11 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             )}
                         </Form.Item>
                         <FormItem label="模板设置">
-                            {getFieldDecorator('file', { rules: [{ required: true }], valuePropName: 'fileList', getValueFromEvent: normFile, })(
-                                <Upload customRequest={customRequest} beforeUpload={beforeUpload} listType="picture"
-                                    onChange={handleChange} onRemove={onRemove}>
+                            {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
+                                <Upload customRequest={customRequest} listType="picture" accept='.json,.xlsx'
+                                    beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json', 'xlsx']) }}
+                                    onChange={handleChange} 
+                                    fileList={fileListS}>
                                     <Button>
                                         <Icon type="upload" /> 选择模板
                                     </Button>
