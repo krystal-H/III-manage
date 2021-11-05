@@ -39,7 +39,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   const { getFieldDecorator, getFieldValue } = form
   const [editInfo, setEditInfo] = useState(opeType === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
   const [radiosDisabled, setRadiosDisabled] = useState(false) // 编辑  方案不可切换
-
+  const [newData, setNewData] = useState()
   useEffect(() => {
     if (opeType === 'edit') {
       setSchemeType(editInfo.schemeType)
@@ -48,7 +48,22 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       if (editInfo.schemeType === 1) { // 免开发
         editInfo.pinDiagram && setPindiagram([{ url: editInfo.pinDiagram, name: '可配置固件引脚示意图', uid: 1 }])
         let arr = []
-        const data = JSON.parse(editData.firmwareDefList[0].customConfigJson)
+        let data = JSON.parse(editData.firmwareDefList[0].customConfigJson)
+        // console.log(data, '-----')
+        data.forEach(ele => {
+          if (ele.dataType.type === 'enum') {
+            ele.dataType.specs.def = ele.dataType.specs.def.map(item => {
+              uniquekey++
+              return {
+                uniquekey,
+                k: item.k,
+                v: item.v
+              }
+            })
+          }
+        })
+        // console.log(data, '修改后得')
+        setNewData(data)
         data.forEach(ele => {
           arr.push(ele.dataType.type)
         })
@@ -79,6 +94,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           values.funcDefList = values.funcDefList.map(item => {
             if (item.dataType.type === 'enum') {
               item.dataType.specs.def = item.dataType.specs.def.filter(item => item)
+              item.dataType.specs.defaultValue = item.dataType.specs.defaultValue.filter(item => item)
             }
             return item
           })
@@ -173,7 +189,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
     // console.log(file, '移除', type)
     const upperType = type.trim().toLowerCase().replace(type[0], type[0].toUpperCase())
     eval(`set${upperType}`)([])
-    form.setFieldsValue({[type]: '' })
+    form.setFieldsValue({ [type]: '' })
     console.log(form.getFieldValue(type))
   }
 
@@ -279,10 +295,11 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   // 枚举的DOM创建——内层
   const createInnerHtml = (name, index1, item) => {
+    // console.log(item, '输出下内层')
     const html1 = <div className="inline-form-item" key={index1}>
       <Form.Item label="默认值" {...formItemLayout}>
         {getFieldDecorator(`${name}.defaultValue[${index1}].k`, {
-          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0].k ? item.dataType.specs.defaultValue[0].k : '',
+          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0] && item.dataType.specs.defaultValue[0].k ? item.dataType.specs.defaultValue[0].k : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入key值" }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
@@ -290,25 +307,17 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       <Form.Item className="right-item">
         -&nbsp;&nbsp;&nbsp;&nbsp;
         {getFieldDecorator(`${name}.defaultValue[${index1}].v`, {
-          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0].v ? item.dataType.specs.defaultValue[0].v : '',
+          initialValue: item.dataType && item.dataType.specs && item.dataType.specs.defaultValue[0] && item.dataType.specs.defaultValue[0].v ? item.dataType.specs.defaultValue[0].v : '',
           validateTrigger: ['onChange', 'onBlur'],
           rules: [{ required: true, whitespace: true, message: "请输入value值", }],
         })(<Input style={{ width: 95, marginRight: 8 }} />)}
       </Form.Item>
     </div>
 
-    let changeList = []
-    if (item.dataType && item.dataType.specs && item.dataType.specs.def) {
-      changeList = item.dataType.specs.def.map(item => {
-        return {
-          uniquekey: uniquekey++,
-          k: item.k,
-          v: item.v
-        }
-      })
-    }
-    getFieldDecorator(`innerList${index1}`, { initialValue: opeType === "edit" && schemeType === 1 ? changeList : [{ uniquekey: 0 }] })
+    const canOpe = item.dataType && item.dataType.specs && item.dataType.specs.def
+    getFieldDecorator(`innerList${index1}`, { initialValue: opeType === "edit" && schemeType === 1 && canOpe ? item.dataType.specs.def : [{ uniquekey: 0 }] })
     const innerList = getFieldValue(`innerList${index1}`)
+    // console.log('innerList--', innerList)
     const html2 = innerList.map((item, index2) => (
       <div className="inline-form-item" key={index2}>
         <Form.Item label="key-value" {...formItemLayout}>
@@ -356,10 +365,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       funcDefList: funcDefList.filter((item, key) => key !== index),
     })
   }
-
+  // JSON.parse(editData.firmwareDefList[0].customConfigJson)
   let list = []
   if (schemeType === 1) {
-    getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? JSON.parse(editData.firmwareDefList[0].customConfigJson) : [{}] })
+    getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? newData : [{}] })
     list = getFieldValue('configList')
   }
 
