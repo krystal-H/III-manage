@@ -75,7 +75,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
         })(
           <Select placeholder="请选择支持协议" showSearch optionFilterProp="children">
             {
-              protocolList.supportProtocolList.map((item, index) => (
+              protocolList.supportProtocolList && protocolList.supportProtocolList.map((item, index) => (
                 <Select.Option value={item.supportProtocol} key={item.supportProtocol}>
                   {item.supportProtocolName}
                 </Select.Option>
@@ -87,7 +87,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
       <Form.Item label="默认通信速率">
         {getFieldDecorator("communicateSpeed", {
           initialValue: editData.communicateSpeed,
-          rules: [{ required: true, message: "请输入通信速率" }]
+          rules: [{ required: true, pattern: new RegExp(/^[1-9]+$/, "g"), message: "请输入通信速率" }]
         })(
           <InputNumber placeholder="请输入通信速率" style={{ width: "100%" }} maxLength={6} />
         )}
@@ -99,7 +99,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
         })(
           <Select placeholder="请选择数据长度上限" showSearch optionFilterProp="children">
             {
-              protocolList.dataLengthLimitList.map((item, index) => (
+              protocolList.dataLengthLimitList && protocolList.dataLengthLimitList.map((item, index) => (
                 <Select.Option value={item.dataLengthLimit} key={item.dataLengthLimit}>
                   {item.dataLengthLimitName}
                 </Select.Option>

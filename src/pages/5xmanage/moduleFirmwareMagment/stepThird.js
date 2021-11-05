@@ -175,12 +175,15 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       setTimeout(() => {
         eval(`set${upperType}`)(arr)
       }, 0)
+
       form.setFieldsValue({ type: file.response.data.url })
     } else if (file.status === "error") {
       message.error(`${info.file.name} 上传失败`)
       eval(`set${upperType}`)([])
+      form.setFieldsValue({ type: '' })
     } else {
       eval(`set${upperType}`)([])
+      form.setFieldsValue({ type: '' })
     }
   }
 
@@ -200,22 +203,24 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   // 上传文档限制
   const uploadDocumentLimit = (file, type, limitSize) => {
-    const isFormat = judgeFormat(file, type)
-    if (!isFormat) {
-      message.error(`只能上传${type}!`)
-    }
-
-    const isLimit = file.size / 1024 / 1024 <= limitSize
-    if (!isLimit) {
-      message.error(`文件必须小于${limitSize}M`)
-    }
-
-    const fileLength = file.name.length <= 50
-    if (!fileLength) {
-      message.error("文件名称长度不超过50个字符")
-    }
-
-    return isFormat && isLimit && fileLength
+    return new Promise((resolve, reject) => {
+      const isFormat = judgeFormat(file, type)
+      if (!isFormat) {
+        message.error(`只能上传${type}!`)
+        return reject(false)
+      }
+      const isLimit = file.size / 1024 / 1024 <= limitSize
+      if (!isLimit) {
+        message.error(`文件必须小于${limitSize}M`)
+        return reject(false)
+      }
+      const fileLength = file.name.length <= 50
+      if (!fileLength) {
+        message.error("文件名称长度不超过50个字符")
+        return reject(false)
+      }
+      return resolve(true)
+    })
   }
 
   // 图片预览
@@ -594,7 +599,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               )}
             </Form.Item>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }} > 
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }} >
               <div className="required-icon2">
                 版本号：
                 {getFieldDecorator("burnFileVersion", {
