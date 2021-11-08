@@ -57,6 +57,7 @@ class ProductAuditList extends Component {
 
     render() {
         const columns = [
+            { title: '产品ID', dataIndex: 'productId', key: 'productId', render: (text) => <span title={text}>{text}</span> },
             { title: '产品名称', dataIndex: 'productName', key: 'productName', render: (text) => <span title={text}>{text}</span> },
             { title: '发布用户', dataIndex: 'email', key: 'email', render: (text) => <span title={text}>{text}</span> },
             { title: '审核类型', dataIndex: 'typeName', key: 'typeName', render: (text) => <span title={text}>{text}</span> },
