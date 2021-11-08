@@ -82,3 +82,11 @@ export const getDetailInfo = (data) => {
         headers: {}
     })
 }
+//下载
+export const getFileUrl = () => {
+    return axios.request({
+        url: '/manage-open/physicalModel/template/download',
+        method: 'get',
+        headers: {}
+    })
+}

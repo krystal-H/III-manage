@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Button, Select, Icon, Radio, Modal, Form, Tabs, DatePicker, Upload, message } from 'antd';
 import TableCom from './TableCom';
-import { upFile, newData, getDetailTable, getDetailInfo, editData } from '../../../apis/physical'
+import { upFile, newData, getDetailTable, getDetailInfo, editData,getFileUrl } from '../../../apis/physical'
 import './index.less'
 
 const FormItem = Form.Item
@@ -28,7 +28,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
     const [currentTab, setCurrentTab] = useState('1')
     const [tableData, setTableData] = useState([])
     const [showData, setShowData] = useState([])
-    const [fileListS,setFileListS]= useState([])
+    const [fileListS, setFileListS] = useState([])
     useEffect(() => {
         if (editId) {
             initData()
@@ -91,9 +91,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                 let data = delaData(res.data.data.standard || [])
                 setTableData(data)
                 tabcallback('1', data)
-            }else{
+            } else {
                 setFileListS([])
-                form.setFieldsValue({ file: ''})
+                form.setFieldsValue({ file: '' })
             }
         })
     }
@@ -164,6 +164,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         //     fileList.splice(1)
         // }
     };
+    const downFile=()=>{
+        window.open('http://skintest.hetyj.com/31438/f8ef83719a7deb1428ef75add5631fa9.json')
+    }
     return (
         <div>
             <Modal
@@ -205,11 +208,12 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} listType="picture" accept='.json,.xlsx'
                                     beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json', 'xlsx']) }}
-                                    onChange={handleChange} 
+                                    onChange={handleChange}
                                     fileList={fileListS}>
                                     <Button>
                                         <Icon type="upload" /> 选择模板
                                     </Button>
+                                    
                                 </Upload>
                             )}
                         </FormItem>

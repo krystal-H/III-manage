@@ -190,7 +190,7 @@ function rapairModel({ form }) {
 
                     <Form.Item label="问题分类">
                         {getFieldDecorator('userType', {})(
-                            <Cascader options={options} style={{ width: '412px' }} popupClassName='order-Cascader' />
+                            <Cascader options={options} placeholder="请选择" style={{ width: '412px' }} popupClassName='order-Cascader' />
                         )}
                     </Form.Item>
                     <Form.Item label="状态">

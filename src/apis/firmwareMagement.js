@@ -12,7 +12,7 @@ export const getList = (pager) => {
 // 审批
 export const relData = (data) => {
     return axios.request({
-        url: '/manage-open/firmware/check',
+        url: '/manage-open/firmware/check/',
         method: 'post',
         data,
         headers: {}

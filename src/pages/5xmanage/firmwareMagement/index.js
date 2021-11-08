@@ -41,10 +41,7 @@ function PanelMn({ form }) {
             key: 'schemeType',
             width: 100,
             render(schemeType) {
-                if (schemeType == 1) {
-                    return <span>免开发</span>
-                }
-                return <span>阿迪斯</span>;
+                return <span>免开发</span>
             }
         },
         {
@@ -57,14 +54,11 @@ function PanelMn({ form }) {
             title: '上传的固件名称',
             dataIndex: 'burnFileName',
             key: 'burnFileName',
-            render(modifyTime) {
-                return modifyTime && DateTool.utcToDev(modifyTime);
-            }
         },
         {
             title: '固件标识',
-            dataIndex: 'firmwareId',
-            key: 'firmwareId',
+            dataIndex: 'firmwareId1',
+            key: 'firmwareId1',
         }, {
             title: '固件版本',
             dataIndex: 'burnFileVersion',
@@ -90,8 +84,8 @@ function PanelMn({ form }) {
             key: 'status2',
             render: (val, record) => {
                 let text = record.status
-                if (text == 1) {
-                    return <a onClick={()=>{openEdit(records)}}>审核</a>
+                if (text==1) {
+                    return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
                 return ''
             }
