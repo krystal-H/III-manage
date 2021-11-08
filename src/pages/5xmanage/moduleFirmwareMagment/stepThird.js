@@ -468,7 +468,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       <Form.Item label="价格">
         {getFieldDecorator('price', {
           initialValue: editData.price ? editData.price.toString() : '',
-          rules: [{ required: true, message: '请输入价格', whitespace: true }],
+          rules: [
+            { required: true, message: '请输入价格', whitespace: true },
+            { pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '最多为两位小数的正数（包含0）' }
+          ],
         })(<Input placeholder="请输入价格" style={{ width: 405 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
       <Form.Item label="支持方案">
