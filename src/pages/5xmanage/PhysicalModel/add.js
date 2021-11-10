@@ -87,7 +87,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         }
         upFile({ file: option.file }).then(res => {
             if (res.data.code == 0) {
-                form.setFieldsValue({ file: [''] })
+                // form.setFieldsValue({ file: [''] })
                 let data = delaData(res.data.data.standard || [])
                 setTableData(data)
                 tabcallback('1', data)
@@ -207,8 +207,8 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                         </Form.Item>
                         <FormItem label="模板设置" extra="支持格式：json,xlsx">
                             {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
-                                <Upload customRequest={customRequest} listType="picture" accept='.json,.xlsx'
-                                    beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json', 'xlsx']) }}
+                                <Upload customRequest={customRequest} listType="picture" accept='.json'
+                                    beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json']) }}
                                     onChange={handleChange}
                                     fileList={fileListS}>
                                     <Button>
@@ -217,7 +217,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
 
                                 </Upload>
                             )}
-                            <a onClick={downFile} className='json-text-down'>下载Json模板</a>
+                            {/* <a onClick={downFile} className='json-text-down'>下载Json模板</a> */}
                         </FormItem>
                         <FormItem label="备注">
                             {getFieldDecorator('remark', { rules: [{ required: true }] })(
