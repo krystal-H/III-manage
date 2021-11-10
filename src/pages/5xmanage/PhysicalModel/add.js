@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Button, Select, Icon, Radio, Modal, Form, Tabs, DatePicker, Upload, message } from 'antd';
 import TableCom from './TableCom';
-import { upFile, newData, getDetailTable, getDetailInfo, editData,getFileUrl } from '../../../apis/physical'
+import { upFile, newData, getDetailTable, getDetailInfo, editData, getFileUrl } from '../../../apis/physical'
 import './index.less'
 
 const FormItem = Form.Item
@@ -164,8 +164,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
         //     fileList.splice(1)
         // }
     };
-    const downFile=()=>{
-        window.open('http://skintest.hetyj.com/31438/f8ef83719a7deb1428ef75add5631fa9.json')
+    const downFile = () => {
+        alert('暂无')
+        // let url = window.location.host + '/v1/web/manage-open/physicalModel/template/download'
     }
     return (
         <div>
@@ -204,7 +205,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                                 </Radio.Group>,
                             )}
                         </Form.Item>
-                        <FormItem label="模板设置">
+                        <FormItem label="模板设置" extra="支持格式：json,xlsx">
                             {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} listType="picture" accept='.json,.xlsx'
                                     beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json', 'xlsx']) }}
@@ -213,9 +214,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                                     <Button>
                                         <Icon type="upload" /> 选择模板
                                     </Button>
-                                    
+
                                 </Upload>
                             )}
+                            <a onClick={downFile} className='json-text-down'>下载Json模板</a>
                         </FormItem>
                         <FormItem label="备注">
                             {getFieldDecorator('remark', { rules: [{ required: true }] })(
