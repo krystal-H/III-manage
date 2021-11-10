@@ -87,7 +87,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
       <Form.Item label="默认通信速率">
         {getFieldDecorator("communicateSpeed", {
           initialValue: editData.communicateSpeed,
-          rules: [{ required: true, pattern: new RegExp(/^[1-9]+$/, "g"), message: "请输入通信速率" }]
+          rules: [{ required: true, pattern: new RegExp(/^\+?[1-9][0-9]*$/, "g"), message: "请输入通信速率" }]
         })(
           <InputNumber placeholder="请输入通信速率" style={{ width: "100%" }} maxLength={6} />
         )}
