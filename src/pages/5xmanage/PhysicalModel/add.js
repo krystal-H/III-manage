@@ -205,7 +205,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                                 </Radio.Group>,
                             )}
                         </Form.Item>
-                        <FormItem label="模板设置" extra="支持格式：json,xlsx">
+                        <FormItem label="模板设置" extra="支持格式：json">
                             {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} listType="picture" accept='.json'
                                     beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json']) }}
