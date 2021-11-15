@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Card, Button, Modal } from 'antd'
-import ProductDetailInfo from '../../businessdata/Product/ProductDetailInfo'
+import ProductDetailInfo from './ProductAuditDetail'
 import { actionCreators } from './store';
 import ProductAuditRadio from './ProductAuditRadio'
 import { getProfuctDetailRequest } from '../../../apis/schemeManagement'
