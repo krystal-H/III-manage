@@ -110,7 +110,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
     let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
     console.log(params, 'params')
     if (opeType === 'edit') {
-      params.moduleId = editData.firmwareDefList[0].moduleId
+      params.moduleId = editData.moduleId  // 为了兼容老数据  没有固件信息的
       updateModuleRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
@@ -130,7 +130,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   }
 
   return (
-    <Modal title="新增" width={900} style={{ top: 20 }}
+    <Modal title={opeType === 'add' ? '新增' : '编辑'} width={900} style={{ top: 20 }}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
