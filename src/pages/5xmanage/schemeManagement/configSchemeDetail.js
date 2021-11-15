@@ -32,7 +32,7 @@ function ConfigSchemeDetail({ form, commitAll, editData = {}, opeType }, ref) {
       dataIndex: 'funcParamList',
       key: 'funcParamList',
       render: (record) => {
-        return <span>{typeMap[record[0].accessMode]}</span>
+        return <span>{record && record[0].accessMode ? typeMap[record[0].accessMode] : ''}</span>
       }
     }
   ]
