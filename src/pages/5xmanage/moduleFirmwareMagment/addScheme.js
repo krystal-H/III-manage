@@ -58,11 +58,6 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
     })
   }
 
-  // 编辑初始化
-  // const initFormData = () => {
-  //   form
-  // }
-
   useEffect(() => {
     getBrandList()
     getNetList()

@@ -4,7 +4,6 @@ import { fileHost } from "../../../util/utils"
 import { cloneDeep } from 'lodash'
 import './stepThird.less'
 
-let picId = 0
 let uniquekey = 0
 
 // 上传地址

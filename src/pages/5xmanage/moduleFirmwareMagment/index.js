@@ -6,7 +6,6 @@ const SchemManagement = ({ match }) => {
     return (
         <Switch>
             <Route path={`${match.url}/list`} component={ModuleList}/>
-            {/* <Route path={`${match.url}/:id`} component={SchemeDetail}/> */}
             <Redirect from={`${match.url}/`} to={`${match.url}/list`} />
         </Switch>
     )
