@@ -7,7 +7,6 @@ import axios from '../../../util/api.request';
 import './style.scss'
 import Detail from './detail';
 import FirmwareInfo from './firmwareInfo';
-import { TIMECHANGE } from '../../dataAnalysis/historicalTrend/store/actionNames';
 const { Option } = Select
 
 const modeList = {
