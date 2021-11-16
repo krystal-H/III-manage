@@ -34,3 +34,15 @@ $sectionBgColor:rgba(255,255,255,1);
 $borderColor:rgba(217,217,217,1);
 $border:1px solid $themeColor;
 $border_Gray:1px solid $borderColor;
+
+@mixin self-scroll-bar(){
+    &::-webkit-scrollbar{
+        background:rgba(255,255,255,1);
+        width:8px;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background:rgba(217,217,217,1);
+        border-radius:5px;
+    }
+}
