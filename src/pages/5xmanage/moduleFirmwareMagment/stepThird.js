@@ -4,7 +4,6 @@ import { fileHost } from "../../../util/utils"
 import { cloneDeep } from 'lodash'
 import './stepThird.less'
 
-let picId = 0
 let uniquekey = 0
 
 // 上传地址
@@ -37,13 +36,13 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
   const [readmePdf, setReadmepdf] = useState([]) // 说明文档
   const { getFieldDecorator, getFieldValue } = form
-  const [editInfo, setEditInfo] = useState(opeType === "edit" ? editData.firmwareDefList[0] : {}) // 编辑详情数据
+  const [editInfo, setEditInfo] = useState(opeType === "edit" && editData.firmwareDefList[0] ? editData.firmwareDefList[0] : {}) // 编辑详情数据
   const [radiosDisabled, setRadiosDisabled] = useState(false) // 编辑  方案不可切换
   const [newData, setNewData] = useState()
   useEffect(() => {
     if (opeType === 'edit') {
       setSchemeType(editInfo.schemeType)
-      setRadiosDisabled(true)
+      Object.keys(editInfo).length && setRadiosDisabled(true) // 为了兼容老数据  没有固件信息的还是可以选择方案
       editData.modulePicture && setModulepicture([{ url: editData.modulePicture, name: editData.modulePictureName || '模组图片', uid: 2 }])
       if (editInfo.schemeType === 1) { // 免开发
         editInfo.pinDiagram && setPindiagram([{ url: editInfo.pinDiagram, name: '可配置固件引脚示意图', uid: 1 }])
@@ -350,6 +349,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   // 新增配置项
   const addConfig = () => {
     const list = form.getFieldValue('configList');
+    console.log(list, '-------------')
     const nextList = list.concat({});
     form.setFieldsValue({
       configList: nextList,
@@ -368,7 +368,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   // JSON.parse(editData.firmwareDefList[0].customConfigJson)
   let list = []
   if (schemeType === 1) {
-    getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 ? newData : [{}] })
+    getFieldDecorator('configList', { initialValue: opeType === "edit" && schemeType === 1 && newData ? newData : [{}] })
     list = getFieldValue('configList')
   }
 

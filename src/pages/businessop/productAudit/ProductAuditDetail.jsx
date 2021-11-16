@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tabs, Table } from 'antd';
-import { actionCreators } from './store';
-import './productDetailInfo.less';
 import LabelVisible from '../../../components/form-com/LabelVisible';
 import { getDetailTable } from '../../../apis/physical'
-import TableCom from './TableCom'
+import { actionCreators } from '../../businessdata/Product/store';
+import TableCom from '../../businessdata/Product/TableCom'
+import '../../businessdata/Product/ProductDetailInfo.less';
 
 const { TabPane } = Tabs;
 
@@ -31,14 +31,16 @@ const LabelItem = ({ label, value, visible }) => {
     )
 }
 
-class ProductDetailInfo1 extends Component {
+
+class ProductAuditDetail extends Component {
     constructor(props) {
         super(props)
         this.state = {
             showPhysicalList: [], // 物模型
             currentPhysicalTab: '1', // 物模型协议切换
             dataSource: [], // 物模型table
-            physicalModelId: props.showProductDetail.physicalModelId
+            physicalModelId: props.showProductDetail.physicalModelId,
+            tableComloading: false
         }
     }
 
@@ -75,13 +77,14 @@ class ProductDetailInfo1 extends Component {
 
     // 拉取物模型数据
     getPhysicalData = (id) => {
+        this.setState({tableComloading: true})
         getDetailTable({ id }).then(res => {
             if (res.data.code == 0) {
                 let data = this.delaData(res.data.data.standard || [])
                 this.setState({ showPhysicalList: data })
                 this.tabcallback('1', data)
             }
-        })
+        }).finally(() =>  this.setState({tableComloading: false}))
     }
 
     // 切换过滤table数据
@@ -98,7 +101,7 @@ class ProductDetailInfo1 extends Component {
     }
 
     render() {
-        let { showPhysicalList, currentPhysicalTab, dataSource } = this.state
+        let { showPhysicalList, currentPhysicalTab, dataSource, tableComloading } = this.state
         let { productDetail, audit, showProductDetail } = this.props;
         let { productName, allCategoryName, bindTypeName, productCode, productClassName, protocolFormatName, productClassId, productIdHex, deviceKey, ssid, ssidPassword,
             accessModeName, barCode, radiocastName, gatewayCommTypeName, isRelatedGateway, netTypeName, productId, accessModeId, authorityType } = productDetail.product || {};
@@ -159,7 +162,7 @@ class ProductDetailInfo1 extends Component {
                                     <TabPane tab="服务" key="3"></TabPane>
                                 </Tabs>
                                 <div>
-                                    <TableCom dataSource={dataSource} pagination={false} />
+                                    <TableCom dataSource={dataSource} pagination={false} loading={tableComloading} />
                                 </div>
                             </div> : null
                     }
@@ -262,4 +265,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductDetailInfo1);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductAuditDetail);
