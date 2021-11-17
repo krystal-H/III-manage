@@ -40,9 +40,9 @@ class ProductAuditDetail extends Component {
             showPhysicalList: [], // 物模型
             currentPhysicalTab: '1', // 物模型协议切换
             dataSource: [], // 物模型table
-            // physicalModelId: props.showProductDetail.physicalModelId,
             tableComloading: false,
             showProductDetail: {}, // 产品详情
+            sessionListItem: JSON.parse(sessionStorage.getItem('listItem'))
         }
     }
 
@@ -55,7 +55,7 @@ class ProductAuditDetail extends Component {
             this.setState({
                 showProductDetail: res.data.data
             })
-            res.data.data.physicalModelId && this.getPhysicalData(res.data.data.physicalModelId)
+            this.state.sessionListItem.physicalModelId && this.getPhysicalData(this.state.sessionListItem.physicalModelId)
         })
 
 
@@ -144,7 +144,7 @@ class ProductAuditDetail extends Component {
     }
 
     render() {
-        let { showPhysicalList, currentPhysicalTab, dataSource, tableComloading, showProductDetail } = this.state
+        let { showPhysicalList, currentPhysicalTab, dataSource, tableComloading, showProductDetail, sessionListItem } = this.state
         let { productDetail, audit } = this.props;
         let { productName, allCategoryName, bindTypeName, productCode, productClassName, protocolFormatName, productClassId, productIdHex, deviceKey, ssid, ssidPassword,
             accessModeName, barCode, radiocastName, gatewayCommTypeName, isRelatedGateway, netTypeName, productId, accessModeId, authorityType } = productDetail.product || {};
@@ -193,26 +193,29 @@ class ProductAuditDetail extends Component {
                         <LabelItem label="AP-SSID/广播名" value={radiocastName} />
                     </div>
                 </div>
-
-                <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}` }}>
-                    <h3>产品协议</h3>
-                    {
-                        showPhysicalList.length ?
-                            <div>
-                                <Tabs activeKey={currentPhysicalTab} onChange={(activeKey) => this.tabcallback(activeKey)}>
-                                    <TabPane tab="属性" key="1"></TabPane>
-                                    <TabPane tab="事件" key="2"></TabPane>
-                                    <TabPane tab="服务" key="3"></TabPane>
-                                </Tabs>
-                                <div>
-                                    <TableCom dataSource={dataSource} pagination={false} loading={tableComloading} />
-                                </div>
-                            </div> : null
-                    }
-                </div>
-
+                {/* 新产品 */}
                 {
-                    // isOld && 
+                    sessionListItem.isOldProduct === 0 &&
+                    <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}` }}>
+                        <h3>产品协议</h3>
+                        {
+                            showPhysicalList.length ?
+                                <div>
+                                    <Tabs activeKey={currentPhysicalTab} onChange={(activeKey) => this.tabcallback(activeKey)}>
+                                        <TabPane tab="属性" key="1"></TabPane>
+                                        <TabPane tab="事件" key="2"></TabPane>
+                                        <TabPane tab="服务" key="3"></TabPane>
+                                    </Tabs>
+                                    <div>
+                                        <TableCom dataSource={dataSource} pagination={false} loading={tableComloading} />
+                                    </div>
+                                </div> : null
+                        }
+                    </div>
+                }
+                {/* 老产品 */}
+                {
+                    sessionListItem.isOldProduct === 1 &&
                     <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}` }}>
                         <h3>产品协议</h3>
                         <Tabs defaultActiveKey="1" size="large">

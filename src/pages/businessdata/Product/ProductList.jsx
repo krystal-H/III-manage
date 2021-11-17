@@ -23,8 +23,13 @@ class ProductList extends Component {
     loading: false
   }
 
-  handleClick = (id) => {
-    this.props.history.push(`./${id}`);
+  componentDidMount() {
+    sessionStorage.removeItem('listItem')
+  }
+
+  handleClick = (record) => {
+    sessionStorage.setItem('listItem', JSON.stringify(record))
+    this.props.history.push(`./${record.productId}`);
   }
 
   column = [
@@ -40,11 +45,11 @@ class ProductList extends Component {
       }
     },
     {
-      title: "操作", dataIndex: 'productId', key: 'operation', width: 66,
-      render: (item) => {
+      title: "操作", dataIndex: 'operation', key: 'operation', width: 66,
+      render: (text,record) => {
         return (
           <Tooltip placement="top" title="查看">
-            <Button icon="info" shape="circle" size="small" onClick={this.handleClick.bind(this, item)}/>
+            <Button icon="info" shape="circle" size="small" onClick={this.handleClick.bind(this, record)}/>
         </Tooltip>
         )
       }
