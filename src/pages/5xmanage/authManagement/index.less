@@ -1,0 +1,28 @@
+@charset 'utf-8';
+
+.auth-mag-page {
+  height: calc(100% - 50px);
+  background-color: #fff;
+  padding: 24px;
+  padding-top: 85px;
+
+  .submit-button {
+    line-height: 0;
+
+    span {
+      padding: 8px 30px;
+    }
+  }
+
+  #resource {
+    &::-webkit-scrollbar {
+      background: rgba(255, 255, 255, 1);
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(217, 217, 217, 1);
+      border-radius: 5px;
+    }
+  }
+}
