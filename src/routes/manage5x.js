@@ -19,6 +19,9 @@ const PhysicalModelMagement = asyncComponent(() => import( /* webpackChunkName: 
 const applyModuleAuditing = asyncComponent(() => import('../pages/5xmanage/applyModuleAuditing'))
 const CustomerService = asyncComponent(() => import('../pages/5xmanage/customerService'))
 
+// 权限管理  修改开放平台菜单/新增接口权限
+const authManagement = asyncComponent(() => import('../pages/5xmanage/authManagement'))
+
 const route = {
   icon: "setting",
   name: '5.X管理',
@@ -69,7 +72,12 @@ const route = {
       name: '在线客服',
       path: '/5xmanage/customerService',
       component: CustomerService,
-    },   
+    }, 
+    {
+      name: '权限管理',
+      path: '/5xmanage/authManagement',
+      component: authManagement
+    }  
   ]
 
 }
