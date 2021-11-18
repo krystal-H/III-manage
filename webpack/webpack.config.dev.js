@@ -32,7 +32,12 @@ const dev = {
         
         changeOrigin: true,
         secure: false,
-      }
+      },
+      "/v5x/web/": {
+        target: 'https://dp.clife.net',
+        changeOrigin: true,
+        secure: false,
+      },
     }
   }
 };
