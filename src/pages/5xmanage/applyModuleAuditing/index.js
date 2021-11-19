@@ -84,6 +84,7 @@ getList=(index)=>{
   }
   axios.Post('manage-open/moduleApplyVerify/getModuleApplyListByPage',param,{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
     let res = data.data || {};
+    // console.log(666,data)
     let { list=[] , pager={} } = res
     this.setState({list,pager})
   });
