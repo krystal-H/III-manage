@@ -68,8 +68,8 @@ function AuthManage({ form }) {
     if (opeType === 'default-menu') {
       setJsonString([])
       getDefaultMenuRequest({ clientId: initClient_id, type: 'default-menu' }).then(res => {
-        // setJsonString(res.data.data.resource ? JSON.stringify(JSON.parse(res.data.data.resource), null, 2) : [])
-        setJsonString(res.data.data.resource)
+        setJsonString(res.data.data.resource ? JSON.stringify(JSON.parse(res.data.data.resource), null, 2) : [])
+        // setJsonString(res.data.data.resource)
       })
     } else {
       setJsonString('')
