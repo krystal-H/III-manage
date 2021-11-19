@@ -68,7 +68,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
           </Checkbox.Group>
         )}
       </Form.Item>
-      <Form.Item label="支持协议">
+      {/* <Form.Item label="支持协议">
         {getFieldDecorator("supportProtocolType", {
           initialValue: editData.supportProtocolType,
           rules: [{ required: true, message: "请选择支持协议" }]
@@ -83,7 +83,7 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
             }
           </Select>
         )}
-      </Form.Item>
+      </Form.Item> */}
       <Form.Item label="默认通信速率">
         {getFieldDecorator("communicateSpeed", {
           initialValue: editData.communicateSpeed,

@@ -29,7 +29,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   const [showSrc, setshowSrc] = useState('') // 图片预览展示的地址
 
   const [pinDiagram, setPindiagram] = useState([]) // 引脚示意图
-  const [sourceCode, setSourcecode] = useState([]) // 源码路径
+  const [sourceCode, setSourcecode] = useState([]) // 原厂SDK路径
   const [libraryFile, setLibraryfile] = useState([]) // 库文件路径
   const [burnFile, setBurnfile] = useState([]) // 烧录文件路径
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
@@ -75,7 +75,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           uid: 3
         }])
         editInfo.readmePdf && setReadmepdf([{ url: editData.readmePdf, name: editData.readmePdfName || '说明文档', uid: 4 }])
-        editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '源码', uid: 4 }])
+        editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '原厂SDK', uid: 4 }])
         editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName || '库文件', uid: 5 }])
       }
       // console.log(editData.firmwareDefList[0], '-------------editData')
@@ -225,14 +225,15 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   // 格式判断
   const judgeFormat = (file, type) => {
     switch (type) {
-      case '源码':
+      case '原厂SDK':
+      case 'PDF文件':
         return (file.type === "application/zip" || file.type === "application/x-zip-compressed")
       case '烧录文件':
         return (file.type === "application/macbinary" || file.type === "application/octet-stream")
       case '库文件':
         return file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a"
-      case 'PDF文件':
-        return file.type === "application/pdf"
+      // case 'PDF文件':
+      //   return file.type === "application/pdf"
     }
   }
 
@@ -465,15 +466,6 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
   // ------------------------------------------------------
   return (
     <Form {...formItemLayout}>
-      <Form.Item label="价格">
-        {getFieldDecorator('price', {
-          initialValue: editData.price ? editData.price.toString() : '',
-          rules: [
-            { required: true, message: '请输入价格', whitespace: true },
-            { pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '最多为两位小数的正数（包含0）' }
-          ],
-        })(<Input placeholder="请输入价格" style={{ width: 405 }} />)}&nbsp;&nbsp;人民币/个
-      </Form.Item>
       <Form.Item label="支持方案">
         {getFieldDecorator("schemeType", {
           initialValue: editInfo.schemeType,
@@ -486,6 +478,15 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </Radio.Group>
         )}
       </Form.Item>
+      <Form.Item label="价格">
+        {getFieldDecorator('price', {
+          initialValue: editData.price ? editData.price.toString() : '',
+          rules: [
+            { required: true, message: '请输入价格', whitespace: true },
+            { pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '最多为两位小数的正数（包含0）' }
+          ],
+        })(<Input placeholder="请输入价格" style={{ width: 405 }} />)}&nbsp;&nbsp;人民币/个
+      </Form.Item>
       {/* 免开发方案 */}
       {
         schemeType === 1 &&
@@ -496,7 +497,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             wrapperCol={{ span: 10 }}>
             {getFieldDecorator("pinDiagram", {
               initialValue: editInfo.pinDiagram,
-              rules: [{ required: true, message: "请上传可配置固件引脚示意图" }]
+              rules: [{ required: false, message: "请上传可配置固件引脚示意图" }]
             })(
               <div>
                 <Upload
@@ -513,10 +514,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               </div>
             )}
           </Form.Item>
-          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 10 }}>
+          <Form.Item label="模组图片" extra="请上传格式为.png，小于500k图片" wrapperCol={{ span: 10 }}>
             {getFieldDecorator("modulePicture", {
               initialValue: editData.modulePicture || '',
-              rules: [{ required: true, message: "请上传一张图片" }]
+              rules: [{ required: false, message: "请上传一张图片" }]
             })(
               <div>
                 <Upload
@@ -533,6 +534,50 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               </div>
             )}
           </Form.Item>
+          <Form.Item
+            label="参考电路图"
+            extra="请上传格式为.png，小于500k图片"
+            wrapperCol={{ span: 13 }}>
+            {getFieldDecorator("referenceCircuitDiagram", {
+              initialValue: editData.referenceCircuitDiagram || '',
+              rules: [{ required: false, message: "请上传一张图片" }]
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  listType="picture"
+                  defaultFileList={referenceCircuitDiagram || []}
+                  onPreview={() => handlePreview(true, referenceCircuitDiagram)}
+                  beforeUpload={modulePictureBeforeUpload}
+                  onRemove={(file) => removePic(file, 'referenceCircuitDiagram')}
+                  accept="image/png"
+                  onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
+                >
+                  {referenceCircuitDiagram && referenceCircuitDiagram.length >= 1 ? null : uploadButton('上传图片')}
+                </Upload>
+              </div>
+            )}
+          </Form.Item>
+          <Form.Item
+            label="说明文档"
+            extra="请上传格式为.zib压缩包，大小40M的文件"
+            wrapperCol={{ span: 13 }}>
+            {getFieldDecorator("readmePdf", {
+              initialValue: editData.readmePdf || ''
+            })(
+              <div>
+                <Upload
+                  {...uploadConfigs}
+                  defaultFileList={readmePdf || []}
+                  beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 40)}
+                  onRemove={(file) => removePic(file, 'readmePdf')}
+                  accept=".zip"
+                  onChange={(info) => handleChange(info, 'readmePdf')}>
+                  {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
+                </Upload>
+              </div>
+            )}
+          </Form.Item>
           <Form.Item label="可配置固件功能部分">
             {/* 创建DOM */}
             {firmwareFormHtml}
@@ -542,24 +587,24 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </Form.Item>
         </div>
       }
-      {
+      {/* {
         (schemeType === 2 || schemeType === 3) &&
         <Form.Item label="通信模组文件" colon={false}></Form.Item>
-      }
+      } */}
       {/* Soc方案 */}
       {
         schemeType === 3 &&
         <>
-          <Form.Item label="源码" extra="（请上传格式为.zip源文件压缩包）" className="required-icon">
+          <Form.Item label="原厂SDK" extra="（请上传格式为.zip源文件压缩包）" className="required-icon">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("sourceCode", {
                 initialValue: editInfo.sourceCode,
-                rules: [{ required: true, message: "请上传源码" }]
+                rules: [{ required: true, message: "请上传原厂SDK" }]
               })(
                 <div>
                   <Upload
                     {...uploadConfigs}
-                    beforeUpload={(file) => uploadDocumentLimit(file, '源码', 512)}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '原厂SDK', 512)}
                     onChange={(info) => handleChange(info, 'sourceCode')}
                     defaultFileList={sourceCode || []}
                     onRemove={(file) => removePic(file, 'sourceCode')}
@@ -575,7 +620,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                 版本号：
                 {getFieldDecorator("sourceCodeVersion", {
                   initialValue: editInfo.sourceCodeVersion,
-                  rules: [{ required: true, message: "请输入源码版本号" }]
+                  rules: [{ required: true, message: "请输入原厂SDK版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
@@ -674,7 +719,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             )}
           </Form.Item>
           <Form.Item
-            label="参考电路"
+            label="参考电路图"
             extra="（请上传格式为.png，小于500k图片）"
             wrapperCol={{ span: 13 }}
           >
@@ -700,19 +745,19 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </Form.Item>
           <Form.Item
             label="说明文档"
-            extra="（请上传格式为.pdf，大小2M说明文件)"
+            extra="请上传格式为.zib压缩包，大小40M的文件"
             wrapperCol={{ span: 13 }}>
             {getFieldDecorator("readmePdf", {
               initialValue: editData.readmePdf || '',
-              rules: [{ required: true, message: "请上传文档" }]
+              // rules: [{ required: true, message: "请上传文档" }]
             })(
               <div>
                 <Upload
                   {...uploadConfigs}
                   defaultFileList={readmePdf || []}
-                  beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 2)}
+                  beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 40)}
                   onRemove={(file) => removePic(file, 'readmePdf')}
-                  accept=".pdf"
+                  accept=".zip"
                   onChange={(info) => handleChange(info, 'readmePdf')}>
                   {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
                 </Upload>

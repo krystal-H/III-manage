@@ -32,6 +32,7 @@ function ModuleList({ form }) {
   const [moduleCommonObj, setModuleCommonObj] = useState({})
   const [editSchemeModal, setEditSchemeModal] = useState(false)
   const [editData, setEditData] = useState({})
+  const [isUpgrade, setIsUpgrade] = useState(false) // 是否为更新
   const columns = [
     {
       title: "模组型号",
@@ -128,6 +129,7 @@ function ModuleList({ form }) {
     return [
       // { title: "查看", icon: "info", key: 'view' },
       { title: "下线", icon: "cloud-download", key: 'offline' },
+      { title: "更新", icon: "redo", key: 'upgrade' }
     ]
   }
 
@@ -176,6 +178,7 @@ function ModuleList({ form }) {
         })
         break;
       case "edit":
+        setIsUpgrade(false)
         getModuleDetail(record.moduleId)
         break;
       case "delete":
@@ -191,6 +194,10 @@ function ModuleList({ form }) {
           onCancel() { },
         })
         break;
+      case "upgrade":
+        // upgradeModule(record)
+        getModuleDetail(record.moduleId)
+        setIsUpgrade(true)
       default:
         break;
     }
@@ -224,6 +231,18 @@ function ModuleList({ form }) {
       if (res.data.code === 0) {
         message.success(releaseStatus === 1 ? `发布成功` : '下线成功')
         getTableData()
+      }
+    })
+  }
+
+  // 更新操作
+  const upgradeModule = (record) => {
+    getModuleDetailRequest(record.moduleId).then(res => {
+      if (res.data.data) {
+        setEditData(res.data.data)
+        editSchemeModal(true)
+      } else {
+        message.warning('返回数据不存在')
       }
     })
   }
@@ -339,7 +358,7 @@ function ModuleList({ form }) {
           getTableData={getTableData}
           handleCancel={() => setAddSchemeModal(false)} />
       }
-      {/* 编辑模组 */}
+      {/* 编辑模组，发布后-更新升级 */}
       {
         editSchemeModal &&
         <OperateSchemeModal
@@ -348,9 +367,10 @@ function ModuleList({ form }) {
           opeType="edit"
           editData={editData}
           getTableData={getTableData}
-          handleCancel={() => setEditSchemeModal(false)} />
+          handleCancel={() => setEditSchemeModal(false)}
+          isUpgrade={isUpgrade} />
       }
-    </div>
+    </div >
   )
 }
 

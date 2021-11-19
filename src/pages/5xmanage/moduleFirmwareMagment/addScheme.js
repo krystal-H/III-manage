@@ -19,8 +19,8 @@ const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['基本参数', '功能参数', '文件上传']
 
-function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, getTableData, editData, opeType }) {
-  const [stepcurrent, setStepcurrent] = useState(0)
+function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, getTableData, editData, opeType, isUpgrade }) {
+  const [stepcurrent, setStepcurrent] = useState(isUpgrade ? 2 : 0) // 编辑从0开始   更新直接跳到第三步
   const ref1 = useRef()
   const ref2 = useRef()
   const ref3 = useRef()
@@ -125,7 +125,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   }
 
   return (
-    <Modal title={opeType === 'add' ? '新增' : '编辑'} width={900} style={{ top: 20 }}
+    <Modal title={isUpgrade ? '更新' : opeType === 'add' ? '新增' : '编辑'} width={900} style={{ top: 20 }}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
@@ -136,7 +136,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
         <Button type="primary" key="next" onClick={() => clickNext()}>{stepcurrent === 2 ? '提交' : '下一步'}</Button>
       ]}>
       <div className="add-scheme-modal">
-        <div className="step-box">
+        <div className={`step-box ${isUpgrade ? "noShow" : ''}`}>
           <Steps current={stepcurrent}>
             {stepList.map((item, index) => (<Step key={item} title={item} />))}
           </Steps>

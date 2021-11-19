@@ -30,13 +30,12 @@ function AuthManage({ form }) {
     console.log('It is not a string!')
   }
 
-
   // 提交数据
   const handleSubmit = e => {
     e.preventDefault()
     form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values)
+        // console.log('Received values of form: ', values)
         if (values.type === 'default-menu') {
           if (isJSON(values.resource)) {
             values.resource = JSON.stringify(JSON.parse(values.resource))
@@ -75,7 +74,6 @@ function AuthManage({ form }) {
       setJsonString('')
     }
   }, [opeType])
-  useEffect(() => { console.log(opeType, 'aaaaaaaaaaaaaa') }, [opeType])
 
   const tailFormItemLayout = {
     wrapperCol: {
