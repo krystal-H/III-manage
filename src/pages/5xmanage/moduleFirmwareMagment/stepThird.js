@@ -105,6 +105,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           schemeType: values.schemeType,
           modulePicture: modulePicture && modulePicture.length ? modulePicture[0].url : '',
           modulePictureName: modulePicture && modulePicture.length ? modulePicture[0].name : '',
+          referenceCircuitDiagram: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].url : '',
+          referenceCircuitDiagramName: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].name : '',
+          readmePdf: readmePdf && readmePdf.length ? readmePdf[0].url : '',
+          readmePdfName: readmePdf && readmePdf.length ? readmePdf[0].name : '',
         }
         // 免开发的参数
         const freeParams = {
@@ -118,15 +122,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           burnFile: burnFile && burnFile.length ? burnFile[0].url : '', // 模组固件
           burnFileVersion: values.burnFileVersion, // 模组固件版本
           burnFileName: values.burnFileName, // 模组固件名称
-          referenceCircuitDiagram: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].url : '',
-          referenceCircuitDiagramName: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].name : '',
-          readmePdf: readmePdf && readmePdf.length ? readmePdf[0].url : '',
-          readmePdfName: readmePdf && readmePdf.length ? readmePdf[0].name : '',
         }
         // Soc方案参数
         const socParams = {
           ...commonParam,
-          ...mcuParams,
           sourceCode: sourceCode && sourceCode.length ? sourceCode[0].url : '',
           sourceCodeVersion: values.sourceCodeVersion,
           sourceCodeName: sourceCode && sourceCode.length ? sourceCode[0].name : '',

@@ -10,7 +10,8 @@ import {
   getModuleProtocolRequest,
   bindSceneListRequest,
   saveModuleRequest,
-  updateModuleRequest
+  updateModuleRequest,
+  publishedUpdateModuleRequest
 } from '../../../apis/moduleFirmwareMagment'
 
 import './addScheme.less'
@@ -102,11 +103,10 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
 
   // 提交所有数据
   const commitAll = (values) => {
-    let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
-    console.log(params, 'params')
-    if (opeType === 'edit') {
-      params.moduleId = editData.moduleId  // 为了兼容老数据  没有固件信息的
-      updateModuleRequest(params).then(res => {
+    if (isUpgrade) {
+      let params = {...values}
+      params.moduleId = editData.moduleId
+      publishedUpdateModuleRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
           handleCancel()
@@ -114,13 +114,26 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
         }
       })
     } else {
-      saveModuleRequest(params).then(res => {
-        if (res.data.code === 0) {
-          message.success(`提交成功`)
-          handleCancel()
-          getTableData()
-        }
-      })
+      let params = { ...subObj.one, ...subObj.two, firmwareDefReqList: values }
+      console.log(params, 'params')
+      if (opeType === 'edit') {
+        params.moduleId = editData.moduleId  // 为了兼容老数据  没有固件信息的
+        updateModuleRequest(params).then(res => {
+          if (res.data.code === 0) {
+            message.success(`提交成功`)
+            handleCancel()
+            getTableData()
+          }
+        })
+      } else {
+        saveModuleRequest(params).then(res => {
+          if (res.data.code === 0) {
+            message.success(`提交成功`)
+            handleCancel()
+            getTableData()
+          }
+        })
+      }
     }
   }
 

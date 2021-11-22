@@ -129,7 +129,7 @@ function ModuleList({ form }) {
     return [
       // { title: "查看", icon: "info", key: 'view' },
       { title: "下线", icon: "cloud-download", key: 'offline' },
-      { title: "更新", icon: "redo", key: 'upgrade' }
+      // { title: "更新", icon: "redo", key: 'upgrade' }
     ]
   }
 
@@ -195,7 +195,6 @@ function ModuleList({ form }) {
         })
         break;
       case "upgrade":
-        // upgradeModule(record)
         getModuleDetail(record.moduleId)
         setIsUpgrade(true)
       default:
@@ -203,7 +202,7 @@ function ModuleList({ form }) {
     }
   }
 
-  // 获取模组详情
+  // 获取模组详情  编辑和更新均用到
   const getModuleDetail = (moduleId) => {
     getModuleDetailRequest(moduleId).then(res => {
       if (res.data.data) {
@@ -231,18 +230,6 @@ function ModuleList({ form }) {
       if (res.data.code === 0) {
         message.success(releaseStatus === 1 ? `发布成功` : '下线成功')
         getTableData()
-      }
-    })
-  }
-
-  // 更新操作
-  const upgradeModule = (record) => {
-    getModuleDetailRequest(record.moduleId).then(res => {
-      if (res.data.data) {
-        setEditData(res.data.data)
-        editSchemeModal(true)
-      } else {
-        message.warning('返回数据不存在')
       }
     })
   }

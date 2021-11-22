@@ -110,3 +110,16 @@ export const getModuleDetailRequest = (moduleId) => {
     url: `${prefix}/module/detail/${moduleId}`
   })
 }
+
+// 发布后更新模组固件
+export const publishedUpdateModuleRequest = (params) => {
+  return axios.request({
+    url: `${prefix}/module/update/firmware`,
+    method: 'post',
+    data: params,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+}
+
