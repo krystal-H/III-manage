@@ -30,8 +30,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
 
   const [pinDiagram, setPindiagram] = useState([]) // 引脚示意图
   const [sourceCode, setSourcecode] = useState([]) // 原厂SDK路径
-  const [libraryFile, setLibraryfile] = useState([]) // 库文件路径
-  const [burnFile, setBurnfile] = useState([]) // 烧录文件路径
+  const [libraryFile, setLibraryfile] = useState([]) // clifeSDK路径
+  const [burnFile, setBurnfile] = useState([]) // 模组固件路径
   const [modulePicture, setModulepicture] = useState([]) // 模组图片
   const [referenceCircuitDiagram, setReferencecircuitdiagram] = useState([]) // 参考电路图
   const [readmePdf, setReadmepdf] = useState([]) // 说明文档
@@ -68,7 +68,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         })
         setValueType(arr)
       } else if (editInfo.schemeType === 2 || editInfo.schemeType === 3) { // mcu方案
-        editInfo.burnFile && setBurnfile([{ url: editInfo.burnFile, name: editInfo.burnFileName || '烧录文件', uid: 1 }])
+        editInfo.burnFile && setBurnfile([{ url: editInfo.burnFile, name: editInfo.burnFileName || '模组固件', uid: 1 }])
         editInfo.referenceCircuitDiagram && setReferencecircuitdiagram([{
           url: editInfo.referenceCircuitDiagram,
           name: editInfo.referenceCircuitDiagramName || '参考电路图',
@@ -76,7 +76,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         }])
         editInfo.readmePdf && setReadmepdf([{ url: editData.readmePdf, name: editData.readmePdfName || '说明文档', uid: 4 }])
         editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '原厂SDK', uid: 4 }])
-        editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName || '库文件', uid: 5 }])
+        editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName || 'clifeSDK', uid: 5 }])
       }
       // console.log(editData.firmwareDefList[0], '-------------editData')
     }
@@ -115,9 +115,9 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         // mcu方案的参数
         const mcuParams = {
           ...commonParam,
-          burnFile: burnFile && burnFile.length ? burnFile[0].url : '', // 烧录文件
-          burnFileVersion: values.burnFileVersion, // 烧录文件版本
-          burnFileName: values.burnFileName, // 烧录文件名称
+          burnFile: burnFile && burnFile.length ? burnFile[0].url : '', // 模组固件
+          burnFileVersion: values.burnFileVersion, // 模组固件版本
+          burnFileName: values.burnFileName, // 模组固件名称
           referenceCircuitDiagram: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].url : '',
           referenceCircuitDiagramName: referenceCircuitDiagram && referenceCircuitDiagram.length ? referenceCircuitDiagram[0].name : '',
           readmePdf: readmePdf && readmePdf.length ? readmePdf[0].url : '',
@@ -227,11 +227,13 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
     switch (type) {
       case '原厂SDK':
       case 'PDF文件':
+      case 'clifeSDK':
+      case '模组固件':
         return (file.type === "application/zip" || file.type === "application/x-zip-compressed")
-      case '烧录文件':
-        return (file.type === "application/macbinary" || file.type === "application/octet-stream")
-      case '库文件':
-        return file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a"
+      // case '模组固件':
+      //   return (file.type === "application/macbinary" || file.type === "application/octet-stream")
+      // case 'clifeSDK':
+      //   return file.name.substr(file.name.lastIndexOf(".")).toLowerCase() === ".a"
       // case 'PDF文件':
       //   return file.type === "application/pdf"
     }
@@ -490,31 +492,144 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {/* 免开发方案 */}
       {
         schemeType === 1 &&
-        <div>
-          <Form.Item
-            label="可配置固件引脚示意图"
-            extra="请上传尺寸为227*404px，格式为png的引脚示意图"
-            wrapperCol={{ span: 10 }}>
-            {getFieldDecorator("pinDiagram", {
-              initialValue: editInfo.pinDiagram,
-              rules: [{ required: false, message: "请上传可配置固件引脚示意图" }]
-            })(
+        <Form.Item
+          label="可配置固件引脚示意图"
+          extra="请上传尺寸为227*404px，格式为png的引脚示意图"
+          wrapperCol={{ span: 13 }}>
+          {getFieldDecorator("pinDiagram", {
+            initialValue: editInfo.pinDiagram,
+            rules: [{ required: false, message: "请上传可配置固件引脚示意图" }]
+          })(
+            <div>
+              <Upload
+                {...uploadConfigs}
+                listType="picture"
+                defaultFileList={pinDiagram || []}
+                onPreview={() => handlePreview(true, pinDiagram)}
+                beforeUpload={modulePictureBeforeUpload}
+                onRemove={(file) => removePic(file, 'pinDiagram')}
+                accept="image/png"
+                onChange={(info) => handleChange(info, 'pinDiagram')}>
+                {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
+              </Upload>
+            </div>
+          )}
+        </Form.Item>
+      }
+
+      {/* MCU方案 */}
+      {
+        schemeType === 2 &&
+        <>
+          <Form.Item label="模组固件" extra="请上传格式为.zip的模组固件">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
+              {getFieldDecorator("burnFile", {
+                initialValue: editInfo.burnFile,
+                rules: [{ required: false, message: "请上传模组固件" }]
+              })(
+                <div>
+                  <Upload
+                    {...uploadConfigs}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '模组固件', 40)}
+                    onChange={(info) => handleChange(info, 'burnFile')}
+                    defaultFileList={burnFile || []}
+                    onRemove={(file) => removePic(file, 'burnFile')}
+                    accept=".bin">
+                    {burnFile && burnFile.length >= 1 ? null : uploadButton()}
+                  </Upload>
+                </div>
+              )}
+            </Form.Item>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }} >
               <div>
-                <Upload
-                  {...uploadConfigs}
-                  listType="picture"
-                  defaultFileList={pinDiagram || []}
-                  onPreview={() => handlePreview(true, pinDiagram)}
-                  beforeUpload={modulePictureBeforeUpload}
-                  onRemove={(file) => removePic(file, 'pinDiagram')}
-                  accept="image/png"
-                  onChange={(info) => handleChange(info, 'pinDiagram')}>
-                  {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
-                </Upload>
+                版本号：
+                {getFieldDecorator("burnFileVersion", {
+                  initialValue: editInfo.burnFileVersion,
+                  rules: [{ required: true, message: "请输入模组固件版本号" }]
+                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
-            )}
+            </Form.Item>
           </Form.Item>
-          <Form.Item label="模组图片" extra="请上传格式为.png，小于500k图片" wrapperCol={{ span: 10 }}>
+          <Form.Item label="模组固件名称">
+            {getFieldDecorator('burnFileName', {
+              initialValue: editInfo.burnFileName ? editInfo.burnFileName.split('.')[0] : '',
+              rules: [{ required: false, message: '模组固件名称', whitespace: true }],
+            })(<Input placeholder="模组固件名称" style={{ width: 460 }} />)}
+          </Form.Item>
+        </>
+      }
+      {/* Soc方案 */}
+      {
+        schemeType === 3 &&
+        <>
+          <Form.Item label="原厂SDK" extra="请上传格式为.zip源文件压缩包">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
+              {getFieldDecorator("sourceCode", {
+                initialValue: editInfo.sourceCode,
+                rules: [{ required: false, message: "请上传原厂SDK" }]
+              })(
+                <div>
+                  <Upload
+                    {...uploadConfigs}
+                    beforeUpload={(file) => uploadDocumentLimit(file, '原厂SDK', 512)}
+                    onChange={(info) => handleChange(info, 'sourceCode')}
+                    defaultFileList={sourceCode || []}
+                    onRemove={(file) => removePic(file, 'sourceCode')}
+                    accept=".zip ">
+                    {sourceCode && sourceCode.length >= 1 ? null : uploadButton()}
+                  </Upload>
+                </div>
+              )}
+            </Form.Item>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              <div>
+                版本号：
+                {getFieldDecorator("sourceCodeVersion", {
+                  initialValue: editInfo.sourceCodeVersion,
+                  rules: [{ required: true, message: "请输入原厂SDK版本号" }]
+                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
+              </div>
+            </Form.Item>
+          </Form.Item>
+          <Form.Item label="clifeSDK" extra="请上传格式为.zip的clifeSDK">
+            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
+              {getFieldDecorator("libraryFile", {
+                initialValue: editInfo.libraryFile,
+                rules: [{ required: false, message: "请上传clifeSDK" }]
+              })(
+                <div>
+                  <Upload
+                    {...uploadConfigs}
+                    beforeUpload={(file) => uploadDocumentLimit(file, 'clifeSDK', 40)}
+                    onChange={(info) => handleChange(info, 'libraryFile')}
+                    onRemove={(file) => removePic(file, 'libraryFile')}
+                    defaultFileList={libraryFile || []}
+                    accept=".a">
+                    {libraryFile && libraryFile.length >= 1 ? null : uploadButton()}
+                  </Upload>
+                </div>
+              )}
+            </Form.Item>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
+              <div>
+                版本号：
+                {getFieldDecorator("libraryFileVersion", {
+                  initialValue: editInfo.libraryFileVersion,
+                  rules: [{ required: true, message: "请输入clifeSDK版本号" }]
+                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
+              </div>
+            </Form.Item>
+          </Form.Item>
+        </>
+      }
+      {/* 共用—模组图片、参考电路图、说明文档   不写判断回显有问题,所以谨慎删除吧 */}
+      {
+        (schemeType === 1 || schemeType === 2 || schemeType === 3) &&
+        <>
+          <Form.Item label="模组图片" extra="请上传格式为.png，小于500k图片" wrapperCol={{ span: 13 }}>
             {getFieldDecorator("modulePicture", {
               initialValue: editData.modulePicture || '',
               rules: [{ required: false, message: "请上传一张图片" }]
@@ -560,196 +675,10 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </Form.Item>
           <Form.Item
             label="说明文档"
-            extra="请上传格式为.zib压缩包，大小40M的文件"
-            wrapperCol={{ span: 13 }}>
-            {getFieldDecorator("readmePdf", {
-              initialValue: editData.readmePdf || ''
-            })(
-              <div>
-                <Upload
-                  {...uploadConfigs}
-                  defaultFileList={readmePdf || []}
-                  beforeUpload={(file) => uploadDocumentLimit(file, 'PDF文件', 40)}
-                  onRemove={(file) => removePic(file, 'readmePdf')}
-                  accept=".zip"
-                  onChange={(info) => handleChange(info, 'readmePdf')}>
-                  {readmePdf && readmePdf.length >= 1 ? null : uploadButton()}
-                </Upload>
-              </div>
-            )}
-          </Form.Item>
-          <Form.Item label="可配置固件功能部分">
-            {/* 创建DOM */}
-            {firmwareFormHtml}
-            <Form.Item>
-              <Button type="primary" icon="plus" onClick={() => addConfig()}>新增</Button>
-            </Form.Item>
-          </Form.Item>
-        </div>
-      }
-      {/* {
-        (schemeType === 2 || schemeType === 3) &&
-        <Form.Item label="通信模组文件" colon={false}></Form.Item>
-      } */}
-      {/* Soc方案 */}
-      {
-        schemeType === 3 &&
-        <>
-          <Form.Item label="原厂SDK" extra="（请上传格式为.zip源文件压缩包）" className="required-icon">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
-              {getFieldDecorator("sourceCode", {
-                initialValue: editInfo.sourceCode,
-                rules: [{ required: true, message: "请上传原厂SDK" }]
-              })(
-                <div>
-                  <Upload
-                    {...uploadConfigs}
-                    beforeUpload={(file) => uploadDocumentLimit(file, '原厂SDK', 512)}
-                    onChange={(info) => handleChange(info, 'sourceCode')}
-                    defaultFileList={sourceCode || []}
-                    onRemove={(file) => removePic(file, 'sourceCode')}
-                    accept=".zip ">
-                    {sourceCode && sourceCode.length >= 1 ? null : uploadButton()}
-                  </Upload>
-                </div>
-              )}
-            </Form.Item>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
-              <div className="required-icon2">
-                版本号：
-                {getFieldDecorator("sourceCodeVersion", {
-                  initialValue: editInfo.sourceCodeVersion,
-                  rules: [{ required: true, message: "请输入原厂SDK版本号" }]
-                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
-              </div>
-            </Form.Item>
-          </Form.Item>
-          <Form.Item label="库文件" extra="（请上传格式为.a的库文件）" className="required-icon">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
-              {getFieldDecorator("libraryFile", {
-                initialValue: editInfo.libraryFile,
-                rules: [{ required: true, message: "请上传库文件" }]
-              })(
-                <div>
-                  <Upload
-                    {...uploadConfigs}
-                    beforeUpload={(file) => uploadDocumentLimit(file, '库文件', 512)}
-                    onChange={(info) => handleChange(info, 'libraryFile')}
-                    onRemove={(file) => removePic(file, 'libraryFile')}
-                    defaultFileList={libraryFile || []}
-                    accept=".a">
-                    {libraryFile && libraryFile.length >= 1 ? null : uploadButton()}
-                  </Upload>
-                </div>
-              )}
-            </Form.Item>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }}>
-              <div className="required-icon2">
-                版本号：
-                {getFieldDecorator("libraryFileVersion", {
-                  initialValue: editInfo.libraryFileVersion,
-                  rules: [{ required: true, message: "请输入库文件版本号" }]
-                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
-              </div>
-            </Form.Item>
-          </Form.Item>
-        </>
-      }
-      {/* MCU方案 */}
-      {
-        (schemeType === 2 || schemeType === 3) &&
-        <>
-          <Form.Item label="烧录文件" extra="（请上传格式为.bin的烧录件）" className="required-icon">
-            <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
-              {getFieldDecorator("burnFile", {
-                initialValue: editInfo.burnFile,
-                rules: [{ required: true, message: "请上传烧录文件" }]
-              })(
-                <div>
-                  <Upload
-                    {...uploadConfigs}
-                    beforeUpload={(file) => uploadDocumentLimit(file, '烧录文件', 32)}
-                    onChange={(info) => handleChange(info, 'burnFile')}
-                    defaultFileList={burnFile || []}
-                    onRemove={(file) => removePic(file, 'burnFile')}
-                    accept=".bin">
-                    {burnFile && burnFile.length >= 1 ? null : uploadButton()}
-                  </Upload>
-                </div>
-              )}
-            </Form.Item>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <Form.Item style={{ display: "inline-block", marginBottom: 0 }} >
-              <div className="required-icon2">
-                版本号：
-                {getFieldDecorator("burnFileVersion", {
-                  initialValue: editInfo.burnFileVersion,
-                  rules: [{ required: true, message: "请输入烧录文件版本号" }]
-                })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
-              </div>
-            </Form.Item>
-          </Form.Item>
-          <Form.Item label="烧录文件名称">
-            {getFieldDecorator('burnFileName', {
-              initialValue: editInfo.burnFileName ? editInfo.burnFileName.split('.')[0] : '',
-              rules: [{ required: true, message: '烧录文件名称', whitespace: true }],
-            })(<Input placeholder="烧录文件名称" style={{ width: 460 }} />)}
-          </Form.Item>
-          <Form.Item label="模组图片" extra="（请上传格式为.png，小于500k图片）" wrapperCol={{ span: 13 }}>
-            {getFieldDecorator("modulePicture", {
-              initialValue: editData.modulePicture || '',
-              rules: [{ required: true, message: "请上传一张图片" }]
-            })(
-              <div>
-                <Upload
-                  {...uploadConfigs}
-                  listType="picture"
-                  defaultFileList={modulePicture || []}
-                  onPreview={() => handlePreview(true, modulePicture)}
-                  beforeUpload={modulePictureBeforeUpload}
-                  onRemove={(file) => removePic(file, 'modulePicture')}
-                  accept="image/png"
-                  onChange={(info) => handleChange(info, 'modulePicture')}
-                >
-                  {modulePicture && modulePicture.length >= 1 ? null : uploadButton('上传图片')}
-                </Upload>
-              </div>
-            )}
-          </Form.Item>
-          <Form.Item
-            label="参考电路图"
-            extra="（请上传格式为.png，小于500k图片）"
-            wrapperCol={{ span: 13 }}
-          >
-            {getFieldDecorator("referenceCircuitDiagram", {
-              initialValue: editData.referenceCircuitDiagram || '',
-              rules: [{ required: true, message: "请上传一张图片" }]
-            })(
-              <div>
-                <Upload
-                  {...uploadConfigs}
-                  listType="picture"
-                  defaultFileList={referenceCircuitDiagram || []}
-                  onPreview={() => handlePreview(true, referenceCircuitDiagram)}
-                  beforeUpload={modulePictureBeforeUpload}
-                  onRemove={(file) => removePic(file, 'referenceCircuitDiagram')}
-                  accept="image/png"
-                  onChange={(info) => handleChange(info, 'referenceCircuitDiagram')}
-                >
-                  {referenceCircuitDiagram && referenceCircuitDiagram.length >= 1 ? null : uploadButton('上传图片')}
-                </Upload>
-              </div>
-            )}
-          </Form.Item>
-          <Form.Item
-            label="说明文档"
-            extra="请上传格式为.zib压缩包，大小40M的文件"
+            extra="请上传格式为.zip压缩包，大小40M的文件"
             wrapperCol={{ span: 13 }}>
             {getFieldDecorator("readmePdf", {
               initialValue: editData.readmePdf || '',
-              // rules: [{ required: true, message: "请上传文档" }]
             })(
               <div>
                 <Upload
@@ -765,6 +694,17 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
             )}
           </Form.Item>
         </>
+      }
+      {/* 免开发方案-固件配置模块 */}
+      {
+        schemeType === 1 &&
+        <Form.Item label="可配置固件功能部分">
+          {/* 创建DOM */}
+          {firmwareFormHtml}
+          <Form.Item>
+            <Button type="primary" icon="plus" onClick={() => addConfig()}>新增</Button>
+          </Form.Item>
+        </Form.Item>
       }
       <Modal visible={previewVisible} footer={null}
         onCancel={() => setPreviewVisible(false)}>
