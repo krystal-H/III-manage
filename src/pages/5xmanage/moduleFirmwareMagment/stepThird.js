@@ -521,7 +521,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         schemeType === 2 &&
         <>
-          <Form.Item label="模组固件" extra="请上传格式为.zip的模组固件">
+          <Form.Item label="模组固件" extra="请上传格式为.zib压缩包，大小40M的文件">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
               {getFieldDecorator("burnFile", {
                 initialValue: editInfo.burnFile,
