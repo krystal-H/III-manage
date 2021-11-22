@@ -420,6 +420,7 @@ export function copyTextToClipBoard (str = '') {
         document.execCommand('copy');
 
         notification.success({
+            message: '提示',
             description:'复制成功'
         })
 

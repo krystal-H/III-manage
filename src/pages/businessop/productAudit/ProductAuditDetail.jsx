@@ -151,7 +151,7 @@ class ProductAuditDetail extends Component {
                     </div>
                 </div>
 
-                <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}` }}>
+                <div className="info-item protocol-detail" style={{ display: `${audit ? "none" : "block"}`, marginBottom: 0 }}>
                     <h3>产品协议</h3>
                     {
                         showPhysicalList.length ?
@@ -161,14 +161,14 @@ class ProductAuditDetail extends Component {
                                     <TabPane tab="事件" key="2"></TabPane>
                                     <TabPane tab="服务" key="3"></TabPane>
                                 </Tabs>
-                                <div>
+                                <div className="white">
                                     <TableCom dataSource={dataSource} pagination={false} loading={tableComloading} />
                                 </div>
                             </div> : null
                     }
                 </div>
-
-                <div className="info-item module-detail" style={{ display: `${audit ? "none" : "block"}` }}>
+                <div style={{height: '60px', width: '100%', background: '#f6f6f6'}}></div>
+                <div className="info-item module-detail" style={{ display: `${audit ? "none" : "block"}`, marginTop: 20 }}>
                     <h3>通信模组</h3>
                     <div className="module-wrap img-wrap">
                         <img src={modulePicture} alt={modulePictureName} />
