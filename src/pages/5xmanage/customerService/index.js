@@ -63,7 +63,7 @@ export default ()=>{
     
     //客户列表
     const getCustomerList=(index)=>{
-        axiosNobaseurl.Post('/v5x/web/manage/support/getCustomers',{},{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+        axiosNobaseurl.Post('/v5x/web/manage/support/getCustomers',{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
             let res = data.data || [];
             setCustomerLi(res)
         });
@@ -74,7 +74,7 @@ export default ()=>{
             receiverId,
             pageIndex: pageRef.current,
             pageRows:pagerows
-        },{},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+        },{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
             let list = data.data && data.data.list || [], 
                 len = list.length,
                 isscroll = pageRef.current>1;

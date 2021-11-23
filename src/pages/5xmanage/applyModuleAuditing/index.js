@@ -82,7 +82,7 @@ getList=(index)=>{
       productName:searchName,
       mode:searchType=="undefined"? undefined : searchType
   }
-  axios.Post('manage-open/moduleApplyVerify/getModuleApplyListByPage',param,{},{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+  axios.Post('manage-open/moduleApplyVerify/getModuleApplyListByPage',param,{loading:true, headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
     let res = data.data || {};
     // console.log(666,data)
     let { list=[] , pager={} } = res

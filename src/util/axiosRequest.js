@@ -157,6 +157,7 @@ class HttpRequest {
     option = Object.assign(defaultConfig, option)
 
     let {url,loading} = option;
+    
 
     if(loading){
       if(loadingList.length === 0){
@@ -164,6 +165,11 @@ class HttpRequest {
       }
       // loadingList.push(`${this.baseUrl}/${url}`);
       loadingList.push(url);
+    }
+
+    if(url.indexOf("getModuleApplyListByPage")){
+      console.log(loadingList)
+
     }
 
     delete option.loading;
@@ -234,12 +240,11 @@ class HttpRequest {
    *  option :自定义axios的option
    *  config :自定义业务配置，待定
    */
-  Post(url="", data={}, params={}, option={}, config={}){
+  Post(url="", data={}, option={}, config={}){
       let defaultOption = {
         method:'post',
         url:url,
         data:data,
-        // params:params,
         ...option
       }
       return this.request(defaultOption)

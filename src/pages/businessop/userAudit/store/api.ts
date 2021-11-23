@@ -15,7 +15,6 @@ export const _getDetailForUser = (data: object) => {
   return axios.Post(
     "manage-open/userAudit/get",
     data,
-    {},
     { isModalError: true }
   );
 };

@@ -18,7 +18,6 @@ export const _checkForAPP = data => {
   return axios.Post(
     "manage-open/auditScene/update",
     data,
-    {},
     {
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +33,6 @@ export const _getDetailForAPP = data => {
   return axios.Post(
     "manage-open/auditScene/getSceneDetailById",
     data,
-    {},
     { isModalError: true }
   );
 };

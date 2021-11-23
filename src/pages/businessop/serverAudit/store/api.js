@@ -15,7 +15,6 @@ export const _getDetailForAPP = data => {
   return axios.Post(
     "manage-open/audit/app/get",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -30,7 +29,6 @@ export const _checkForAPP = data => {
   return axios.Post(
     "manage-open/audit/update",
     data,
-    {},
     { isModalError: true }
   );
 };

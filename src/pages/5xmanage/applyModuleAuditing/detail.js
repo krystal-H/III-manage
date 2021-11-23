@@ -18,7 +18,7 @@ function Detail({
     const [info, setInfo] = useState({})
     useEffect(() => {
         if(id){
-            axios.Post('manage-open/moduleApplyVerify/getModuleApply',{id},{},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+            axios.Post('manage-open/moduleApplyVerify/getModuleApply',{id},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
                 let res = data.data || {};
                 setInfo({...res})
               });
@@ -31,7 +31,7 @@ function Detail({
             if(!err){
                 let param= {...value,id},
                     url = 'manage-open/moduleApplyVerify/flowCheckModuleApply';  
-                axios.Post(url,param,{},{ headers: {"Content-Type":"application/json"}}).then((res) => {
+                axios.Post(url,param,{ headers: {"Content-Type":"application/json"}}).then((res) => {
                     console.log(1111,res)
                     closeDetail();
                     getList();

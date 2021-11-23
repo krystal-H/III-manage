@@ -12,7 +12,7 @@ function firmwareInfo({
     const [info, setInfo] = useState([])
     useEffect(() => {
         if(productId){
-            axios.Post('manage-open/product/show/firmware/config',{productId},{},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
+            axios.Post('manage-open/product/show/firmware/config',{productId},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
                 let res = data.data || {};
                 setInfo(res.firmwareModuleList || [])
               });

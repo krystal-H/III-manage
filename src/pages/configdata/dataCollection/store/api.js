@@ -28,7 +28,6 @@ export const _addApp = data => {
   return axios.Post(
     "collection/application/add",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -45,7 +44,6 @@ export const _refreshToken = data => {
   return axios.Post(
     "collection/application/updateToken",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -54,7 +52,6 @@ export const _deleteAPP = data => {
   return axios.Post(
     "collection/application/delete",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -64,7 +61,6 @@ export const _addEvent = data => {
   return axios.Post(
     "collection/logsEvent/add",
     data,
-    {},
     {
       headers: {
         "Content-Type": "application/json",
@@ -87,7 +83,6 @@ export const _getEventDetail = data => {
   return axios.Post(
     "collection/logsEvent/get",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -96,7 +91,6 @@ export const _updateEvent = data => {
   return axios.Post(
     "collection/logsEvent/update",
     data,
-    {},
     {
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +105,6 @@ export const _deleteEvent = data => {
   return axios.Post(
     "collection/logsEvent/delete",
     data,
-    {},
     { isModalError: true }
   );
 };
@@ -120,7 +113,6 @@ export const _disableEvent = data => {
   return axios.Post(
     "collection/logsEvent/ope",
     data,
-    {},
     { isModalError: true }
   );
 };

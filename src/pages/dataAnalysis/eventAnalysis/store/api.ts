@@ -12,7 +12,7 @@ export const _getData = (data: object) => {
     }
   }
   url = url.replace(/&$/, "");
-  return axios.Post(url, {}, {}, { isModalError: true });
+  return axios.Post(url, {}, { isModalError: true });
 };
 
 /* 下载文件 */
