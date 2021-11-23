@@ -50,9 +50,11 @@ class ProductAuditDetail extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const pId = this.props.showProductDetail.physicalModelId
-        const preId = prevProps.showProductDetail.physicalModelId
-        if (preId !== pId) { this.getPhysicalData(pId) }
+        if (this.props.showProductDetail) {
+            const pId = this.props.showProductDetail.physicalModelId
+            const preId = prevProps.showProductDetail.physicalModelId
+            if (preId !== pId) { this.getPhysicalData(pId) }
+        }
     }
 
     componentWillUnmount() {
@@ -77,14 +79,14 @@ class ProductAuditDetail extends Component {
 
     // 拉取物模型数据
     getPhysicalData = (id) => {
-        this.setState({tableComloading: true})
+        this.setState({ tableComloading: true })
         getDetailTable({ id }).then(res => {
             if (res.data.code == 0) {
                 let data = this.delaData(res.data.data.standard || [])
                 this.setState({ showPhysicalList: data })
                 this.tabcallback('1', data)
             }
-        }).finally(() =>  this.setState({tableComloading: false}))
+        }).finally(() => this.setState({ tableComloading: false }))
     }
 
     // 切换过滤table数据
@@ -102,7 +104,10 @@ class ProductAuditDetail extends Component {
 
     render() {
         let { showPhysicalList, currentPhysicalTab, dataSource, tableComloading } = this.state
-        let { productDetail, audit, showProductDetail } = this.props;
+        let { productDetail, audit, showProductDetail = {} } = this.props;
+        if (!showProductDetail) {
+            showProductDetail = {}
+        }
         let { productName, allCategoryName, bindTypeName, productCode, productClassName, protocolFormatName, productClassId, productIdHex, deviceKey, ssid, ssidPassword,
             accessModeName, barCode, radiocastName, gatewayCommTypeName, isRelatedGateway, netTypeName, productId, accessModeId, authorityType } = productDetail.product || {};
         let { modulePicture, modulePictureName, hetModuleTypeName, originalModuleTypeName,
@@ -167,7 +172,7 @@ class ProductAuditDetail extends Component {
                             </div> : null
                     }
                 </div>
-                <div style={{height: '60px', width: '100%', background: '#f6f6f6'}}></div>
+                <div style={{ height: '60px', width: '100%', background: '#f6f6f6' }}></div>
                 <div className="info-item module-detail" style={{ display: `${audit ? "none" : "block"}`, marginTop: 20 }}>
                     <h3>通信模组</h3>
                     <div className="module-wrap img-wrap">
