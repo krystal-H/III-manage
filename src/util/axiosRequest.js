@@ -39,7 +39,18 @@ class HttpRequest {
     //响应拦截
     instance.interceptors.response.use(res => {
       let config = res.config;
+      if(url.indexOf("getModuleApplyListByPage")){
+        console.log(4,config)
+    
+      }
       if(loading){
+
+        if(url.indexOf("getModuleApplyListByPage")){
+          console.log(3,config)
+      
+        }
+
+
         closeLoading(config);
       }
       this.destory(url)
@@ -69,21 +80,20 @@ class HttpRequest {
         return res;
       }
 
-
       const errortext = data.msg;
-	  if(isModalError){
-		Modal.error({
-		  title: errortext,
-		  centered: true,
-		  zIndex: 1080
-		});
-	  }
-	  else{
-		notification.error({
-		  message: `请求错误 ${res.status}: ${res.url}`,
-		  description: errortext,
-		});
-	  }
+
+      if(isModalError){
+        Modal.error({
+          title: errortext,
+          centered: true,
+          zIndex: 1080
+        });
+      }else{
+        notification.error({
+          message: `请求错误 ${res.status}: ${res.url}`,
+          description: errortext,
+        });
+      }
 
 
       return { data, status }
@@ -153,25 +163,14 @@ class HttpRequest {
     })
     let defaultConfig = this.getInsideConfig()
     let time = new Date().getTime();
-
     option = Object.assign(defaultConfig, option)
-
     let {url,loading} = option;
-    
-
     if(loading){
       if(loadingList.length === 0){
         store.dispatch(loadingShowStatu(true));
       }
-      // loadingList.push(`${this.baseUrl}/${url}`);
       loadingList.push(url);
     }
-
-    if(url.indexOf("getModuleApplyListByPage")){
-      console.log(loadingList)
-
-    }
-
     delete option.loading;
     
     
@@ -221,9 +220,8 @@ class HttpRequest {
    *  url     : 请求url
    *  params    : get data
    *  option  : 自定义axios的option
-   *  config  : 自定义业务配置，待定
    */
-  Get(url="", params={}, option={}, config={}){
+  Get(url="", params={}, option={}){
     let defaultOption = {
       method:'get',
       url:url,
@@ -238,9 +236,8 @@ class HttpRequest {
    *  data   :请求data
    *  params :请求params
    *  option :自定义axios的option
-   *  config :自定义业务配置，待定
    */
-  Post(url="", data={}, option={}, config={}){
+  Post(url="", data={}, option={}){
       let defaultOption = {
         method:'post',
         url:url,
@@ -253,7 +250,24 @@ class HttpRequest {
 
 // 判断是否需要关闭loading
 function closeLoading (config) {
+
+
+  if(config.url.indexOf("getModuleApplyListByPage")){
+    console.log(1,loadingList)
+
+  }
+
+
   loadingList = loadingList.filter(item => item !== config.url);
+
+
+  if(config.url.indexOf("getModuleApplyListByPage")){
+    console.log(2,loadingList)
+
+  }
+
+
+
   if (loadingList.length === 0) {
     // TODO: 不使用redux管理
     store.dispatch(loadingShowStatu(false));
