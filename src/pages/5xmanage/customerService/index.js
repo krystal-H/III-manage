@@ -101,14 +101,23 @@ export default ()=>{
         };
         ws.onmessage =  ({data="{}"})=> {//接收到消息
             let onemsg = JSON.parse(data)
-            setContent( ({data}) => ({data:[ ...data, onemsg ],isscroll:false}))
+            const {senderId,senderName} = onemsg;
+            if( senderName=='客服' || senderId==receiverId ){
+                setContent( ({data}) => ({data:[ ...data, onemsg ],isscroll:false}))
+
+            }
         };
         ws.onclose = (e) =>{//检测到断开连接
-            console.log("---断开连接----")
+            console.log("---断开连接----",e)
             clearInterval(wsTimer);
             ws = null;
             if ( connectRef.current && e.code == '1006') {//如果异常断开，尝试重连
                 setTimeout(newWebSocket,5000);
+            }else if ( e.code == '1007') {//多点登录
+                notification.info({
+                    description: '已在其他地方上线'
+                })
+                setReceiverId(undefined);
             }
             connectRef.current = false;
             
