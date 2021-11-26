@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Form, Select, InputNumber, Checkbox, Radio } from 'antd';
+import { Form, Select, InputNumber, Checkbox, Radio, Input } from 'antd';
 
 import './stepSecond.less'
+const { TextArea } = Input
 
 function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, moduleCommonObj, editData = {} }, ref) {
   // 表单提交
@@ -132,6 +133,14 @@ function StepSecond({ form, setStepCur, netList, protocolList, bindSceneList, mo
             <Radio value={0}>否</Radio>
           </Radio.Group>
         )}
+      </Form.Item>
+      <Form.Item label="模组备注">
+        {
+          getFieldDecorator('moduleRemark', {
+            initialValue: editData.moduleRemark
+          })(
+            <TextArea placeholder="请输入模组备注（最大长度100）" autoSize={{ minRows: 3, maxRows: 3 }} maxLength="100" />
+          )}
         <br />
         <span>限制2M大小</span>
       </Form.Item>
