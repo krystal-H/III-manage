@@ -196,8 +196,8 @@ function rapairModel({ form }) {
                     <Form.Item label="状态">
                         {getFieldDecorator('status', {})(
                             <Select style={{ width: 160 }} placeholder="请选择" allowClear>
-                                <Option value="1">已回复</Option>
-                                <Option value="0">未回复</Option>
+                                <Select.Option value="1">已回复</Select.Option>
+                                <Select.Option value="0">未回复</Select.Option>
                             </Select>
                         )}
                     </Form.Item>
