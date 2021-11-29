@@ -104,8 +104,9 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
   // 提交所有数据
   const commitAll = (values) => {
     if (isUpgrade) {
-      let params = {...values}
-      params.moduleId = editData.moduleId
+      let params = { firmwareDefReqList: values, moduleId: editData.moduleId }
+      params.firmwareDefReqList[0].id = editData.firmwareDefList && editData.firmwareDefList.length ? editData.firmwareDefList[0].id : ''
+      console.log(params, 'params')
       publishedUpdateModuleRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
@@ -118,6 +119,7 @@ function OperateSchemeModal({ visible, handleOk, handleCancel, moduleCommonObj, 
       console.log(params, 'params')
       if (opeType === 'edit') {
         params.moduleId = editData.moduleId  // 为了兼容老数据  没有固件信息的
+        params.firmwareDefReqList[0].id = editData.firmwareDefList && editData.firmwareDefList.length ? editData.firmwareDefList[0].id : ''
         updateModuleRequest(params).then(res => {
           if (res.data.code === 0) {
             message.success(`提交成功`)

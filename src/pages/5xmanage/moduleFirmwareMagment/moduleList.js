@@ -129,7 +129,7 @@ function ModuleList({ form }) {
     return [
       // { title: "查看", icon: "info", key: 'view' },
       { title: "下线", icon: "cloud-download", key: 'offline' },
-      // { title: "更新", icon: "redo", key: 'upgrade' }
+      { title: "更新", icon: "redo", key: 'upgrade' }
     ]
   }
 

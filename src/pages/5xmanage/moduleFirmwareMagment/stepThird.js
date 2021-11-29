@@ -67,7 +67,8 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           arr.push(ele.dataType.type)
         })
         setValueType(arr)
-      } else if (editInfo.schemeType === 2 || editInfo.schemeType === 3) { // mcu方案
+      } 
+      // else if (editInfo.schemeType === 2 || editInfo.schemeType === 3) { // mcu方案
         editInfo.burnFile && setBurnfile([{ url: editInfo.burnFile, name: editInfo.burnFileName || '模组固件', uid: 1 }])
         editInfo.referenceCircuitDiagram && setReferencecircuitdiagram([{
           url: editInfo.referenceCircuitDiagram,
@@ -77,7 +78,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         editInfo.readmePdf && setReadmepdf([{ url: editData.readmePdf, name: editData.readmePdfName || '说明文档', uid: 4 }])
         editInfo.sourceCode && setSourcecode([{ url: editInfo.sourceCode, name: editInfo.sourceCodeName || '原厂SDK', uid: 4 }])
         editInfo.libraryFile && setLibraryfile([{ url: editInfo.libraryFile, name: editInfo.libraryFileName || 'clifeSDK', uid: 5 }])
-      }
+      // }
       // console.log(editData.firmwareDefList[0], '-------------editData')
     }
   }, [editData])
@@ -520,7 +521,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         schemeType === 2 &&
         <>
-          <Form.Item label="模组固件" extra="请上传格式为.zib压缩包，大小40M的文件">
+          <Form.Item label="模组固件" extra="请上传格式为.zip压缩包，大小40M的文件">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
               {getFieldDecorator("burnFile", {
                 initialValue: editInfo.burnFile,
@@ -533,7 +534,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     onChange={(info) => handleChange(info, 'burnFile')}
                     defaultFileList={burnFile || []}
                     onRemove={(file) => removePic(file, 'burnFile')}
-                    accept=".bin">
+                    accept=".zip">
                     {burnFile && burnFile.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
@@ -587,7 +588,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                 版本号：
                 {getFieldDecorator("sourceCodeVersion", {
                   initialValue: editInfo.sourceCodeVersion,
-                  rules: [{ required: true, message: "请输入原厂SDK版本号" }]
+                  rules: [{ required: false, message: "请输入原厂SDK版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
@@ -605,7 +606,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                     onChange={(info) => handleChange(info, 'libraryFile')}
                     onRemove={(file) => removePic(file, 'libraryFile')}
                     defaultFileList={libraryFile || []}
-                    accept=".a">
+                    accept=".zip">
                     {libraryFile && libraryFile.length >= 1 ? null : uploadButton()}
                   </Upload>
                 </div>
@@ -617,7 +618,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                 版本号：
                 {getFieldDecorator("libraryFileVersion", {
                   initialValue: editInfo.libraryFileVersion,
-                  rules: [{ required: true, message: "请输入clifeSDK版本号" }]
+                  rules: [{ required: false, message: "请输入clifeSDK版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>
