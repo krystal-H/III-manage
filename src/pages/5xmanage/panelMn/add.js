@@ -188,7 +188,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                             )}
                         </FormItem>
                         <FormItem label="面板名称">
-                            {getFieldDecorator('templateName', { rules: [{ required: true }] })(
+                            {getFieldDecorator('templateName', { rules: [{ required: true, message: '请输入面板名称' }] })(
                                 <Input style={{ width: '100%' }} onPressEnter={() => searchList()}></Input>
                             )}
                         </FormItem>
@@ -210,7 +210,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
 
                         <FormItem label="封面" extra="支持格式：png、jpg 尺寸：247px * 439px,170*302px">
                             {getFieldDecorator('page1', {
-                                rules: [{ required: true }], getValueFromEvent: normFile
+                                rules: [{ required: true, message: '请上传封面' }], getValueFromEvent: normFile
                             })(
                                 <div>
                                     <Upload
@@ -231,7 +231,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, modelType,
                             )}
                         </FormItem>
                         <FormItem label="上传H5包" extra="支持格式：zix">
-                            {getFieldDecorator('htmlPath', { rules: [{ required: true }], getValueFromEvent: normFile })(
+                            {getFieldDecorator('htmlPath', { rules: [{ required: true, message: '请上传H5包' }], getValueFromEvent: normFile })(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"

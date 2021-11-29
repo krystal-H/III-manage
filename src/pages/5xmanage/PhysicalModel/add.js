@@ -57,7 +57,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
     const sundata = () => {
         if (editId) {
             validateFields().then(val => {
-                let params = { ...val, file: getFieldValue('file')[0].originFileObj, id: editId }
+                let params = { ...val, file: fileListS.length ? fileListS[0].originFileObj : '', id: editId }
                 editData(params).then(res => {
                     if (res.data.code == 0) {
                         message.success('编辑成功');
@@ -67,7 +67,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
             })
         } else {
             validateFields().then(val => {
-                let params = { ...val, file: getFieldValue('file')[0].originFileObj }
+                let params = { ...val, file: fileListS.length ? fileListS[0].originFileObj : ''}
                 newData(params).then(res => {
                     if (res.data.code == 0) {
                         message.success('新增成功');
@@ -81,7 +81,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
 
     //导入
     const customRequest = (option) => {
-        if (getFieldValue('file') && getFieldValue('file').length) {
+        if (fileListS.length) {
             message.info('只能上传一个文件')
             return
         }
@@ -180,12 +180,12 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                 <div>
                     <Form {...formItemLayout}>
                         <FormItem label="模型名称">
-                            {getFieldDecorator('name', { rules: [{ required: true }] })(
+                            {getFieldDecorator('name', { rules: [{ required: true, message: '请输入模型名称' }] })(
                                 <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>
                         <FormItem label="所属分类">
-                            {getFieldDecorator('deviceTypeId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('deviceTypeId', { rules: [{ required: true, message: '请选择所属分类' }] })(
                                 <Select style={{ width: '100%' }} placeholder="请选择所属分类" allowClear>
                                     {
                                         optionList.map((item, index) => (
@@ -198,7 +198,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             )}
                         </FormItem>
                         <Form.Item label="状态">
-                            {getFieldDecorator('status', { rules: [{ required: true }] })(
+                            {getFieldDecorator('status', { rules: [{ required: true , message: '请选择状态'}] })(
                                 <Radio.Group>
                                     <Radio value={2}> 正式</Radio>
                                     <Radio value={1}>草稿</Radio>
@@ -206,7 +206,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             )}
                         </Form.Item>
                         <FormItem label="模板设置" extra="支持格式：json">
-                            {getFieldDecorator('file', { rules: [{ required: true }], getValueFromEvent: normFile, })(
+                            {getFieldDecorator('file', { getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} listType="picture" accept='.json'
                                     beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json']) }}
                                     onChange={handleChange}
@@ -220,12 +220,12 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             {/* <a onClick={downFile} className='json-text-down'>下载Json模板</a> */}
                         </FormItem>
                         <FormItem label="备注">
-                            {getFieldDecorator('remark', { rules: [{ required: true }] })(
+                            {getFieldDecorator('remark', { rules: [{ required: true , message: '请输入备注'}] })(
                                 <TextArea style={{ width: '100%' }} ></TextArea>
                             )}
                         </FormItem>
                         {
-                            tableData.length ? <FormItem label="物模型详情">
+                            fileListS.length ? <FormItem label="物模型详情">
                                 <div>
                                     <Tabs activeKey={currentTab} onChange={tabcallback}>
                                         <TabPane tab="属性" key="1">

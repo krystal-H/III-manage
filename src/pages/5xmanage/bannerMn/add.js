@@ -75,22 +75,22 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                 <div className='banner-modal-add'>
                     <Form {...formItemLayout}>
                         <FormItem label="banner名称">
-                            {getFieldDecorator('bannerName', { rules: [{ required: true }] })(
+                            {getFieldDecorator('bannerName', { rules: [{ required: true , message: '请输入banner名称'}] })(
                                 <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>
                         <FormItem label="计划展示开始时间">
-                            {getFieldDecorator('showStartTime', { rules: [{ required: true }] })(
+                            {getFieldDecorator('showStartTime', { rules: [{ required: true, message: '请选择开始时间' }] })(
                                 <DatePicker showTime style={{ width: '100%' }} />
                             )}
                         </FormItem>
                         <FormItem label="计划展示结束时间">
-                            {getFieldDecorator('showEndTime', { rules: [{ required: true }] })(
+                            {getFieldDecorator('showEndTime', { rules: [{ required: true, message: '请选择结束时间' }] })(
                                 <DatePicker showTime style={{ width: '100%' }} />
                             )}
                         </FormItem>
                         <FormItem label="上传图片" extra="支持格式：png、jpg 尺寸：1440x * 1334px">
-                            {getFieldDecorator('imageUrl', { rules: [{ required: true }], getValueFromEvent: normFile})(
+                            {getFieldDecorator('imageUrl', { rules: [{ required: true, message: '请上传图片' }], getValueFromEvent: normFile})(
                                 <div>
                                     <Upload
                                         className="avatar-uploader"
@@ -109,7 +109,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                             )}
                         </FormItem>
                         <FormItem label="跳转URL">
-                            {getFieldDecorator('url', { rules: [{ required: true }] })(
+                            {getFieldDecorator('url', { rules: [{ required: true, message: '请输入跳转URL' }] })(
                                 <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>
