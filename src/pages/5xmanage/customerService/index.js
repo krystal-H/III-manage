@@ -43,6 +43,8 @@ export default ()=>{
         return closeWebsocket //组件卸载时关闭ws
     }, [])
     useEffect(() => {
+        console.log('---receiverId---',receiverId)
+        // setContent({data:[],isscroll:false})
         if(receiverId){
             pageRef.current = 1;
             getHistoryChat()
@@ -51,14 +53,14 @@ export default ()=>{
 
     //聊天内容变化处理滚动条：非滚动加载的内容 滚动到最底端；滚动加载完成向下滚动300px的内容
     useEffect(() => {
-        if(data.length>0){
+        if( data.length>0 && receiverId){
             let scrolltop = containerRef.current.scrollHeight;
             if(isscroll){
                 scrolltop = 300;
             }
             containerRef.current.scrollTop = scrolltop;
         }
-    }, [data,isscroll])
+    }, [data,isscroll,receiverId])
 
     
     //客户列表
@@ -86,7 +88,14 @@ export default ()=>{
             }else{
                 pageRef.current += 1;
             }
-            setContent( ({data}) => ({data:[ ...list.reverse(), ...data ],isscroll}))
+            setContent( ({data}) => {
+                let predata = isscroll && data || [];
+                return {
+                    data:[ ...list.reverse(), ...predata ],
+                    isscroll
+                }
+            })
+                
         });
     }
 
@@ -101,11 +110,27 @@ export default ()=>{
         };
         ws.onmessage =  ({data="{}"})=> {//接收到消息
             let onemsg = JSON.parse(data)
-            const {senderId,senderName} = onemsg;
-            if( senderName=='客服' || senderId==receiverId ){
-                setContent( ({data}) => ({data:[ ...data, onemsg ],isscroll:false}))
+            const {senderId,senderName,code} = onemsg;
+            if(code=="3002"){
+                notification.info({
+                    description: '已在其他地方上线'
+                })
+                setReceiverId(undefined);
+            }else if(code=="3001"){
+                notification.info({
+                    description: '非法登录'
+                })
+            }else{
+                setReceiverId(pre=>{
+                    console.log(222,onemsg,pre)
+                    if( senderName=='客服' || senderId==pre ){
+                        setContent( ({data}) => ({data:[ ...data, onemsg ],isscroll:false}))
+        
+                    }
+                    return pre
+                })
 
-            }
+            }   
         };
         ws.onclose = (e) =>{//检测到断开连接
             console.log("---断开连接----",e)
