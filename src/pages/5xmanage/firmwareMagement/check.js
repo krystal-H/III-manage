@@ -118,7 +118,7 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
                 })
                 data.forEach((item, index) => {
                     arr.push({
-                        deviceVersionType: keys[index].mode,
+                        deviceVersionType: keys[index].type,
                         firmwareTypeNo: item.firmwareTypeNo || 0,
                         firmwareTypeName: item.firmwareTypeName,
                         productId: actionData.productId,

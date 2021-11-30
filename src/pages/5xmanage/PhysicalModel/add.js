@@ -34,6 +34,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
             initData()
         }
     }, [])
+    //编辑初始化
     const initData = () => {
         getDetailInfo({ id: editId }).then(res => {
             if (res.data.code == 0) {
@@ -54,6 +55,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
             }
         })
     }
+    //提交
     const sundata = () => {
         if (editId) {
             validateFields().then(val => {
@@ -206,7 +208,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             )}
                         </Form.Item>
                         <FormItem label="模板设置" extra="支持格式：json">
-                            {getFieldDecorator('file', { getValueFromEvent: normFile, })(
+                            {getFieldDecorator('file', { rules: [{ required:editId ? false : true , message: '请上传文件'}],getValueFromEvent: normFile, })(
                                 <Upload customRequest={customRequest} listType="picture" accept='.json'
                                     beforeUpload={(file, fileList) => { return beforeUpload(file, fileList, ['json']) }}
                                     onChange={handleChange}
@@ -225,7 +227,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                             )}
                         </FormItem>
                         {
-                            fileListS.length ? <FormItem label="物模型详情">
+                             <FormItem label="物模型详情">
                                 <div>
                                     <Tabs activeKey={currentTab} onChange={tabcallback}>
                                         <TabPane tab="属性" key="1">
@@ -239,7 +241,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
                                         <TableCom dataSource={showData} pagination={false} />
                                     </div>
                                 </div>
-                            </FormItem> : null
+                            </FormItem> 
                         }
                     </Form>
                 </div>

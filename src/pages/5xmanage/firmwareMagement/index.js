@@ -85,7 +85,7 @@ function PanelMn({ form }) {
             key: 'status2',
             render: (val, record) => {
                 let text = record.status
-                if (text) {
+                if (text != 1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
                 return ''
