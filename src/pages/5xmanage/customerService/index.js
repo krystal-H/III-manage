@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Input, notification, Select } from 'antd'
 import { DateTool } from "../../../util/utils";
+import {UpFileToCloud} from '../../../components/UpFileToCloud';
+import {CheckUpFile} from '../../../components/CheckUpFile';
 import {axiosNobaseurl} from '../../../util/api.request';
 import './style.scss'
 let hostname = location.hostname ;
@@ -35,6 +37,7 @@ export default ()=>{
     const [customerLi, setCustomerLi] = useState([])
     const [receiverId, setReceiverId] = useState(undefined) //当前窗口的客户id
     const [senderNam, setSenderNam] = useState(undefined) //当前窗口的客户nam
+    const [bigImg, setBigImg] = useState("")
 
     const {data,isscroll} = content;
     
@@ -181,51 +184,84 @@ export default ()=>{
         }
     }
 
+    const imgChang = e=>{
+        e = e || window.event;
+        let target = e.target,
+            file = target.files[0];
+        if(!file) return false;
+        if(!CheckUpFile(target)) return false;
+        UpFileToCloud(file,(src)=>{
+            console.log(1111,src)
+            if(ws){
+                ws.send(sendMsg(`_img_${src}`,receiverId))
+            }else{
+                notification.info({
+                    description: '连线中'
+                })
+            }
+        })
+        
+    }
+
 
     return <div className='comm-contont-cardw'>
         <div className='customer-service-box'>
-        <div className='customer'>
-            <div className='list'>
-                {
-                    customerLi.map(({senderName,senderId})=>{
-                        return <div className={`a${receiverId==senderId?' cur':''}`}
-                            key={senderId} 
-                            onClick={()=>{selectCustomer(senderId,senderName)}}
-                         >
-                            <span> {senderName}</span>
-                        </div>
+            <div className='customer'>
+                <div className='list'>
+                    {
+                        customerLi.map(({senderName,senderId})=>{
+                            return <div className={`a${receiverId==senderId?' cur':''}`}
+                                key={senderId} 
+                                onClick={()=>{selectCustomer(senderId,senderName)}}
+                            >
+                                <span> {senderName}</span>
+                            </div>
 
-                    })
-                }
+                        })
+                    }
+                </div>
             </div>
-        </div>
-        {
-            receiverId && <div className="customer-service" >
-            <div className='tit'>{senderNam}</div>
-            <div className='content' ref={containerRef} onScrollCapture={scrolHandle}>
-                {
-                    data.map(({message,senderName,time},index)=>{
-                        return <div className={`onechat ${senderName=='客服'?'right':'left'}`}  key={index+'_'+time} >
-                                    <span className='bubble'>{message}</span>
-                                    <span className='time'>{DateTool.formateDate(time,'MM-dd hh:mm:ss',8)}</span>
-                                </div>
-    
-                    })
-                }
-            </div>
-            <div className='inputbox'>                                                                                                                                                                                             
-                <span className='imgbtn'></span>
-                <span className='sendbtn' onClick={sendHandle}>发送</span>
-                <Input.TextArea className='textarea' placeholder="输入回复 ......" maxLength={200}
-                    value={inputValue}
-                    onChange={changeInput}
-                    onPressEnter={sendHandle}
-                />
-            </div>
-            </div> || <div className='nosender'><div>喝杯茶吧，让精神抖擞起来。</div></div>
-        }
+            {
+                receiverId && <div className="customer-service" >
+                <div className='tit'>{senderNam}</div>
+                <div className='content' ref={containerRef} onScrollCapture={scrolHandle}>
+                    {
+                        data.map(({message='',senderName,time},index)=>{
+                            let isimg = '';
+                            if(message.indexOf('_img_')==0){
+                                isimg = message.slice(5)
+                            }
+                            return <div className={`onechat ${senderName=='客服'?'right':'left'}`}  key={index+'_'+time} >
+                                        { isimg ? <img className='img' src={isimg} onClick={ ()=>setBigImg(isimg)} /> :  
+                                        <span className='bubble'>{message}</span> 
+                                        }
+                                        <span className='time'>{DateTool.formateDate(time,'MM-dd hh:mm:ss',8)}</span>
+                                    </div>
+        
+                        })
+                    }
+                </div>
+                <div className='inputbox'> 
+                    <label className='upimgbtn' htmlFor='up'></label>
+                    <input className='file' id='up' type='file' data-format='gif,jpeg,jpg,png' data-maxsize={1024} 
+                        onChange={imgChang}
+                        accept='.gif,.jpeg,.jpg,.png'
+                    />
+
+                    <span className='sendbtn' onClick={sendHandle}>发送</span>
+                    <Input.TextArea className='textarea' placeholder="输入回复 ......" maxLength={200}
+                        value={inputValue}
+                        onChange={changeInput}
+                        onPressEnter={sendHandle}
+                    />
+                </div>
+                </div> || <div className='nosender'><div>喝杯茶吧，让精神抖擞起来。</div></div>
+            }
         
         </div> 
+        {
+            bigImg && <div onClick={()=>setBigImg("")} className="showbigimg-maskbox" title="点击关闭" > <img src={bigImg}/></div>
+        }
     </div>  
 
 }
