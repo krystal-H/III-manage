@@ -4,8 +4,7 @@ import TitleTab from '../../../components/TitleTab';
 import { getList, relData } from '../../../apis/firmwareMagement'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
-import CheckModal from './check'
-import './index.less'
+
 const FormItem = Form.Item
 const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }, { value: 3, label: '不通过' }]
 
@@ -72,7 +71,7 @@ function PanelMn({ form }) {
                 if (text == 1) {
                     return <span>待审核</span>
                 } else if (text == 2) {
-                    return <span style={{ color: '#008000' }}>已通过</span>
+                    return <span>已通过</span>
                 } else if (text == 3) {
                     return <span>未通过</span>
                 }
@@ -85,13 +84,14 @@ function PanelMn({ form }) {
             key: 'status2',
             render: (val, record) => {
                 let text = record.status
-                if (text != 1) {
+                if (text==1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
                 return ''
             }
         }
     ]
+
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
         if (pageRows === pager.pageRows) {
@@ -140,17 +140,32 @@ function PanelMn({ form }) {
             setPager({ pageIndex: 1, pageRows: 10 })
         }
     }
+
     //=======
     const openEdit = (data) => {
         setActionData(data)
         setCheckVisible(true)
     }
     const handleOk = () => {
-        setCheckVisible(false)
-        getTableData()
+        let params = {
+            status,
+            id: actionData.id
+        }
+        relData(params).then(res => {
+            if (res.data.code == 0) {
+                getTableData()
+                message.success('审核成功')
+                setCheckVisible(false)
+            }
+        })
+
     }
     const handleCancel = () => {
         setCheckVisible(false)
+    }
+    const [status, setStatus] = useState(2)
+    const changeStatus = val => {
+        setStatus(val.target.value)
     }
     return (
         <div className="panelMn-page">
@@ -163,12 +178,12 @@ function PanelMn({ form }) {
                                 return val.replace(/[^\d]/g, '');
                             }
                         })(
-                            <Input placeholder="请输入产品ID" style={{ width: 240 }} allowClear></Input>
+                            <Input placeholder="请输入产品ID" style={{ width: 240 }} ></Input>
                         )}
                     </FormItem>
                     <FormItem label="状态">
                         {getFieldDecorator('status')(
-                            <Select style={{ width: 160 }} placeholder="请选择状态" allowClear>
+                            <Select style={{ width: 160 }} placeholder="请选择状态">
                                 {
                                     optionArr.map((item, index) => (
                                         <Select.Option key={item.value} value={item.value} label={item.label}>
@@ -201,7 +216,20 @@ function PanelMn({ form }) {
                     }} />
             </Card>
             {
-                checkVisible && <CheckModal checkVisible={checkVisible} handleOk={handleOk} handleCancel={handleCancel} actionData={actionData} />
+                <Modal
+                    title="固件审核"
+                    visible={checkVisible}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                >
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        <span>审核结果：</span>
+                        <Radio.Group value={status} buttonStyle="solid" onChange={changeStatus}>
+                            <Radio.Button value={2}>通过</Radio.Button>
+                            <Radio.Button value={3}>不通过</Radio.Button>
+                        </Radio.Group>
+                    </div>
+                </Modal>
             }
         </div>
     )
