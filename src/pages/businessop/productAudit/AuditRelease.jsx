@@ -26,7 +26,7 @@ class AuditRelease extends Component {
 
     // 审核
     handleAudit = () => {
-        const { id } = this.props.match.params;
+        const { productId, id } = this.props.match.params;
         const _this = this;
         Modal.confirm({
             width: 520,
@@ -40,6 +40,7 @@ class AuditRelease extends Component {
             ),
             onOk() {
                 _this.props.updateAuditStatus({ id, ..._this.refDadio.state })
+                _this.props.getAuditData({ productId, id })
             },
             onCancel() { }
         });
@@ -48,6 +49,7 @@ class AuditRelease extends Component {
     render() {
         const { productId } = this.props.match.params;
         const { auditDetail } = this.props;
+        console.log(this.props,'---')
         const { statu, statuName, remark } = auditDetail;
         const { showProductDetail } = this.state
 
@@ -68,7 +70,7 @@ class AuditRelease extends Component {
                             <h3>审核状态</h3>
                             <div className="info-item">
                                 <span className="label">审核结果：</span>
-                                <span>{statuName}</span>
+                                <span>{statu === 1 ? '通过' : statu === 2 ? '不通过' : ''}</span>
                             </div>
                             {
                                 statu === 2 ?

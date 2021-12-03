@@ -40,7 +40,7 @@ class HttpRequest {
     instance.interceptors.response.use(res => {
       let config = res.config;
       if(url.indexOf("getModuleApplyListByPage")){
-        console.log(4,config)
+        // console.log(4,config)
     
       }
       if(loading){
