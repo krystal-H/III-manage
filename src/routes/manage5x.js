@@ -22,6 +22,10 @@ const CustomerService = asyncComponent(() => import('../pages/5xmanage/customerS
 // 权限管理  修改开放平台菜单/新增接口权限
 const authManagement = asyncComponent(() => import('../pages/5xmanage/authManagement'))
 
+
+const proFirmwareUpdate = asyncComponent(() => import('../pages/5xmanage/proFirmwareUpdate'))
+
+
 const route = {
   icon: "setting",
   name: '5.X管理',
@@ -42,6 +46,11 @@ const route = {
       name: '模组&固件管理',
       path: '/5xmanage/moduleFirmwareManagement',
       component: moduleManagement
+    },
+    {
+      name: '产品模组升级',
+      path: '/5xmanage/proFirmwareUpdate',
+      component: proFirmwareUpdate,
     },
     {
       name: '工单管理',

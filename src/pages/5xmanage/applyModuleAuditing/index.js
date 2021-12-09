@@ -106,7 +106,7 @@ handleCancel = () => {
 }
 
   render() {
-    const { searchName, searchType, list, pager,id, status, productId } = this.state;
+    const { searchName, searchType, list, pager,id, status, productId,pageIndex } = this.state;
     
     return (
       <div className="apply-modul-auditing">
@@ -128,7 +128,7 @@ handleCancel = () => {
           </div>
         </TitleTab>
         <div className="comm-contont-card">
-            <Table rowKey={"id"} columns={this.column} dataSource={list} pager={pager} onPageChange={this.getList} />
+            <Table rowKey={"id"} columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
         </div>
 
         <Detail id={id} status={status} closeDetail={()=>{this.setState({id:undefined})}} getList={this.getList} />
