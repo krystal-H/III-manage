@@ -111,6 +111,7 @@ function Detail({
             maskClosable={false}
             onCancel={close}
             onOk={finishComit}
+            okText='升级通知'
             wrapClassName="ota_add_firmware_dialog"
             // afterClose={resetFields}
         >
