@@ -86,10 +86,10 @@ getList=(index)=>{
           <div className="comm-title-search-box">
 
             <span className="labeknam">关键字：</span>
-            <Input value={searchKey} placeholder="输入生产厂商或模组型号" maxLength={10} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchKey",e.target.value || undefined)}}/>
+            <Input value={searchKey} placeholder="请输入生产厂商或模组型号" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchKey",e.target.value || undefined)}}/>
 
             <span className="labeknam">产品名称：</span>
-            <Input value={searchName} placeholder="输入产品名称查询" maxLength={10} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchName",e.target.value || undefined)}}/>
+            <Input value={searchName} placeholder="请输入产品名称" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchName",e.target.value || undefined)}}/>
             
             <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
