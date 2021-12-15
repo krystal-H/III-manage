@@ -19,7 +19,9 @@ const MacAllocation = asyncComponent(() => import( /* webpackChunkName: "configd
 const InterfaceRole = asyncComponent(() => import( /* webpackChunkName: "configdata" */ '../pages/configdata/interfaceRole'))
 const InterfaceUser = asyncComponent( () => import(/* webpackChunkName: "businessdata" */ '../pages/configdata/interfaceUser'));
 
-const ProtocolTag = asyncComponent( () => import(/* webpackChunkName: "businessdata" */ '../pages/configdata/protocolTag/TagList'));
+const ProtocolTag = asyncComponent(() => import(/* webpackChunkName: "businessdata" */ '../pages/configdata/protocolTag/TagList'));
+
+const VoiceAudit = asyncComponent(() => import('../pages/configdata/voiceAudit'))
 
 /* add by lcp at 2019-10-12 09:57 */
 //const DataCollection = asyncComponent(() => import( /* webpackChunkName: "configdata" */ '../pages/configdata/dataCollection'))
@@ -228,6 +230,11 @@ const route = {
       path: '/config/interfaceUser',
       component: InterfaceUser
     },
+    {
+      name: '语音方案审核',
+      path: '/config/voiceAudit',
+      component: VoiceAudit
+    }
   ]
 }
 

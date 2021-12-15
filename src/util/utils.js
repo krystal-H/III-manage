@@ -20,6 +20,27 @@ export const fileHost = (function () {
 })();
 
 
+/**
+ *
+ * @param str 需要转换的字符串
+ * @param num 中间转成“*”的字符数
+ * @returns {string}
+ */
+ export function strToAsterisk(str, num) {
+    str = str + '';
+    let totallength = str.length;
+    if (num < totallength) {
+        let frontlen = Math.floor((totallength - num) / 2);
+
+        let frontstr = str.substring(0, frontlen),
+            betweenstr = str.substring(frontlen, frontlen + num),
+            afterstr = str.substring(frontlen + num),
+            starstr = betweenstr.replace(/\S/g, '*');
+        return frontstr + starstr + afterstr;
+    } else {
+        return str.replace(/\S/g, '*');
+    }
+}
 
 export const JSTool = {
     filterParam(obj) {  // 对对象直接量进行过滤（不含空值）

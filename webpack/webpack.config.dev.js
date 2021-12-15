@@ -27,7 +27,7 @@ const dev = {
       target: 'https://dp.clife.net',
       // target: 'https://itest.clife.net/',
         // target: 'https://cms.clife.cn',
-        // target:'http://10.6.50.121:8080/',
+        // target:'http://10.6.50.139:8087/',
         // target:'http://10.6.50.96:8088/',
         
         
