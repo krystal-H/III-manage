@@ -30,7 +30,7 @@ function VoiceAudit({ form }) {
     { title: "状态", dataIndex: 'mode', key: 'mode', width: "102px", render: (item) => (<span>{modeList[item] || ''}</span>) },
     { title: "创建账号", dataIndex: 'email', key: 'email', render: (text) => <span title={text}>{text}</span> },
     {
-      title: "创建时间", dataIndex: 'createTime', key: 'createTime',
+      title: "创建时间", dataIndex: 'createTime', key: 'createTime', width: 180,
       render: (item) => {
         let timeStr = DateTool.utc2beijing(item, "yyyy-MM-dd hh:mm:ss")
         return <span title={timeStr}>{timeStr}</span>
