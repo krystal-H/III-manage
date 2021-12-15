@@ -20,7 +20,7 @@ function AuditDetail({ visible, handleOk, handleCancel, productId, opeType }) {
       title: '语音能力ID',
       dataIndex: 'abilityId',
       key: 'abilityId',
-      width: 120
+      width: 100
     },
     {
       title: '语音能力名称',
@@ -53,7 +53,7 @@ function AuditDetail({ visible, handleOk, handleCancel, productId, opeType }) {
       title: '操作状态',
       dataIndex: 'operation',
       key: 'operation',
-      width: 120,
+      width: 80,
       render: (text) => <span>{text == 0 ? '移除' : text == 1 ? '新增' : ''}</span>
     }
   ];
