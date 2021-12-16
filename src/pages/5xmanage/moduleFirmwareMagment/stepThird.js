@@ -563,7 +563,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         schemeType === 3 &&
         <>
-          <Form.Item label="原厂SDK" extra="请上传格式为.zip源文件压缩包">
+          <Form.Item label="原厂SDK" extra="请上传格式为.zip压缩包，大小40M的文件">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("sourceCode", {
                 initialValue: editInfo.sourceCode,
@@ -593,7 +593,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
               </div>
             </Form.Item>
           </Form.Item>
-          <Form.Item label="clifeSDK" extra="请上传格式为.zip的clifeSDK">
+          <Form.Item label="clifeSDK" extra="请上传格式为.zip压缩包，大小40M的文件">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }}>
               {getFieldDecorator("libraryFile", {
                 initialValue: editInfo.libraryFile,
@@ -629,7 +629,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
       {
         (schemeType === 1 || schemeType === 2 || schemeType === 3) &&
         <>
-          <Form.Item label="模组图片" extra="请上传格式为.png，小于500k图片" wrapperCol={{ span: 13 }}>
+          <Form.Item label="模组图片" extra="请上传格式为.png、尺寸为119*119px、小于500k的图片" wrapperCol={{ span: 13 }}>
             {getFieldDecorator("modulePicture", {
               initialValue: editData.modulePicture || '',
               rules: [{ required: false, message: "请上传一张图片" }]
