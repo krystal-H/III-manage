@@ -44,7 +44,7 @@ function VoiceAudit({ form }) {
       }
     },
     {
-      title: "操作", dataIndex: 'operation', key: 'operation', width: 180,
+      title: "操作", dataIndex: 'operation', key: 'operation',
       render: (text, record) => {
         return (
           <div>
