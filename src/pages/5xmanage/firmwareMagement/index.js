@@ -15,6 +15,7 @@ function PanelMn({ form }) {
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [checkVisible, setCheckVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [actionData, setActionData] = useState({})
     const column = [
         {
@@ -120,13 +121,13 @@ function PanelMn({ form }) {
             params.status = getFieldsValue().status
         }
         params = { ...params, ...pager }
+        setLoading(true)
         getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.records)
                 setTotalRows(res.data.data.totalRows)
             }
-
-        })
+        }).finally(() => { setLoading(false) })
     }
     //重置
     const handleReset = () => {
@@ -190,6 +191,7 @@ function PanelMn({ form }) {
             </TitleTab>
             <Card>
                 <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
+                loading={loading}
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,

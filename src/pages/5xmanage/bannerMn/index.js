@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message } from 'antd';
 import TitleTab from '../../../components/TitleTab';
 import TableCom from '../../../components/Table';
-import { getList, relData,delData } from '../../../apis/bannerMn'
+import { getList, relData, delData } from '../../../apis/bannerMn'
 import AddModal from './add';
 import './index.less'
 import { DateTool } from '../../../util/utils';
@@ -19,6 +19,7 @@ function FirmwareMagement({ form }) {
     const [addVis, setAddVis] = useState(false)
     const [showImg, setShowImg] = useState(false)
     const [actionData, setActionData] = useState({})
+    const [loading, setLoading] = useState(false)
     useEffect(() => {
         getTableData()
     }, [pager.pageRows, pager.pageIndex])
@@ -29,12 +30,13 @@ function FirmwareMagement({ form }) {
             params.bannerName = getFieldsValue().bannerName.trim()
         }
         params = { ...params, ...pager }
+        setLoading(true)
         getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.list)
                 setTotalRows(res.data.data.pager.totalRows)
             }
-        })
+        }).finally(() => { setLoading(false) })
     }
     //状态
     const getStatus = (val = 0) => {
@@ -206,6 +208,7 @@ function FirmwareMagement({ form }) {
             </TitleTab>
             <Card>
                 <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
+                    loading={loading}
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,
@@ -226,7 +229,7 @@ function FirmwareMagement({ form }) {
                     onCancel={() => { setShowImg(false) }}
                 >
                     <div className='banner-img-wrap'>
-                        <img src={actionData.imageUrl}/>
+                        <img src={actionData.imageUrl} />
                     </div>
                 </Modal>
             }

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Card, Form, Input, Button, Select, Tooltip } from 'antd'
+import { Card, Form, Input, Button, Select, Tooltip, Modal,notification } from 'antd'
 import { actionCreators } from './store';
 import TableCom from '../../../components/Table';
 import { DateTool } from "../../../util/utils";
 import TitleTab from '../../../components/TitleTab';
 import TableHOC from '../../../components/TableHOC';
-
+import { changeProductStatus } from '../../../apis/product';
 const FormItem = Form.Item
 
 const modeList = {
@@ -31,7 +31,29 @@ class ProductList extends Component {
     sessionStorage.setItem('listItem', JSON.stringify(record))
     this.props.history.push(`./${record.productId}`);
   }
+  recoverStatus = (record) => {
+    const _this = this
+    Modal.confirm({
+      title: "变更产品状态确认",
+      content: "若产品已生产或出贷到消费者端，修改产品则可能导致设备功能异常、配网异常等问题，请谨慎操作及确定无影响。",
+      onOk() {
+        let params = {
+          productId: record.productId,
+          mode: 0
+        }
+        changeProductStatus(params).then(res => {
+          if (res.data.code === 0) {
+            notification.success({
+              message: '提示',
+              description: '更新成功' 
+            })
+            _this.props.onFilter()
+          }
 
+        })
+      }
+    });
+  }
   column = [
     { title: "产品名称", dataIndex: 'productName', key: 'productName', width: "20%", render: (text) => <span title={text}>{text}</span> },
     { title: "产品ID", dataIndex: 'productId', key: 'productId', width: "10%" },
@@ -45,12 +67,21 @@ class ProductList extends Component {
       }
     },
     {
-      title: "操作", dataIndex: 'operation', key: 'operation', width: 66,
-      render: (text,record) => {
+      title: "操作", dataIndex: 'operation', key: 'operation', width: 106,
+      render: (text, record) => {
         return (
-          <Tooltip placement="top" title="查看">
-            <Button icon="info" shape="circle" size="small" onClick={this.handleClick.bind(this, record)}/>
-        </Tooltip>
+          <>
+            <Tooltip placement="top" title="查看">
+              <Button icon="info" shape="circle" size="small" onClick={this.handleClick.bind(this, record)} />
+            </Tooltip>
+            {
+              record.mode === 1 && <>
+                &nbsp; | &nbsp;
+                <Tooltip placement="top" title="状态重置">
+                  <Button icon="retweet" shape="circle" size="small" onClick={this.recoverStatus.bind(this, record)} />
+                </Tooltip></>
+            }
+          </>
         )
       }
     }
@@ -95,8 +126,8 @@ class ProductList extends Component {
           </Form>
         </TitleTab>
         <Card>
-          <TableCom rowKey={"productId"} columns={this.column} dataSource={productList} 
-              pager={pager} onPageChange={this.props.onChange} loading={loading} />
+          <TableCom rowKey={"productId"} columns={this.column} dataSource={productList}
+            pager={pager} onPageChange={this.props.onChange} loading={loading} />
         </Card>
       </div>
     )
