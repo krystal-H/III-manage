@@ -27,7 +27,7 @@ const proFirmwareUpdate = asyncComponent(() => import('../pages/5xmanage/proFirm
 
 
 const route = {
-  icon: "setting",
+  icon: "tool",
   name: '5.X管理',
   path: '/5xmanage',
   redirect: '/5xmanage/schemeManagement',
