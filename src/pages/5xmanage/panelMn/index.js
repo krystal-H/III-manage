@@ -21,6 +21,7 @@ function PanelMn({ form }) {
   const [editVis, setEditVis] = useState(false)
   const [actionData, setActionData] = useState({})
   const [modelType, setModelType] = useState('')
+  const [loading, setLoading] = useState(false) //antd的loading控制
   const column = [
     {
       title: '面板ID',
@@ -141,13 +142,14 @@ function PanelMn({ form }) {
       params.deviceTypeId = getFieldsValue().deviceTypeId
     }
     params = { ...params, ...pager }
+    setLoading(true)
     getList(params).then(res => {
       if (res.data.code == 0) {
         setdataSource(res.data.data.list)
         setTotalRows(res.data.data.pager.totalRows)
       }
 
-    })
+    }).finally(() => { setLoading(false) })
   }
   //重置
   const handleReset = () => {
@@ -222,6 +224,7 @@ function PanelMn({ form }) {
       </TitleTab>
       <Card>
         <TableCom rowKey={"templateId"} columns={column} dataSource={dataSource}
+          loading={loading}
           pagination={{
             defaultCurrent: 1,
             current: pager.pageIndex,

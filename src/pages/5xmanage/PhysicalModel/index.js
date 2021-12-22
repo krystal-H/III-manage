@@ -15,6 +15,8 @@ function PhysicalModel({ form }) {
   const [optionList, setOptionList] = useState([])
   const [addVis, setAddVis] = useState(false)
   const [editId, setEditId] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [totalRows, setTotalRows] = useState(0)
   const column = [
     {
       title: '物模型ID',
@@ -105,7 +107,7 @@ function PhysicalModel({ form }) {
     getData()
   }, [pager.pageRows, pager.pageIndex])
   //列表
-  const [totalRows, setTotalRows] = useState(0)
+
   const getData = () => {
     let params = {}
     if (getFieldsValue().name && getFieldsValue().name.trim()) {
@@ -115,10 +117,11 @@ function PhysicalModel({ form }) {
       params.deviceTypeId = getFieldsValue().deviceTypeId
     }
     params = { ...params, ...pager }
+    setLoading(true)
     getList(params).then(res => {
       setdataSource(res.data.data.list)
       setTotalRows(res.data.data.pager.totalRows)
-    })
+    }).finally(() => { setLoading(false) })
   }
   //下拉
   const getOption = () => {
@@ -199,6 +202,7 @@ function PhysicalModel({ form }) {
       </TitleTab>
       <Card>
         <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
+          loading={loading}
           pagination={{
             defaultCurrent: 1,
             current: pager.pageIndex,

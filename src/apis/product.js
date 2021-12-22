@@ -28,3 +28,12 @@ export const getServer = (productId) => {
     method: 'get'
   })
 }
+//改变产品状态
+export const changeProductStatus = (data) => {
+  return axios.request({
+    url: prefix+'/product/modifyProductMode',
+    data,
+    method: 'post',
+    headers: {}
+  })
+}
