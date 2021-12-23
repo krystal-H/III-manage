@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react'
 import { Card, Form, Input, Button, Select, Tooltip, Modal, message } from 'antd'
 import TitleTab from '../../../components/TitleTab'
 import TableCom from '../../../components/Table'
+import {
+  conditionTypeListRequest,
+  conditionDicListRequest,
+  sceneProductListRequest,
+  AIAbilityListRequest
+} from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 
 const { Option } = Select
 
-const optionMap = ['场景产品列表', '条件类型列表', '条件字典列表', 'AI能力列表']
 const btnArr = [
   { title: "编辑", icon: "edit", status: 0, key: 1 },
   { title: "删除", icon: "delete", status: 0, key: 2 }
 ]
+const optionMap = ['场景产品列表', '条件类型列表', '条件字典列表', 'AI能力列表']
 
 function SceneLibList({ form }) {
   const { getFieldDecorator, getFieldsValue } = form
@@ -92,24 +98,24 @@ function SceneLibList({ form }) {
   const conditionTypeColumns = [
     {
       title: '条件类型名称',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'conditionOptionName',
+      key: 'conditionOptionName',
     },
     {
       title: '备注',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'comments',
+      key: 'comments',
     },
     {
       title: '编辑时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'createTime',
+      key: 'createTime',
     },
     {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
-      width: "100px",
+      width: "10%",
       render: (text, record) => (
         <div>
           {btnArr.map((value, index) => {
@@ -119,7 +125,7 @@ function SceneLibList({ form }) {
                   shape="circle"
                   size="small"
                   icon={value.icon}
-                  key={record.key}
+                  key={record.conditionTypeId}
                 // onClick={() => this.handleDelete(item, value)}
                 />
               </Tooltip>
@@ -134,24 +140,29 @@ function SceneLibList({ form }) {
   const conditionDicColumns = [
     {
       title: '条件字典名称',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'conditionName',
+      key: 'conditionName',
     },
     {
       title: '条件类型',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'conditionOptionName',
+      key: 'conditionOptionName',
+    },
+    {
+      title: '类型',
+      dataIndex: 'paramStyleName',
+      key: 'paramStyleName'
     },
     {
       title: '编辑时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
     {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
-      width: "100px",
+      width: "10%",
       render: (text, record) => (
         <div>
           {btnArr.map((value, index) => {
@@ -161,7 +172,7 @@ function SceneLibList({ form }) {
                   shape="circle"
                   size="small"
                   icon={value.icon}
-                  key={record.key}
+                  key={record.conditionId}
                 // onClick={() => this.handleDelete(item, value)}
                 />
               </Tooltip>
@@ -208,7 +219,7 @@ function SceneLibList({ form }) {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
-      width: "100px",
+      width: "10%",
       render: (text, record) => (
         <div>
           {btnArr.map((value, index) => {
@@ -229,7 +240,7 @@ function SceneLibList({ form }) {
     }
   ]
 
-  // columns映射
+  // columns列映射
   const mapColumns = {
     '1': sceneColumns,
     '2': conditionTypeColumns,
@@ -239,23 +250,25 @@ function SceneLibList({ form }) {
 
   // 获取列表数据
   const getTableData = () => {
-    // setLoading(true)
-    const params = {
-      ...form.getFieldsValue(),
-      ...pager
+    const variableName = {
+      '1': sceneProductListRequest, // 场景产品列表
+      '2': conditionTypeListRequest, // 条件类型接口
+      '3': conditionDicListRequest, // 条件字典接口
+      '4': AIAbilityListRequest, // AI能力列表
     }
-    console.log('asdada', params)
-    // ModuleListRequest(params).then(res => {
-    //   if (res.data.code === 0) {
-    //     setDataSource(res.data.data.list)
-    //     setTotalRows(res.data.data.pager.totalRows)
-    //   }
-    // }).finally(() => { setLoading(false) })
+    const params = { ...form.getFieldsValue(), ...pager }
+    setLoading(true)
+    variableName[selectVal](params).then(res => {
+      if (res.data.code === 0) {
+        setDataSource(res.data.data.list)
+        setTotalRows(res.data.data.pager.totalRows)
+      }
+    }).finally(() => { setLoading(false) })
   }
 
   useEffect(() => {
     getTableData()
-  }, [pager.pageRows, pager.pageIndex])
+  }, [pager.pageRows, pager.pageIndex, selectVal])
 
   // 搜索按钮触发,默认请求第一页的数据
   const searchClick = () => {
@@ -285,7 +298,8 @@ function SceneLibList({ form }) {
       <div className="scene-lib-page">
         <TitleTab title="场景库管理" className="title-box">
           <div className="select-box">
-            <Select defaultValue="1" onChange={(val) => setSelectVal(val)} style={{ width: 150 }}>
+            <Select defaultValue="1" style={{ width: 150 }}
+              onChange={(val) => setSelectVal(val)}>
               {
                 optionMap.map((item, index) => (
                   <Option key={item} value={index + 1 + ''}>{item}</Option>
@@ -391,7 +405,9 @@ function SceneLibList({ form }) {
         </TitleTab>
 
         <Card className='ModuleManagerListTable' style={{ marginTop: 10 }}>
-          <TableCom rowKey="moduleId" bordered
+          <TableCom
+            rowKey="moduleId"
+            bordered
             columns={mapColumns[selectVal]}
             dataSource={dataSource}
             loading={loading}
@@ -400,10 +416,12 @@ function SceneLibList({ form }) {
               current: pager.pageIndex,
               onChange: pagerChange,
               pageSize: pager.pageRows,
-              total: totalRows,
+              // total: totalRows,
+              total: dataSource.length || 0,
               showQuickJumper: true,
               pageSizeOptions: ['10'],
-              showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+              // showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+              showTotal: () => <span>共 <a>{dataSource.length || 0}</a> 条</span>
             }}
           />
         </Card>
