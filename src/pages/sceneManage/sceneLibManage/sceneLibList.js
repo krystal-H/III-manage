@@ -20,6 +20,7 @@ function SceneLibList({ form }) {
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [selectVal, setSelectVal] = useState('1') // 列表类型切换
 
+  // 场景产品列表
   const sceneColumns = [
     {
       title: '产品名称',
@@ -63,7 +64,6 @@ function SceneLibList({ form }) {
       key: '',
     },
     {
-
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
@@ -88,6 +88,190 @@ function SceneLibList({ form }) {
     }
   ]
 
+  // 条件类型列表
+  const conditionTypeColumns = [
+    {
+      title: '条件类型名称',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '备注',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '编辑时间',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      width: "100px",
+      render: (text, record) => (
+        <div>
+          {btnArr.map((value, index) => {
+            return (
+              <Tooltip key={index} placement="top" title={value.title}>
+                <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
+                  shape="circle"
+                  size="small"
+                  icon={value.icon}
+                  key={record.key}
+                // onClick={() => this.handleDelete(item, value)}
+                />
+              </Tooltip>
+            )
+          })}
+        </div>
+      )
+    }
+  ]
+
+  // 条件字典列表
+  const conditionDicColumns = [
+    {
+      title: '条件字典名称',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '条件类型',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '编辑时间',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      width: "100px",
+      render: (text, record) => (
+        <div>
+          {btnArr.map((value, index) => {
+            return (
+              <Tooltip key={index} placement="top" title={value.title}>
+                <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
+                  shape="circle"
+                  size="small"
+                  icon={value.icon}
+                  key={record.key}
+                // onClick={() => this.handleDelete(item, value)}
+                />
+              </Tooltip>
+            )
+          })}
+        </div>
+      )
+    }
+  ]
+
+  // AI能力列表
+  const AIColumns = [
+    {
+      title: '能力名称',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '接口地址',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '输入',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '输出',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '描述',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '编辑时间',
+      dataIndex: '',
+      key: '',
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      width: "100px",
+      render: (text, record) => (
+        <div>
+          {btnArr.map((value, index) => {
+            return (
+              <Tooltip key={index} placement="top" title={value.title}>
+                <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
+                  shape="circle"
+                  size="small"
+                  icon={value.icon}
+                  key={record.key}
+                // onClick={() => this.handleDelete(item, value)}
+                />
+              </Tooltip>
+            )
+          })}
+        </div>
+      )
+    }
+  ]
+
+  // columns映射
+  const mapColumns = {
+    '1': sceneColumns,
+    '2': conditionTypeColumns,
+    '3': conditionDicColumns,
+    '4': AIColumns
+  }
+
+  // 获取列表数据
+  const getTableData = () => {
+    // setLoading(true)
+    const params = {
+      ...form.getFieldsValue(),
+      ...pager
+    }
+    console.log('asdada', params)
+    // ModuleListRequest(params).then(res => {
+    //   if (res.data.code === 0) {
+    //     setDataSource(res.data.data.list)
+    //     setTotalRows(res.data.data.pager.totalRows)
+    //   }
+    // }).finally(() => { setLoading(false) })
+  }
+
+  useEffect(() => {
+    getTableData()
+  }, [pager.pageRows, pager.pageIndex])
+
+  // 搜索按钮触发,默认请求第一页的数据
+  const searchClick = () => {
+    if (pager.pageIndex === 1) {
+      getTableData()
+    } else {
+      setPager({ pageIndex: 1, pageRows: 10 })
+    }
+  }
+
+  // 重置按钮触发
+  const reset = () => {
+    form.resetFields()
+    searchClick()
+  }
+
   // 翻页
   const pagerChange = (pageIndex, pageRows) => {
     setPager(pre => {
@@ -95,7 +279,7 @@ function SceneLibList({ form }) {
       return Object.assign(obj, { pageIndex: pageRows === pager.pageRows ? pageIndex : 1, pageRows })
     })
   }
-  
+
   return (
     <div>
       <div className="scene-lib-page">
@@ -104,7 +288,7 @@ function SceneLibList({ form }) {
             <Select defaultValue="1" onChange={(val) => setSelectVal(val)} style={{ width: 150 }}>
               {
                 optionMap.map((item, index) => (
-                  <Option key={item} value={index + 1 + ''}>场景产品列表</Option>
+                  <Option key={item} value={index + 1 + ''}>{item}</Option>
                 ))
               }
             </Select>
@@ -136,6 +320,61 @@ function SceneLibList({ form }) {
                   </Form.Item>
                 </>
               }
+              {/* 条件类型列表-查询 */}
+              {
+                selectVal === '2' && <>
+                  <Form.Item label="条件类型名称">
+                    {getFieldDecorator('productName', {
+                      getValueFromEvent: (e) => {
+                        const val = e.target.value;
+                        return val.replace(/[^\d]/g, '');
+                      }
+                    })(
+                      <Input placeholder="请输入条件类型名称" style={{ width: 240 }}></Input>
+                    )}
+                  </Form.Item>
+                </>
+              }
+              {/* 条件字典列表-查询 */}
+              {
+                selectVal === '3' && <>
+                  <Form.Item label="条件字典名称">
+                    {getFieldDecorator('productName', {
+                      getValueFromEvent: (e) => {
+                        const val = e.target.value;
+                        return val.replace(/[^\d]/g, '');
+                      }
+                    })(
+                      <Input placeholder="请输入条件字典名称" style={{ width: 240 }}></Input>
+                    )}
+                  </Form.Item>
+                  <Form.Item label="条件类型">
+                    {getFieldDecorator('productName', {
+                      getValueFromEvent: (e) => {
+                        const val = e.target.value;
+                        return val.replace(/[^\d]/g, '');
+                      }
+                    })(
+                      <Input placeholder="请输入条件类型" style={{ width: 240 }}></Input>
+                    )}
+                  </Form.Item>
+                </>
+              }
+              {/* AI能力列表-查询 */}
+              {
+                selectVal === '4' && <>
+                  <Form.Item label="AI能力列表">
+                    {getFieldDecorator('productName', {
+                      getValueFromEvent: (e) => {
+                        const val = e.target.value;
+                        return val.replace(/[^\d]/g, '');
+                      }
+                    })(
+                      <Input placeholder="请输入AI能力列表" style={{ width: 240 }}></Input>
+                    )}
+                  </Form.Item>
+                </>
+              }
               <Form.Item>
                 <Button type="primary" onClick={() => searchClick()}>查询</Button>
               </Form.Item>
@@ -153,7 +392,7 @@ function SceneLibList({ form }) {
 
         <Card className='ModuleManagerListTable' style={{ marginTop: 10 }}>
           <TableCom rowKey="moduleId" bordered
-            columns={sceneColumns}
+            columns={mapColumns[selectVal]}
             dataSource={dataSource}
             loading={loading}
             pagination={{
