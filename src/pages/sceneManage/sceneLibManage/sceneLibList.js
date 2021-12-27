@@ -6,15 +6,19 @@ import {
   conditionTypeListRequest,
   conditionDicListRequest,
   sceneProductListRequest,
-  AIAbilityListRequest
+  AIAbilityListRequest,
+  deleteConditionTypeRequest,
+  getConditonTypeDetailRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
+import ConditionTypeModal from './conditionTypeModal'
 
 const { Option } = Select
+const { confirm } = Modal
 
 const btnArr = [
-  { title: "编辑", icon: "edit", status: 0, key: 1 },
-  { title: "删除", icon: "delete", status: 0, key: 2 }
+  { title: "编辑", icon: "edit", status: 0, key: 1, type: 'edit' },
+  { title: "删除", icon: "delete", status: 0, key: 2, type: 'delete' }
 ]
 const optionMap = ['场景产品列表', '条件类型列表', '条件字典列表', 'AI能力列表']
 
@@ -25,6 +29,9 @@ function SceneLibList({ form }) {
   const [dataSource, setDataSource] = useState([{}])
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [selectVal, setSelectVal] = useState('1') // 列表类型切换
+
+  const [conditionTypeVisible, setConditionTypeVisible] = useState(false) // 条件类型弹窗
+  const [conditionTypeDetailData, setConditionTypeDetailData] = useState({}) // 条件类型详情数据
 
   // 场景产品列表
   const sceneColumns = [
@@ -84,7 +91,7 @@ function SceneLibList({ form }) {
                   size="small"
                   icon={value.icon}
                   key={record.key}
-                // onClick={() => this.handleDelete(item, value)}
+                // onClick={() => this.handleDeleteOpe(item, value)}
                 />
               </Tooltip>
             )
@@ -108,8 +115,8 @@ function SceneLibList({ form }) {
     },
     {
       title: '编辑时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
     {
       title: '操作',
@@ -118,15 +125,15 @@ function SceneLibList({ form }) {
       width: "10%",
       render: (text, record) => (
         <div>
-          {btnArr.map((value, index) => {
+          {btnArr.map((item, index) => {
             return (
-              <Tooltip key={index} placement="top" title={value.title}>
+              <Tooltip key={index} placement="top" title={item.title}>
                 <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
                   shape="circle"
                   size="small"
-                  icon={value.icon}
-                  key={record.conditionTypeId}
-                // onClick={() => this.handleDelete(item, value)}
+                  icon={item.icon}
+                  key={record.conditionOptionId}
+                  onClick={() => handleDeleteOpe(item, record)}
                 />
               </Tooltip>
             )
@@ -173,7 +180,7 @@ function SceneLibList({ form }) {
                   size="small"
                   icon={value.icon}
                   key={record.conditionId}
-                // onClick={() => this.handleDelete(item, value)}
+                // onClick={() => this.handleDeleteOpe(item, value)}
                 />
               </Tooltip>
             )
@@ -230,7 +237,7 @@ function SceneLibList({ form }) {
                   size="small"
                   icon={value.icon}
                   key={record.key}
-                // onClick={() => this.handleDelete(item, value)}
+                // onClick={() => this.handleDeleteOpe(item, value)}
                 />
               </Tooltip>
             )
@@ -246,6 +253,50 @@ function SceneLibList({ form }) {
     '2': conditionTypeColumns,
     '3': conditionDicColumns,
     '4': AIColumns
+  }
+
+  // 编辑/删除 判断
+  const handleDeleteOpe = (item, record) => {
+    if (item.type === 'delete') {
+      confirm({
+        content: '是否确定删除本条数据？',
+        okText: '确定',
+        okType: 'danger',
+        cancelText: '取消',
+        onOk: () => {
+          deleteCommonFunc(record)
+        },
+        onCancel() { },
+      })
+    } else if (item.type === 'edit') {
+      getCommonDetail(record)
+    }
+  }
+
+  // 删除操作
+  const deleteCommonFunc = (record) => {
+    if (selectVal === '2') {// 条件类型的删除
+      deleteConditionTypeRequest({ conditionOptionId: record.conditionOptionId })
+        .then(res => {
+          if (res.data.code === 0) {
+            message.success('删除成功')
+            getTableData()
+          }
+        })
+    }
+  }
+
+  // 获取编辑详情
+  const getCommonDetail = (record) => {
+    if (selectVal === '2') {// 条件类型 详情
+      setConditionTypeVisible(true)
+      getConditonTypeDetailRequest({ conditionOptionId: record.conditionOptionId })
+        .then(res => {
+          if (res.data.code === 0) {
+            setConditionTypeDetailData(res.data.data)
+          }
+        })
+    }
   }
 
   // 获取列表数据
@@ -291,6 +342,21 @@ function SceneLibList({ form }) {
       let obj = cloneDeep(pre)
       return Object.assign(obj, { pageIndex: pageRows === pager.pageRows ? pageIndex : 1, pageRows })
     })
+  }
+
+  // 新增 操作
+  const handleAdd = () => {
+    const addMap = {
+      '2': () => {setConditionTypeVisible(true); setConditionTypeDetailData({})}
+    }
+    addMap[selectVal]()
+  }
+
+  const rowKeyMap = {
+    '1': '',
+    '2': 'conditionTypeId',
+    '3': 'conditionId',
+    '4': ''
   }
 
   return (
@@ -398,7 +464,7 @@ function SceneLibList({ form }) {
             </div>
             <div>
               <Form.Item>
-                <Button type="primary" onClick={() => setAddSchemeModal(true)}>新增</Button>
+                <Button type="primary" onClick={() => handleAdd()}>新增</Button>
               </Form.Item>
             </div>
           </Form>
@@ -406,7 +472,7 @@ function SceneLibList({ form }) {
 
         <Card className='ModuleManagerListTable' style={{ marginTop: 10 }}>
           <TableCom
-            rowKey="moduleId"
+            rowKey={rowKeyMap[selectVal]}
             bordered
             columns={mapColumns[selectVal]}
             dataSource={dataSource}
@@ -425,6 +491,20 @@ function SceneLibList({ form }) {
             }}
           />
         </Card>
+
+        {/* 条件类型弹窗 */}
+        {
+          conditionTypeVisible &&
+          <ConditionTypeModal
+            visible={conditionTypeVisible}
+            conditionTypeDetailData={conditionTypeDetailData}
+            handleOk={() => {
+              setConditionTypeVisible(false)
+              getTableData()
+            }}
+            handleCancel={() => setConditionTypeVisible(false)}
+          />
+        }
 
       </div>
     </div>
