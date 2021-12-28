@@ -8,10 +8,14 @@ import {
   sceneProductListRequest,
   AIAbilityListRequest,
   deleteConditionTypeRequest,
-  getConditonTypeDetailRequest
+  getConditonTypeDetailRequest,
+  getCheckTypeRequest,
+  getUnitRequest,
+  getConditionDicDetailRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 import ConditionTypeModal from './conditionTypeModal'
+import ConditionDicModal from './conditionDicModal'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -24,14 +28,19 @@ const optionMap = ['场景产品列表', '条件类型列表', '条件字典列�
 
 function SceneLibList({ form }) {
   const { getFieldDecorator, getFieldsValue } = form
-  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 200 }) //分页
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([{}])
   const [loading, setLoading] = useState(false) //antd的loading控制
   const [selectVal, setSelectVal] = useState('1') // 列表类型切换
 
-  const [conditionTypeVisible, setConditionTypeVisible] = useState(false) // 条件类型弹窗
-  const [conditionTypeDetailData, setConditionTypeDetailData] = useState({}) // 条件类型详情数据
+  const [conditionTypeVisible, setConditionTypeVisible] = useState(false) // 条件类型-弹窗
+  const [conditionTypeDetailData, setConditionTypeDetailData] = useState({}) // 条件类型-详情数据
+
+  const [conditionDicVisible, setConditionDicVisible] = useState(false) // 条件字典-弹窗
+  const [conditionDicDetailData, setConditionDicDetailData] = useState({}) // 条件字典-详情数据
+  const [dicConditionType, setDicConditionType] = useState([]) // 条件字典-条件类型
+  const [unitList, setUnitList] = useState([]) // 条件字典-参数单位
 
   // 场景产品列表
   const sceneColumns = [
@@ -133,8 +142,7 @@ function SceneLibList({ form }) {
                   size="small"
                   icon={item.icon}
                   key={record.conditionOptionId}
-                  onClick={() => handleDeleteOpe(item, record)}
-                />
+                  onClick={() => handleDeleteOpe(item, record)} />
               </Tooltip>
             )
           })}
@@ -172,16 +180,15 @@ function SceneLibList({ form }) {
       width: "10%",
       render: (text, record) => (
         <div>
-          {btnArr.map((value, index) => {
+          {btnArr.map((item, index) => {
             return (
-              <Tooltip key={index} placement="top" title={value.title}>
+              <Tooltip key={index} placement="top" title={item.title}>
                 <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
                   shape="circle"
                   size="small"
-                  icon={value.icon}
+                  icon={item.icon}
                   key={record.conditionId}
-                // onClick={() => this.handleDeleteOpe(item, value)}
-                />
+                  onClick={() => handleDeleteOpe(item, record)} />
               </Tooltip>
             )
           })}
@@ -290,12 +297,21 @@ function SceneLibList({ form }) {
   const getCommonDetail = (record) => {
     if (selectVal === '2') {// 条件类型 详情
       setConditionTypeVisible(true)
+      setConditionTypeDetailData({})
       getConditonTypeDetailRequest({ conditionOptionId: record.conditionOptionId })
         .then(res => {
           if (res.data.code === 0) {
             setConditionTypeDetailData(res.data.data)
           }
         })
+    } else if (selectVal === '3') {
+      setConditionDicVisible(true)
+      setConditionDicDetailData({})
+      getConditionDicDetailRequest({ conditionId: record.conditionId }).then(res => {
+        if (res.data.code === 0) {
+          setConditionDicDetailData(res.data.data)
+        }
+      })
     }
   }
 
@@ -320,6 +336,21 @@ function SceneLibList({ form }) {
   useEffect(() => {
     getTableData()
   }, [pager.pageRows, pager.pageIndex, selectVal])
+
+  useEffect(() => {
+    // 条件字典-条件类型
+    getCheckTypeRequest({ pageIndex: 1, pageRows: 999999 }).then(res => {
+      if (res.data.code === 0) {
+        setDicConditionType(res.data.data)
+      }
+    })
+    // 参数单位
+    getUnitRequest({ paged: false }).then(res => {
+      if (res.data.code === 0) {
+        setUnitList(res.data.data)
+      }
+    })
+  }, [])
 
   // 搜索按钮触发,默认请求第一页的数据
   const searchClick = () => {
@@ -347,7 +378,8 @@ function SceneLibList({ form }) {
   // 新增 操作
   const handleAdd = () => {
     const addMap = {
-      '2': () => {setConditionTypeVisible(true); setConditionTypeDetailData({})}
+      '2': () => { setConditionTypeVisible(true); setConditionTypeDetailData({}) },
+      '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}) }
     }
     addMap[selectVal]()
   }
@@ -492,7 +524,7 @@ function SceneLibList({ form }) {
           />
         </Card>
 
-        {/* 条件类型弹窗 */}
+        {/* 条件类型-弹窗 */}
         {
           conditionTypeVisible &&
           <ConditionTypeModal
@@ -505,7 +537,21 @@ function SceneLibList({ form }) {
             handleCancel={() => setConditionTypeVisible(false)}
           />
         }
-
+        {/* 条件字典-弹窗 */}
+        {
+          conditionDicVisible &&
+          <ConditionDicModal
+            visible={conditionDicVisible}
+            dicConditionType={dicConditionType}
+            unitList={unitList}
+            conditionDicDetailData={conditionDicDetailData}
+            handleOk={() => {
+              setConditionDicVisible(false)
+              getTableData()
+            }}
+            handleCancel={() => setConditionDicVisible(false)}
+          />
+        }
       </div>
     </div>
   )

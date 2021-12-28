@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Input, Select, Modal, message } from 'antd'
+import { Form, Input, Modal, message } from 'antd'
 import {addOrUpdateConditionRequest} from '../../../apis/sceneLibList'
 
 const { TextArea } = Input
@@ -37,7 +37,7 @@ function ConditionTypeModal({ form, visible, handleOk, handleCancel, conditionTy
       confirmLoading={confirmLoading}
       wrapClassName="module-add-scheme"
     >
-      <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} autocomplete="off">
+      <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} autoComplete="off">
         <Form.Item label="条件类型名称">
           {getFieldDecorator('conditionOptionName', {
             initialValue: conditionTypeDetailData.conditionOptionName,
