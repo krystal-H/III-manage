@@ -25,6 +25,8 @@ const authManagement = asyncComponent(() => import('../pages/5xmanage/authManage
 
 const proFirmwareUpdate = asyncComponent(() => import('../pages/5xmanage/proFirmwareUpdate'))
 
+//网关子设备管理
+const gatewayMagement =asyncComponent(() => import( '../pages/5xmanage/gatewayMagement'))
 
 const route = {
   icon: "tool",
@@ -86,6 +88,11 @@ const route = {
       name: '权限管理',
       path: '/5xmanage/authManagement',
       component: authManagement
+    } ,
+    {
+      name: '网关子设备管理',
+      path: '/5xmanage/gatewayMagement',
+      component: gatewayMagement
     }  
   ]
 
