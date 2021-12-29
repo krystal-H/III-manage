@@ -92,6 +92,15 @@ export const getConditionDicDetailRequest = (params) => {
   })
 }
 
+// 条件字典-删除
+export const deleteConditionDicRequest = (params) => {
+  return axios.request({
+    url: '/expert/scene/condition/delete',
+    params,
+    method: 'get'
+  })
+}
+
 
 // 场景产品列表
 export const sceneProductListRequest = (params) => {

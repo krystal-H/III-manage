@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { Form, Input, Select, Modal, message, InputNumber, Icon, Button } from 'antd'
 import './conditionDicModal.less'
 import { saveConditionDicRequest } from '../../../apis/sceneLibList'
+import { cloneDeep } from 'lodash'
 
 const { Option } = Select
+let newData = []
 
 function ConditionDicModal({
   form,
@@ -19,7 +21,7 @@ function ConditionDicModal({
   const [paramStyle, setParamStyle] = useState('') // 类型
 
   useEffect(() => {
-    if (Object.keys(conditionDicDetailData).length) {
+    if (Object.keys(conditionDicDetailData).length) { // 编辑
       setParamStyle(conditionDicDetailData.paramStyleId + '')
     }
   }, [Object.keys(conditionDicDetailData).length])
@@ -29,7 +31,7 @@ function ConditionDicModal({
     form.validateFields((err, values) => {
       if (!err) {
         setConfirmLoading(true)
-        console.log('values', values)
+        console.log('values', values, typeof paramStyle)
         let params = { ...values }
         if (paramStyle === '1') {// 范围
           params.queryParams = [{ queryParamName: values.rangArr1, queryParamValue: values.rangArr2 }]
@@ -39,6 +41,20 @@ function ConditionDicModal({
             params.queryParams[0].queryParamId = conditionDicDetailData.queryParams[0].queryParamId
             params.statusQueryId = conditionDicDetailData.statusQueryId
             params.conditionId = conditionDicDetailData.conditionId
+          }
+        } else if (paramStyle === '2') { // 枚举
+          params.queryParams = cloneDeep(values.configList)
+          delete params.configList
+          if (Object.keys(conditionDicDetailData).length > 0) { // 编辑
+            params.statusQueryId = conditionDicDetailData.statusQueryId
+            params.conditionId = conditionDicDetailData.conditionId
+            params.queryParams = params.queryParams.map(item => {
+              let obj = {}
+              if (item.queryParamId) obj.queryParamId = item.queryParamId
+              obj.queryParamName = item.queryParamName
+              obj.queryParamValue = item.queryParamValue
+              return obj
+            })
           }
         }
 
@@ -78,22 +94,44 @@ function ConditionDicModal({
     })
   }
 
-  getFieldDecorator('queryParams', { initialValue: [] })
+  
+  if (Object.keys(conditionDicDetailData).length && paramStyle === '2') {
+    // 为了兼容老数据
+    if (conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
+      newData = []
+    } else {
+      newData = cloneDeep(conditionDicDetailData.queryParams)
+    } 
+  }
+  getFieldDecorator('queryParams', { initialValue: newData })
   const keys = getFieldValue('queryParams')
   const formItems = keys.map((k, index) => (
     <div className='inline-form-item2' key={index}>
       <Form.Item label="名称" labelCol={{ span: 6 }}>
         {
           getFieldDecorator(`configList[${index}].queryParamName`, {
+            initialValue: k.queryParamName,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入名称" }],
           })(<Input placeholder="请输入名称" />)
         }
       </Form.Item>
+      {
+        // 专为编辑使用，存id
+        Object.keys(conditionDicDetailData).length &&
+        <Form.Item label="" style={{ display: 'none' }} >
+          {
+            getFieldDecorator(`configList[${index}].queryParamId`, {
+              initialValue: k.queryParamId,
+            })(<Input style={{ display: 'none' }} />)
+          }
+        </Form.Item>
+      }
       &nbsp;&nbsp;&nbsp;&nbsp;
       <Form.Item label="数值" labelCol={{ span: 6 }}>
         {
           getFieldDecorator(`configList[${index}].queryParamValue`, {
+            initialValue: k.queryParamValue,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入数值", },],
           })(<Input placeholder="请输入数值" />)
@@ -150,7 +188,8 @@ function ConditionDicModal({
         <Form.Item label="变化频率">
           {
             getFieldDecorator('frequency', {
-              initialValue: (conditionDicDetailData.frequency || conditionDicDetailData.frequency === 0) ? conditionDicDetailData.frequency + '' : '' ,
+              initialValue: (conditionDicDetailData.frequency || conditionDicDetailData.frequency === 0) ?
+                conditionDicDetailData.frequency + '' : '',
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入变化频率', whitespace: true }]
             })(
@@ -225,7 +264,10 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr1', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ? conditionDicDetailData.queryParams[0].queryParamName : '',
+                  initialValue: conditionDicDetailData.queryParams ?
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[0] + '' :
+                      conditionDicDetailData.queryParams[0].queryParamName : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [{ required: true, whitespace: true, message: "请输入数值", }],
                 })(<Input style={{ width: 90, marginRight: 10 }} />)
@@ -236,7 +278,11 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr2', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ? conditionDicDetailData.queryParams[0].queryParamValue : '',
+                  initialValue: conditionDicDetailData.queryParams ?
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
+                      conditionDicDetailData.queryParams[0].queryParamName : '',
+                  // conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [{ required: true, whitespace: true, message: "请输入数值", }],
                 })(<Input style={{ width: 90, marginRight: 10 }} />)

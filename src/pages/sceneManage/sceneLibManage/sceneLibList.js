@@ -11,9 +11,11 @@ import {
   getConditonTypeDetailRequest,
   getCheckTypeRequest,
   getUnitRequest,
-  getConditionDicDetailRequest
+  getConditionDicDetailRequest,
+  deleteConditionDicRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
+import { cloneDeep } from 'lodash'
 import ConditionTypeModal from './conditionTypeModal'
 import ConditionDicModal from './conditionDicModal'
 
@@ -28,7 +30,7 @@ const optionMap = ['场景产品列表', '条件类型列表', '条件字典列�
 
 function SceneLibList({ form }) {
   const { getFieldDecorator, getFieldsValue } = form
-  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 200 }) //分页
+  const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10, paged: true }) //分页
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([{}])
   const [loading, setLoading] = useState(false) //antd的loading控制
@@ -290,6 +292,14 @@ function SceneLibList({ form }) {
             getTableData()
           }
         })
+    } else if (selectVal === '3') {// 条件字典的删除
+      deleteConditionDicRequest({ conditionId: record.conditionId })
+        .then(res => {
+          if (res.data.code === 0) {
+            message.success('删除成功')
+            getTableData()
+          }
+        })
     }
   }
 
@@ -337,19 +347,27 @@ function SceneLibList({ form }) {
     getTableData()
   }, [pager.pageRows, pager.pageIndex, selectVal])
 
-  useEffect(() => {
-    // 条件字典-条件类型
+  // 条件字典-条件类型
+  const getCheckType = () => {
     getCheckTypeRequest({ pageIndex: 1, pageRows: 999999 }).then(res => {
       if (res.data.code === 0) {
         setDicConditionType(res.data.data)
       }
     })
-    // 参数单位
+  }
+
+  // 参数单位
+  const getUnit = () => {
     getUnitRequest({ paged: false }).then(res => {
       if (res.data.code === 0) {
         setUnitList(res.data.data)
       }
     })
+  }
+
+  useEffect(() => {
+    getCheckType()
+    getUnit()
   }, [])
 
   // 搜索按钮触发,默认请求第一页的数据
@@ -514,12 +532,11 @@ function SceneLibList({ form }) {
               current: pager.pageIndex,
               onChange: pagerChange,
               pageSize: pager.pageRows,
-              // total: totalRows,
-              total: dataSource.length || 0,
+              total: totalRows,
+              // total: dataSource.length || 0,
               showQuickJumper: true,
               pageSizeOptions: ['10'],
-              // showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
-              showTotal: () => <span>共 <a>{dataSource.length || 0}</a> 条</span>
+              showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
             }}
           />
         </Card>
