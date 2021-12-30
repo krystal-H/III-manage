@@ -17,7 +17,7 @@ const formrules = {
 }
 
 function Detail({
-    updata:{ productId, schemeType, hetModuleTypeName='--', productName='--', phone='--' },
+    updata:{ productId, schemeType, hetModuleTypeName='--', productName='--', tel='--' },
     form:{ getFieldDecorator, setFieldsValue,validateFields, resetFields },
     close,
 }){
@@ -33,11 +33,14 @@ function Detail({
                 let li = data.data || []
                 console.log(7777,li)
                 setFirmwareList(li)
-                if(li.length>0){
-                    const firstNo = li[0].firmwareTypeNo
-                    setSelectedFirmwareLi([firstNo])
-                    setCurFirmwareTypeNo(firstNo)
-                }
+
+                setSelectedFirmwareLi([])
+                // setCurFirmwareTypeNo()
+                // if(li.length>0){
+                //     const firstNo = li[0].firmwareTypeNo
+                //     setSelectedFirmwareLi([firstNo])
+                //     setCurFirmwareTypeNo(firstNo)
+                // }
             });
 
             axios.Post('manage-open/firmware/productFirmware/getLastProductVersion',{productId},{ headers: {"Content-Type":"application/json"}}).then(({data = {}}) => {
@@ -85,7 +88,7 @@ function Detail({
                     extVersion:productFirmwareVersion,
                     deviceVersionIds:summaryVersions[0]&&summaryVersions[0].deviceVersionId,
                     deviceVersions,
-                    phone,
+                    phone:tel,
                     hetModuleTypeName,
                     textTemplate 
                 }
@@ -100,6 +103,19 @@ function Detail({
             }
         });
 
+    }
+
+    const deselectVal = d=>{
+        if(curFirmwareTypeNo==d){
+            setCurFirmwareTypeNo(selectedFirmwareLi[0])
+        }
+    }
+    const selectVal = s=>{
+        setCurFirmwareTypeNo(s)
+        setFieldsValue({ 
+            [`filePath_${s}`]:'',
+            [`mainVersion_${s}`]:''
+        })
     }
 
    
@@ -128,14 +144,26 @@ function Detail({
                 </Item>
                 <Item label="当前产品版本号">{productFirmwareVersion}</Item>
 
-                <Item label="模块/插件">
-                    <Select placeholder="选择固件模块" onChange={v=>{setSelectedFirmwareLi(v)}} mode="multiple" value={selectedFirmwareLi}>
-                        {
-                            firmwareList.map(({firmwareTypeName,firmwareTypeNo},i) => {
-                                return <Select.Option key={firmwareTypeNo} disabled={ schemeType==2 || i==0 } value={firmwareTypeNo}>{firmwareTypeName}</Select.Option>
-                            })
-                        }
-                    </Select>
+                <Item label="模块/插件" >
+
+                    {getFieldDecorator('noneed', {
+                        rules: [{ required: true, message: '选择固件模块'}]
+                    })(
+
+                        <Select placeholder="选择固件模块" onChange={v=>{setSelectedFirmwareLi(v)}} mode="multiple" 
+                            onDeselect={ deselectVal }
+                            onSelect = { selectVal }
+                                
+                        >
+                            {
+                                firmwareList.map(({firmwareTypeName,firmwareTypeNo},i) => {
+                                    return <Select.Option key={firmwareTypeNo}  value={firmwareTypeNo}>{firmwareTypeName}</Select.Option>
+                                })
+                            }
+                        </Select>
+                    )}
+
+
                 </Item>
 
                 <Tabs className='tabs'type="card" onChange={cngTab}>
@@ -182,7 +210,7 @@ function Detail({
                     </Upload>
                 }
                 <Item label='通知方式' className='topborder'>短信通知</Item>
-                <Item label='产品联系手机号'>{phone}</Item>
+                <Item label='产品联系手机号'>{tel}</Item>
                 <Item label='短信文案'>
                     {getFieldDecorator('textTemplate', {
                         rules: [{ required: true, message: '请输入短信文案'}],
