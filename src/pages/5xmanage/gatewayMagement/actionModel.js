@@ -7,6 +7,7 @@ const { Search } = Input;
 function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData, optionList }) {
     const { getFieldDecorator, validateFields, setFieldsValue, getFieldValue } = form;
     const [productInfo, setProductInfo] = useState({})
+    const [productList, setProductList] = useState([])
     const sundata = () => {
         validateFields().then(val => {
             let params = {}
@@ -47,20 +48,28 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
         wrapperCol: { span: 14 },
     };
     const goSearch = val => {
-        let params = {
-            pageIndex: 1,
-            pageRows: 10,
-            productId: val,
-            mode: 1,
+        val = val.trim()
+        let params = {}
+        if (val) {
+            params = {
+                productName: val,
+                productCode: val,
+            }
+            if (!isNaN(val - 0)) {
+                params.productId = Number(val)
+            }
         }
-        setProductInfo({})
         getProduct(params).then(res => {
             if (res.data.code === 0) {
-                if (res.data.data.list && res.data.data.list.length) {
-                    setProductInfo(res.data.data.list[0])
-                }
+                setProductList(res.data.data.list || [])
             }
         })
+    }
+    const productChange = val => {
+        let data = productList.find(item => {
+            return item.productId == val
+        })
+        setProductInfo(data)
     }
     return (
         <div>
@@ -89,16 +98,26 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                             )}
                         </FormItem>
                         <FormItem label="网关ID">
-                            {getFieldDecorator('templateName', { rules: [{ required: true, message: '请输入产品ID/名称/型号' }] })(
-                                <Search
-                                    enterButton="搜索"
-                                    placeholder='请输入产品ID/名称/型号'
-                                    onSearch={goSearch}
-                                />
-                            )}
+                            <Search
+                                enterButton="搜索"
+                                placeholder='请输入产品ID/名称/型号'
+                                onSearch={goSearch}
+                            />
                         </FormItem>
                         <FormItem label="产品名称">
-                            <span>{productInfo.productName}</span>
+                            {getFieldDecorator('selectProduct')(
+                                <Select onChange={productChange} showSearch optionFilterProp="children" filterOption={(input, option) =>
+                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }>
+                                    {
+                                        productList.map((item, index) => (
+                                            <Select.Option key={item.productId} productId={item.productId} label={item.productName}>
+                                                {item.productName}
+                                            </Select.Option>
+                                        ))
+                                    }
+                                </Select>
+                            )}
                         </FormItem>
                         <FormItem label="产品型号">
                             <span>{productInfo.productName}</span>
@@ -107,7 +126,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                             <span>{productInfo.productName}</span>
                         </FormItem>
                         <FormItem label="产品ID">
-                            <span>{productInfo.productId}</span>
+                            <span>{productInfo.productCode}</span>
                         </FormItem>
                         <FormItem label="产品标识">
                             {getFieldDecorator('productMark', {})(

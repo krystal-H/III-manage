@@ -15,7 +15,7 @@ function PanelMn({ form }) {
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [optionList, setOptionList] = useState(gateArr)
-    const [addVis, setAddVis] = useState(false)
+    const [addVis, setAddVis] = useState(true)
     const [actionData, setActionData] = useState({})
     const [modelType, setModelType] = useState('')
     const [loading, setLoading] = useState(false)

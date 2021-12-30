@@ -39,8 +39,9 @@ export const addData = (data) => {
 // 获取产品
 export const getProduct = (pager) => {
     return axios.request({
-        url: '/manage-open/product/getList',
-        params: pager,
-        method: 'get'
+        url: '/manage-open/gatewayManage/getProductListByPage',
+        data: pager,
+        method: 'post',
+        headers: {}
     })
 };
