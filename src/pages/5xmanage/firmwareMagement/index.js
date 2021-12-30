@@ -82,8 +82,8 @@ function PanelMn({ form }) {
         },
         {
             title: '操作',
-            width: 180,
-            key: 'status2',
+            width: 200,
+            key: '',
             render: (val, record) => {
                 let text = record.status
                 if (text === 1) {
@@ -154,7 +154,7 @@ function PanelMn({ form }) {
         setCheckVisible(false)
     }
     return (
-        <div className="panelMn-page">
+        <div className="panelMn-page" style={{minWidth:'1200px'}}>
             <TitleTab title="用户免开发固件上传信息">
                 <Form layout="inline" >
                     <FormItem label="产品ID">
