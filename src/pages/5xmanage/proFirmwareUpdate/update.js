@@ -144,7 +144,7 @@ function Detail({
                 </Item>
                 <Item label="当前产品版本号">{productFirmwareVersion}</Item>
 
-                <Item label="模块/插件" >
+                <Item label="模块" >
 
                     {getFieldDecorator('noneed', {
                         rules: [{ required: true, message: '选择固件模块'}]
