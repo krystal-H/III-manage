@@ -198,7 +198,7 @@ function ConditionDicModal({
           }
           <span className="ant-form-text">小时(*非负整数)</span>
         </Form.Item>
-        <Form.Item label="状态">
+        {/* <Form.Item label="状态">
           {
             getFieldDecorator('approvalStatus', {
               initialValue: (conditionDicDetailData.approvalStatus || conditionDicDetailData.approvalStatus === 0) ?
@@ -213,7 +213,7 @@ function ConditionDicModal({
               </Select>
             )
           }
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item label="参数单位">
           {
             getFieldDecorator('unitId', {

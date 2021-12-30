@@ -375,7 +375,10 @@ function SceneLibList({ form }) {
     if (pager.pageIndex === 1) {
       getTableData()
     } else {
-      setPager({ pageIndex: 1, pageRows: 10 })
+      setPager(pre => {
+        let obj = cloneDeep(pre)
+        return Object.assign(obj, { pageIndex: 1, pageRows: 10 })
+      })
     }
   }
 
@@ -469,23 +472,19 @@ function SceneLibList({ form }) {
               {
                 selectVal === '3' && <>
                   <Form.Item label="条件字典名称">
-                    {getFieldDecorator('productName', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
+                    {getFieldDecorator('conditionName', {})(
                       <Input placeholder="请输入条件字典名称" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
                   <Form.Item label="条件类型">
-                    {getFieldDecorator('productName', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
-                      <Input placeholder="请输入条件类型" style={{ width: 240 }}></Input>
+                    {getFieldDecorator('conditionTypeId', {})(
+                      <Select placeholder="请选择条件类型" style={{ width: 240 }}>
+                        {
+                          dicConditionType && dicConditionType.map(item => (
+                            <Option key={item.conditionTypeId} value={item.conditionTypeId + ''}>{item.conditionOptionName}</Option>
+                          ))
+                        }
+                      </Select>
                     )}
                   </Form.Item>
                 </>
