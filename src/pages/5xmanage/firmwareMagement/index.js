@@ -36,6 +36,7 @@ function PanelMn({ form }) {
             title: '归属产品',
             dataIndex: 'productName',
             key: 'productName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '方案',
@@ -50,6 +51,7 @@ function PanelMn({ form }) {
             title: '模组名称',
             dataIndex: 'moduleName',
             key: 'moduleName',
+            render: (text) => <span title={text}>{text}</span>
 
         },
         {

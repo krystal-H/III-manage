@@ -26,7 +26,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
             params.productId = productInfo.productId
             params.productMark = val.productMark
             if (modelType === 'edit') {
-                params.id=actionData.id
+                params = {
+                    id: actionData.id,
+                    productMark: val.productMark
+                }
                 editData(params).then(res => {
                     if (res.data.code === 0) {
                         message.success('更新成功');
@@ -121,7 +124,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
 
                         <FormItem label="网关名称">
                             {getFieldDecorator('gatewayType', { rules: [{ required: true }] })(
-                                <Select>
+                                <Select disabled={modelType === 'edit' ? true : false}>
                                     {
                                         optionList.map((item, index) => (
                                             <Select.Option key={item.value} value={item.value} label={item.label}>
@@ -155,6 +158,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                                 //     }
                                 // </Select>
                                 <Select
+                                    disabled={modelType === 'edit' ? true : false}
                                     showSearch
                                     placeholder="输入产品名称"
                                     notFoundContent={fetching ? <Spin size="small" /> : null}

@@ -35,6 +35,7 @@ function rapairModel({ form }) {
         },
         {
             title: "问题内容", dataIndex: "problemDesc",
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: "问题图片/视频", dataIndex: "image",
@@ -210,7 +211,7 @@ function rapairModel({ form }) {
                 </Form>
             </TitleTab>
             <Card>
-                <TableCom rowKey="workOrderId" columns={column} dataSource={dataSource}
+                <TableCom rowKey="workOrderId" bordered columns={column} dataSource={dataSource}
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,

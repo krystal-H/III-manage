@@ -18,6 +18,7 @@ const formItemLayout = {
 };
 function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
     const { getFieldDecorator, validateFields, getFieldsValue, getFieldValue } = form;
+    const [isPass, setIsPass] = useState(2)
     useEffect(() => {
         unlkey = 0
     }, [])
@@ -100,12 +101,29 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
             keys: nextKeys,
         });
     }
+    const checkChange = val => {
+        console.log(val.target.value)
+        setIsPass(val.target.value)
+    }
     //提交
     const subFata = () => {
         console.log(getFieldsValue())
         validateFields((err, values) => {
             if (!err) {
                 const { names, status, keys } = values;
+                if (status === 3) {
+                    let params1 = {
+                        status: status,
+                        id: actionData.id,
+                    }
+                    relData(params1).then(res => {
+                        if (res.data.code === 0) {
+                            message.success('审核成功')
+                            handleOk()
+                        }
+                    })
+                    return
+                }
                 if (!names || !names.length) {
                     message.info('至少添加一个模组/固件')
                     return
@@ -131,7 +149,7 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
                     productFirmwareTypeList: arr
                 }
                 relData(params).then(res => {
-                    if (res.data.code == 0) {
+                    if (res.data.code === 0) {
                         message.success('审核成功')
                         handleOk()
                     }
@@ -153,30 +171,36 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
                     <Form {...formItemLayout} >
                         <FormItem label="审核结果">
                             {getFieldDecorator('status', { initialValue: 2 })(
-                                <Radio.Group buttonStyle="solid">
+                                <Radio.Group buttonStyle="solid" onChange={checkChange}>
                                     <Radio.Button value={2}>通过</Radio.Button>
                                     <Radio.Button value={3}>不通过</Radio.Button>
                                 </Radio.Group>
                             )}
                         </FormItem>
-                        <FormItem label="选择模块" >
-                            {getFieldDecorator('mode', { rules: [{ required: true, message: '请选择模块' }], initialValue: 1 })(
-                                <Select style={{ width: '100%' }} >
-                                    {
-                                        optionArr.map((item, index) => (
-                                            <Select.Option key={item.value} value={item.value} label={item.label}>
-                                                {item.label}
-                                            </Select.Option>
-                                        ))
-                                    }
-                                </Select>
-                            )}
-                        </FormItem>
                         {
-                            getDom()
+                            isPass === 2 && <FormItem label="选择模块" >
+                                {getFieldDecorator('mode', { rules: [{ required: true, message: '请选择模块' }], initialValue: 1 })(
+                                    <Select style={{ width: '100%' }} >
+                                        {
+                                            optionArr.map((item, index) => (
+                                                <Select.Option key={item.value} value={item.value} label={item.label}>
+                                                    {item.label}
+                                                </Select.Option>
+                                            ))
+                                        }
+                                    </Select>
+                                )}
+                            </FormItem>
+                        }
+
+                        {
+                            isPass === 2 && getDom()
+                        }
+                        {
+                            isPass === 2 && <a onClick={addItem} className='add-btn'>新增</a>
                         }
                     </Form>
-                    <a onClick={addItem} className='add-btn'>新增</a>
+
                 </div>
             </Modal>
         </div>
