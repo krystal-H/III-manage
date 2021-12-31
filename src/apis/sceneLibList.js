@@ -101,14 +101,65 @@ export const deleteConditionDicRequest = (params) => {
   })
 }
 
+// 场景产品列表-----------------------------------------------
 
 // 场景产品列表
 export const sceneProductListRequest = (params) => {
   return axios.request({
-
+    url: '/expert/combine/deviceType/list/v2.0',
+    params,
+    method: 'get'
   })
 }
 
+// 场景产品列表-详情
+export const getSceneProductDetailRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/getDetail',
+    params,
+    method: 'get'
+  })
+}
+
+// 场景产品列表-扩展功能-状态查询
+export const getStatusQueryRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/statusQuery/list',
+    params,
+    method: 'get'
+  })
+}
+
+// 场景产品列表-扩展功能-功能控制
+export const getExtendFuncsRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/deviceFunction/list',
+    params,
+    method: 'get'
+  })
+}
+
+// 场景产品列表-扩展功能-状态删除
+export const deleteExtendFuncsRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/deviceFunction/delete',
+    params,
+    method: 'get'
+  })
+}
+
+
+// 场景产品列表-扩展功能-功能删除
+export const deleteStatusQueryRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/statusQuery/delete',
+    params,
+    method: 'get'
+  })
+}
+
+
+// AI能力列表-----------------------------------------------
 // AI能力列表
 export const AIAbilityListRequest = (params) => {
   return axios.request({

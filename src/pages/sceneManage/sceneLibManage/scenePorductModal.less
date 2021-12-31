@@ -1,0 +1,73 @@
+@charset 'utf-8';
+
+.scene-porduct-modal {
+  color: #666;
+
+  .title {
+    font-size: 14px;
+    color: #323232;
+    word-break: break-all;
+    font-weight: 700;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .ant-form-item {
+    margin-bottom: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .ant-form-item-label {
+    line-height: 40px;
+  }
+
+  .ant-form-item-label>label {
+    color: #323232 !important;
+  }
+
+  .func-box {
+    padding-top: 10px;
+    &-title {
+      width: 70px;
+      color: #323232;
+      float: left;
+    }
+
+    &-cont {
+      color: rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      .func-params {
+        margin-bottom: 10px;
+        position: relative;
+        &-title{
+          width: 70px;
+          float: left;
+        }
+        &-box {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          flex-wrap: wrap;
+          .delete-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+            color: #f60;
+          }
+        }
+        &-cont {
+          margin-right: 15px;
+          color: #323232;
+        }
+      }
+    }
+  }
+
+  // .ant-form-item-label, .ant-form-item-control-wrapper {
+  //   display: inline-block;
+  // }
+}

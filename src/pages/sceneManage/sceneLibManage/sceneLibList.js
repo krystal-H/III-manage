@@ -12,12 +12,14 @@ import {
   getCheckTypeRequest,
   getUnitRequest,
   getConditionDicDetailRequest,
-  deleteConditionDicRequest
+  deleteConditionDicRequest,
+  getSceneProductDetailRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 import { cloneDeep } from 'lodash'
 import ConditionTypeModal from './conditionTypeModal'
 import ConditionDicModal from './conditionDicModal'
+import ScenePorductModal from './scenePorductModal'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -44,13 +46,15 @@ function SceneLibList({ form }) {
   const [dicConditionType, setDicConditionType] = useState([]) // 条件字典-条件类型
   const [unitList, setUnitList] = useState([]) // 条件字典-参数单位
 
+  const [sceneProductVisible, setSceneProductVisible] = useState(false)
+  const [sceneProductDetail, setSceneProductDetail] = useState({}) // 场景产品列表-详情数据
+
   // 场景产品列表
   const sceneColumns = [
     {
       title: '产品名称',
-      dataIndex: '',
-      key: '',
-      // width: 100
+      dataIndex: 'deviceTypeName',
+      key: 'deviceTypeName',
     },
     {
       title: '产品ID',
@@ -59,33 +63,50 @@ function SceneLibList({ form }) {
     },
     {
       title: '大类',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'judge',
+      key: 'judge',
+      render: (item, record) => {
+        if (record.level === 2) {
+          return <span>{record.parent.deviceTypeName}</span>
+        } else if (record.level === 3) {
+          return <span>{record.grand.deviceTypeName}</span>
+        }
+      }
     },
     {
       title: '小类',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'judge2',
+      key: 'judge2',
+      render: (item, record) => {
+        if (record.level === 2) {
+          return <span>{record.deviceTypeName}</span>
+        } else if (record.level === 3) {
+          return <span>{record.parent.deviceTypeName}</span>
+        }
+      }
     },
     {
       title: '状态查询',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'statusQueryCount',
+      key: 'statusQueryCount',
     },
     {
       title: '功能控制',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'deviceFunctionCount',
+      key: 'deviceFunctionCount',
     },
     {
       title: '输入输出',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'inoutType',
+      key: 'inoutType',
+      render: (item, record) => {
+        return item && item.inoutTypeName && <span>{item.inoutTypeName}</span>
+      }
     },
     {
       title: '编辑时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
     {
       title: '操作',
@@ -94,19 +115,14 @@ function SceneLibList({ form }) {
       width: "100px",
       render: (text, record) => (
         <div>
-          {btnArr.map((value, index) => {
-            return (
-              <Tooltip key={index} placement="top" title={value.title}>
-                <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
-                  shape="circle"
-                  size="small"
-                  icon={value.icon}
-                  key={record.key}
-                // onClick={() => this.handleDeleteOpe(item, value)}
-                />
-              </Tooltip>
-            )
-          })}
+          <Tooltip placement="top" title="查看">
+            <Button
+              shape="circle"
+              size="small"
+              icon="info"
+              onClick={() => checkSceneProductDetail(record)}>
+            </Button>
+          </Tooltip>
         </div>
       )
     }
@@ -264,6 +280,18 @@ function SceneLibList({ form }) {
     '4': AIColumns
   }
 
+  // 场景产品列表查看
+  const checkSceneProductDetail = (record) => {
+    setSceneProductVisible(true)
+    setSceneProductDetail(record)
+    // getSceneProductDetailRequest({ deviceTypeId: record.deviceTypeId })
+    //   .then(res => {
+    //     if (res.data.code === 0) {
+    //       setSceneProductDetail(res.data.data.deviceType)
+    //     }
+    //   })
+  }
+
   // 编辑/删除 判断
   const handleDeleteOpe = (item, record) => {
     if (item.type === 'delete') {
@@ -406,7 +434,7 @@ function SceneLibList({ form }) {
   }
 
   const rowKeyMap = {
-    '1': '',
+    '1': 'deviceTypeId',
     '2': 'conditionTypeId',
     '3': 'conditionId',
     '4': ''
@@ -426,13 +454,13 @@ function SceneLibList({ form }) {
               }
             </Select>
           </div>
-          <Form layout="inline" className='scene-form'>
+          <Form layout="inline" className='scene-form' autoComplete="off">
             <div>
               {/* 场景产品列表-查询 */}
               {
                 selectVal === '1' && <>
                   <Form.Item label="产品名称">
-                    {getFieldDecorator('productName', {
+                    {getFieldDecorator('deviceTypeName', {
                       getValueFromEvent: (e) => {
                         const val = e.target.value;
                         return val.replace(/[^\d]/g, '');
@@ -457,12 +485,7 @@ function SceneLibList({ form }) {
               {
                 selectVal === '2' && <>
                   <Form.Item label="条件类型名称">
-                    {getFieldDecorator('productName', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
+                    {getFieldDecorator('conditionOptionName', {})(
                       <Input placeholder="请输入条件类型名称" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
@@ -566,6 +589,18 @@ function SceneLibList({ form }) {
               getTableData()
             }}
             handleCancel={() => setConditionDicVisible(false)}
+          />
+        }
+        {/* 场景列表-详情弹窗 */}
+        {
+          sceneProductVisible &&
+          <ScenePorductModal
+            visible={sceneProductVisible}
+            sceneProductDetail={sceneProductDetail}
+            handleOk={() => {
+              setSceneProductVisible(false)
+            }}
+            handleCancel={() => setSceneProductVisible(false)}
           />
         }
       </div>
