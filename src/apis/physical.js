@@ -67,7 +67,8 @@ export const editData = (data) => {
 // 详情1
 export const getDetailTable = (data) => {
     return axios.request({
-        url: '/manage-open/physicalModel/func/list',
+        // url: '/manage-open/physicalModel/func/list',
+        url: '/manage-open/product/dev/show/func',
         method: 'post',
         data,
         headers: {}

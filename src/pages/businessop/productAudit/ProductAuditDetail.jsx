@@ -80,7 +80,7 @@ class ProductAuditDetail extends Component {
     // 拉取物模型数据
     getPhysicalData = (id) => {
         this.setState({ tableComloading: true })
-        getDetailTable({ id }).then(res => {
+        getDetailTable({ productId: this.props.showProductDetail.productId }).then(res => {
             if (res.data.code == 0) {
                 let data = this.delaData(res.data.data.standard || [])
                 this.setState({ showPhysicalList: data })
