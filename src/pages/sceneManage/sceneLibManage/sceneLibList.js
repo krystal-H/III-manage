@@ -460,22 +460,12 @@ function SceneLibList({ form }) {
               {
                 selectVal === '1' && <>
                   <Form.Item label="产品名称">
-                    {getFieldDecorator('deviceTypeName', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
+                    {getFieldDecorator('deviceTypeName', {})(
                       <Input placeholder="请输入产品名称" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
                   <Form.Item label="产品ID">
-                    {getFieldDecorator('productId', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
+                    {getFieldDecorator('productId', {})(
                       <Input placeholder="请输入产品ID" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
