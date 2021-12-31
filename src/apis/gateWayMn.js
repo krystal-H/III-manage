@@ -12,7 +12,7 @@ export const getList = (pager) => {
 // 删除
 export const delData = (data) => {
     return axios.request({
-        url: '/manage-open/addGatewayInfo/deleteGatewayInfo',
+        url: '/manage-open/gatewayManage/deleteGatewayInfo',
         method: 'post',
         data,
         headers: {}
@@ -21,7 +21,7 @@ export const delData = (data) => {
 // 编辑
 export const editData = (data) => {
     return axios.request({
-        url: '/manage-open/addGatewayInfo/modifyGatewayInfo',
+        url: '/manage-open/gatewayManage/modifyGatewayInfo',
         method: 'post',
         data,
         headers: {}
@@ -39,8 +39,9 @@ export const addData = (data) => {
 // 获取产品
 export const getProduct = (pager) => {
     return axios.request({
-        url: '/manage-open/product/getList',
-        params: pager,
-        method: 'get'
+        url: '/manage-open/gatewayManage/getProductListByPage',
+        data: pager,
+        method: 'post',
+        headers: {}
     })
 };

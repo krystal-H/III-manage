@@ -33,8 +33,8 @@ function PanelMn({ form }) {
         },
         {
             title: '网关ID',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'gatewayType',
+            key: 'gatewayType',
         },
         {
             title: '产品名称',
@@ -104,9 +104,9 @@ function PanelMn({ form }) {
     //列表
     const getTableData = () => {
         let params = {}
-        if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
-            params.templateName = getFieldsValue().templateName.trim()
-        }
+        // if (getFieldsValue().templateName && getFieldsValue().templateName.trim()) {
+        //     params.templateName = getFieldsValue().templateName.trim()
+        // }
         if (getFieldsValue().gatewayType) {
             params.gatewayType = getFieldsValue().gatewayType
         }
@@ -158,7 +158,7 @@ function PanelMn({ form }) {
 
                         <FormItem label="网关名称">
                             {getFieldDecorator('gatewayType')(
-                                <Select style={{ width: 160 }} placeholder="请选择所属分类">
+                                <Select style={{ width: 200 }}  allowClear>
                                     {
                                         optionList.map((item, index) => (
                                             <Select.Option key={item.value} value={item.value} label={item.label} >
@@ -169,11 +169,11 @@ function PanelMn({ form }) {
                                 </Select>
                             )}
                         </FormItem>
-                        <FormItem label="网关ID">
+                        {/* <FormItem label="网关ID">
                             {getFieldDecorator('templateName', {})(
                                 <Input placeholder="请输入面板名称" style={{ width: 240 }} ></Input>
                             )}
-                        </FormItem>
+                        </FormItem> */}
                         <FormItem  >
                             <Button type="primary" onClick={() => searchList()} >查询</Button>
                         </FormItem>
@@ -185,7 +185,7 @@ function PanelMn({ form }) {
                 </div>
             </TitleTab>
             <Card>
-                <TableCom rowKey={"templateId"} columns={column} dataSource={dataSource}
+                <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
                     pagination={{
                         defaultCurrent: 1,

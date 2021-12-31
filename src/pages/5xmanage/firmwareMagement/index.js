@@ -36,6 +36,7 @@ function PanelMn({ form }) {
             title: '归属产品',
             dataIndex: 'productName',
             key: 'productName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '方案',
@@ -50,6 +51,7 @@ function PanelMn({ form }) {
             title: '模组名称',
             dataIndex: 'moduleName',
             key: 'moduleName',
+            render: (text) => <span title={text}>{text}</span>
 
         },
         {
@@ -82,8 +84,8 @@ function PanelMn({ form }) {
         },
         {
             title: '操作',
-            width: 180,
-            key: 'status2',
+            width: 200,
+            key: '',
             render: (val, record) => {
                 let text = record.status
                 if (text === 1) {
@@ -154,7 +156,7 @@ function PanelMn({ form }) {
         setCheckVisible(false)
     }
     return (
-        <div className="panelMn-page">
+        <div className="panelMn-page" style={{minWidth:'1200px'}}>
             <TitleTab title="用户免开发固件上传信息">
                 <Form layout="inline" >
                     <FormItem label="产品ID">
