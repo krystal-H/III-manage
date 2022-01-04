@@ -57,6 +57,14 @@ function Detail({
                 [`filePath_${curFirmwareTypeNo}`]:url
             })
         }
+        if(file.status=="removed"){ //删除操作
+            setFieldsValue({ 
+                [`filePath_${curFirmwareTypeNo}`]:""
+            })
+
+        }
+
+
     }
     const cngTab = cur=>{
         setCurFirmwareTypeNo(cur)
@@ -166,9 +174,10 @@ function Detail({
 
                 </Item>
 
-                <Tabs className='tabs'type="card" onChange={cngTab}>
-                    {
-                        selectedFirmwareLi.map( firmwareTypeNo =>{
+                {
+                    selectedFirmwareLi.length>0 && <>
+                    <Tabs type="card" onChange={cngTab}>
+                       { selectedFirmwareLi.map( firmwareTypeNo =>{
                             const data = summaryVersions.find(a=>a.firmwareVersionType == firmwareTypeNo) || {}
                             const { firmwareVersionTypeName, totalVersion=0, curMainVersion=0 } = data;
                             return <Tabs.TabPane tab={firmwareVersionTypeName || firmwareList.find((a)=>a.firmwareTypeNo==firmwareTypeNo).firmwareTypeName } key={firmwareTypeNo} >
@@ -195,11 +204,9 @@ function Detail({
                                     )}
                                 </Item>
                             </Tabs.TabPane>
-                        })
-                    }    
-                </Tabs>
-                {
-                    selectedFirmwareLi.length>0 &&
+                            })
+                        }
+                    </Tabs>
                     <Upload className='filepathinpt' onChange={uploadChange}
                         accept='.bin,.hex,.zip,.cyacd,.apk,.dpkg'
                         maxCount={1}
@@ -208,8 +215,9 @@ function Detail({
                             <Button type="primary" >上传附件</Button>
                             <div>支持.bin,.hex,.zip,.cyacd,.apk,.dpkg格式，不超过200MB。</div>
                     </Upload>
-                }
-                <Item label='通知方式' className='topborder'>短信通知</Item>
+                </>}
+                
+                <Item label='通知方式'>短信通知</Item>
                 <Item label='产品联系手机号'>{tel}</Item>
                 <Item label='短信文案'>
                     {getFieldDecorator('textTemplate', {
