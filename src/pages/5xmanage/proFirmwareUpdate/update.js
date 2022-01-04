@@ -77,15 +77,14 @@ function Detail({
                 let deviceVersions = selectedFirmwareLi.map(firmwareTypeNo=>{
                     let o = firmwareList.find(a=>a.firmwareTypeNo==firmwareTypeNo) || {}
                     const { firmwareTypeName, deviceVersionType } = o;
-                    const mainVersion = values[`mainVersion_${firmwareTypeNo}`],
-                        extVersion = mainVersion,
+                    const extVersion = values[`extVersion_${firmwareTypeNo}`],
                         totalVersion = values[`totalVersion_${firmwareTypeNo}`],
                         filePath = values[`filePath_${firmwareTypeNo}`];
                     return {
                         deviceVersionName:firmwareTypeName,
                         deviceVersionType,
                         firmwareVersionType:firmwareTypeNo,
-                        mainVersion, extVersion, totalVersion, filePath,
+                        mainVersion:"", extVersion, totalVersion, filePath,
                         productId
                     }
                 })
@@ -122,7 +121,7 @@ function Detail({
         setCurFirmwareTypeNo(s)
         setFieldsValue({ 
             [`filePath_${s}`]:'',
-            [`mainVersion_${s}`]:''
+            [`extVersion_${s}`]:''
         })
     }
 
@@ -179,18 +178,18 @@ function Detail({
                     <Tabs type="card" onChange={cngTab}>
                        { selectedFirmwareLi.map( firmwareTypeNo =>{
                             const data = summaryVersions.find(a=>a.firmwareVersionType == firmwareTypeNo) || {}
-                            const { firmwareVersionTypeName, totalVersion=0, curMainVersion=0 } = data;
+                            const { firmwareVersionTypeName, totalVersion="", curExtVersion="" } = data;
                             return <Tabs.TabPane tab={firmwareVersionTypeName || firmwareList.find((a)=>a.firmwareTypeNo==firmwareTypeNo).firmwareTypeName } key={firmwareTypeNo} >
                                 
                                 <Item label='硬件版本号' >
                                     {getFieldDecorator(`totalVersion_${firmwareTypeNo}`, {
                                         initialValue:totalVersion,
-                                    })(<Input className='noborderinpt' disabled />)}
+                                    })(<Input maxLength={50} placeholder='请输入硬件版本号' />)}
                                 </Item>
-                                <Item label='当前软件版本号'>{curMainVersion}</Item>
+                                <Item label='当前软件版本号'>{curExtVersion}</Item>
 
                                 <Item label="待上传软件版本号">
-                                    {getFieldDecorator(`mainVersion_${firmwareTypeNo}`, {
+                                    {getFieldDecorator(`extVersion_${firmwareTypeNo}`, {
                                         rules: [{ required: true, message: '待上传软件版本号'}]
                                     })(
                                         <Input maxLength={30} placeholder='请输入需上传的固件程序的软件版本号' />
