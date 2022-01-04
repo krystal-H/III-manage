@@ -5,21 +5,15 @@
     .ant-form-item{ 
         margin-bottom: 5px;
     }
-    .topborder{
-        border-top: 1px solid #e8e8e8;
-        margin-top: 14px;
-    }
     .upload-wrapper .upload .upload-desc{
         margin-top: 4px;
         line-height: 24px;
     }
     .filepathinpt{
-        position: relative;
-        left: 138px;
+        display: block;
+        border-bottom: 1px solid #e8e8e8;
+        padding: 0 0 12px 138px;
     }
-    // .tabs{
-    //     // padding-left: 24px;
-    // }
     .ant-upload-list{
         display: none;
     }
