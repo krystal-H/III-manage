@@ -36,8 +36,8 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
       <Form.Item label="模组名称">
         {getFieldDecorator('moduleName', {
           initialValue: editData.moduleName,
-          rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
-        })(<Input placeholder="请输入方案名称" />)}
+          rules: [{ required: true, message: '请输入模组名称', whitespace: true }],
+        })(<Input placeholder="请输入模组名称" />)}
       </Form.Item>
       <Form.Item label="模组生产厂家">
         {getFieldDecorator('moduleBrandId', {
@@ -56,14 +56,14 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
       <Form.Item label="模组型号">
         {getFieldDecorator('hetModuleTypeName', {
           initialValue: editData.hetModuleTypeName,
-          rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
-        })(<Input placeholder="请输入方案名称" />)}
+          rules: [{ required: true, message: '请输入模组型号', whitespace: true }],
+        })(<Input placeholder="请输入模组型号" />)}
       </Form.Item>
       <Form.Item label="模组IC型号">
         {getFieldDecorator('originalModuleTypeName', {
           initialValue: editData.originalModuleTypeName,
-          rules: [{ required: true, message: '请输入方案名称', whitespace: true }],
-        })(<Input placeholder="请输入方案名称" />)}
+          rules: [{ required: true, message: '请输入模组IC型号', whitespace: true }],
+        })(<Input placeholder="请输入模组IC型号" />)}
       </Form.Item>
       <Form.Item label="适用范围" >
         {getFieldDecorator("applyScope", {
