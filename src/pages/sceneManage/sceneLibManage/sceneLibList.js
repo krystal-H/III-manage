@@ -20,6 +20,7 @@ import { cloneDeep } from 'lodash'
 import ConditionTypeModal from './conditionTypeModal'
 import ConditionDicModal from './conditionDicModal'
 import ScenePorductModal from './scenePorductModal'
+import AIAbilityModal from './AIAbilityModal'
 
 const { Option } = Select
 const { confirm } = Modal
@@ -36,7 +37,7 @@ function SceneLibList({ form }) {
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([{}])
   const [loading, setLoading] = useState(false) //antd的loading控制
-  const [selectVal, setSelectVal] = useState('1') // 列表类型切换
+  const [selectVal, setSelectVal] = useState('4') // 列表类型切换
 
   const [conditionTypeVisible, setConditionTypeVisible] = useState(false) // 条件类型-弹窗
   const [conditionTypeDetailData, setConditionTypeDetailData] = useState({}) // 条件类型-详情数据
@@ -48,6 +49,8 @@ function SceneLibList({ form }) {
 
   const [sceneProductVisible, setSceneProductVisible] = useState(false)
   const [sceneProductDetail, setSceneProductDetail] = useState({}) // 场景产品列表-详情数据
+
+  const [aiAbilityVisible, setAiAbilityVisible] = useState(true) // ai能力-弹窗
 
   // 场景产品列表
   const sceneColumns = [
@@ -428,7 +431,8 @@ function SceneLibList({ form }) {
   const handleAdd = () => {
     const addMap = {
       '2': () => { setConditionTypeVisible(true); setConditionTypeDetailData({}) },
-      '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}) }
+      '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}) },
+      '4': () => { setAiAbilityVisible(true) }
     }
     addMap[selectVal]()
   }
@@ -524,11 +528,14 @@ function SceneLibList({ form }) {
                 <Button type="default" onClick={() => reset()}>重置</Button>
               </Form.Item>
             </div>
-            <div>
-              <Form.Item>
-                <Button type="primary" onClick={() => handleAdd()}>新增</Button>
-              </Form.Item>
-            </div>
+            {
+              selectVal !== '1' &&
+              <div>
+                <Form.Item>
+                  <Button type="primary" onClick={() => handleAdd()}>新增</Button>
+                </Form.Item>
+              </div>
+            }
           </Form>
         </TitleTab>
 
@@ -591,6 +598,15 @@ function SceneLibList({ form }) {
               setSceneProductVisible(false)
             }}
             handleCancel={() => setSceneProductVisible(false)}
+          />
+        }
+        {/* ai能力列表 */}
+        {
+          aiAbilityVisible && 
+          <AIAbilityModal
+            visible={aiAbilityVisible}
+            handleCancel={() => setAiAbilityVisible(false)}
+            handleOk={() => setAiAbilityVisible(false)}
           />
         }
       </div>

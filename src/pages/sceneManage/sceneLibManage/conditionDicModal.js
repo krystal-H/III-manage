@@ -118,7 +118,7 @@ function ConditionDicModal({
       </Form.Item>
       {
         // 专为编辑使用，存id
-        Object.keys(conditionDicDetailData).length &&
+        Object.keys(conditionDicDetailData).length > 0 &&
         <Form.Item label="" style={{ display: 'none' }} >
           {
             getFieldDecorator(`configList[${index}].queryParamId`, {
