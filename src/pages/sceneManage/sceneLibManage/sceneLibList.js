@@ -61,8 +61,8 @@ function SceneLibList({ form }) {
     },
     {
       title: '产品ID',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'defaultProductId',
+      key: 'defaultProductId',
     },
     {
       title: '大类',
@@ -469,7 +469,7 @@ function SceneLibList({ form }) {
                     )}
                   </Form.Item>
                   <Form.Item label="产品ID">
-                    {getFieldDecorator('productId', {})(
+                    {getFieldDecorator('defaultProductId', {})(
                       <Input placeholder="请输入产品ID" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
@@ -509,14 +509,14 @@ function SceneLibList({ form }) {
               {/* AI能力列表-查询 */}
               {
                 selectVal === '4' && <>
-                  <Form.Item label="AI能力列表">
+                  <Form.Item label="能力名称">
                     {getFieldDecorator('productName', {
                       getValueFromEvent: (e) => {
                         const val = e.target.value;
                         return val.replace(/[^\d]/g, '');
                       }
                     })(
-                      <Input placeholder="请输入AI能力列表" style={{ width: 240 }}></Input>
+                      <Input placeholder="请输入能力名称" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
                 </>
