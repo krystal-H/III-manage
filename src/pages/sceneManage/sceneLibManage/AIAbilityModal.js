@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Select, Modal, message, InputNumber, Icon, Button } from 'antd'
-import { saveConditionDicRequest } from '../../../apis/sceneLibList'
+import { saveAIbilityRequest } from '../../../apis/sceneLibList'
 import { cloneDeep } from 'lodash'
 import './AIAbilityModal.less'
 
@@ -8,6 +8,7 @@ const { TextArea } = Input
 const { Option } = Select
 
 let uniquekey = 0
+let uniquekey_2 = 0
 
 function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
   const [confirmLoading, setConfirmLoading] = useState(false)
@@ -17,6 +18,8 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
   const confirmSubmit = () => {
     form.validateFields((err, values) => {
       console.log('====', values)
+      let params = { ...values }
+
     })
   }
 
@@ -24,7 +27,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     console.log(val, typeof val, pid)
   }
 
-  // 新增--内层
+  // 输入-新增--内层
   const addInnerForm = (index) => {
     const innerList = getFieldValue(`innerList${index}`)
     uniquekey++
@@ -34,17 +37,17 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     })
   }
 
-  // 删除--内层
+  // 输入-删除--内层
   const removeInnerForm = (index1, uniquekey) => {
     const innerList = getFieldValue(`innerList${index1}`)
-    const configList = getFieldValue(`configList`)
-
+    const aiInParamList = getFieldValue(`aiInParamList`)
     form.setFieldsValue({
       [`innerList${index1}`]: innerList.filter((item, key) => item.uniquekey !== uniquekey),
-      configList: configList[index1].innerList.filter((item, key) => item.uniquekey !== uniquekey)
+      aiInParamList: aiInParamList[index1].enums.filter((item, key) => item.uniquekey !== uniquekey)
     })
   }
 
+  // 输入-内层-html
   const createInnerHtml = (name, index1, item) => {
 
     getFieldDecorator(`innerList${index1}`, { initialValue: [] })
@@ -55,8 +58,8 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <div className='inline-form-item2' key={index2}>
         <Form.Item label="名称" labelCol={{ span: 6 }}>
           {
-            getFieldDecorator(`${name}[${item.uniquekey}].queryParamName`, {
-              initialValue: item.queryParamName,
+            getFieldDecorator(`${name}[${item.uniquekey}].name`, {
+              initialValue: item.name,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, whitespace: true, message: "请输入名称" }],
             })(<Input placeholder="请输入名称" />)
@@ -64,8 +67,8 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
         </Form.Item>
         <Form.Item label="数值" labelCol={{ span: 6 }}>
           {
-            getFieldDecorator(`${name}[${item.uniquekey}].queryParamValue`, {
-              initialValue: item.queryParamValue,
+            getFieldDecorator(`${name}[${item.uniquekey}].value`, {
+              initialValue: item.value,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, whitespace: true, message: "请输入数值", },],
             })(<Input placeholder="请输入数值" />)
@@ -83,9 +86,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     return [html2]
   }
 
-
-
-  // 新增--外层
+  // 输入-新增--外层
   const addParam = () => {
     const keys = getFieldValue('queryParams')
     const nextKeys = keys.concat({})
@@ -94,24 +95,24 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     })
   }
 
-  // 删除--外层
+  // 输入-删除--外层
   const deleteParam = index => {
     const queryParams = getFieldValue('queryParams')
-    const configList = getFieldValue('configList')
+    const aiInParamList = getFieldValue('aiInParamList')
     form.setFieldsValue({
       queryParams: queryParams.filter((item, key) => key !== index),
-      configList: configList.filter((item, key) => key !== index)
+      aiInParamList: aiInParamList.filter((item, key) => key !== index)
     })
   }
 
   getFieldDecorator('queryParams', { initialValue: [] })
   const keys = getFieldValue('queryParams')
-  // 外层---form-item
+  // 输入-外层---form-item
   const formItems = keys.map((item, index) => (
     <div className='form-item-block' key={index}>
       <Form.Item label="输入key">
         {
-          getFieldDecorator(`configList[${index}].key`, {
+          getFieldDecorator(`aiInParamList[${index}].key`, {
             initialValue: item.queryParamName,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入输入key" }],
@@ -120,14 +121,15 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       </Form.Item>
       <Form.Item label="类型">
         {
-          getFieldDecorator(`configList[${index}].paramStyleId`, {
+          getFieldDecorator(`aiInParamList[${index}].type`, {
             initialValue: '',
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, message: '请选择类型', whitespace: true }]
           })(
-            <Select placeholder="请选择类型" onChange={(val) => changeType(val, `configList[${index}].paramStyleId`)}>
-              <Option value="1">范围</Option>
-              <Option value="2">枚举</Option>
+            // onChange={(val) => changeType(val, `aiInParamList[${index}].type`)}
+            <Select placeholder="请选择类型">
+              <Option value="2">范围</Option>
+              <Option value="1">枚举</Option>
             </Select>
           )
         }
@@ -135,11 +137,11 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <div className="ai-del-btn" key={index} onClick={() => deleteParam(index)}>删除</div>
       {/* 数值 */}
       {
-        getFieldValue(`configList[${index}].paramStyleId`) == '1' &&
+        getFieldValue(`aiInParamList[${index}].type`) == '2' &&
         <div className='rang-style'>
           <Form.Item label="">
             {
-              getFieldDecorator(`configList[${index}].queryParamName`, {
+              getFieldDecorator(`aiInParamList[${index}].range.min`, {
                 initialValue: '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
@@ -149,7 +151,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           <div className='short-line'>-</div>
           <Form.Item label="">
             {
-              getFieldDecorator(`configList[${index}].queryParamValue`, {
+              getFieldDecorator(`aiInParamList[${index}].range.max`, {
                 initialValue: '',
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
@@ -161,14 +163,163 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       }
       {/* 枚举 */}
       {
-        getFieldValue(`configList[${index}].paramStyleId`) == '2' &&
+        getFieldValue(`aiInParamList[${index}].type`) == '1' &&
         <div>
           <Form.Item label="设置参数">
             <Button type="dashed" onClick={() => addInnerForm(index)} >
-              <Icon type="plus" /> 新&nbsp;&nbsp;增
+              <Icon type="plus" />
             </Button>
           </Form.Item>
-          {createInnerHtml(`configList[${index}].innerList`, index, item)}
+          {createInnerHtml(`aiInParamList[${index}].enums`, index, item)}
+        </div>
+      }
+    </div>
+  ))
+
+  // 输出-------------------------------------------
+
+  // 输出-内层-新增
+  const addInnerOutForm = (index) => {
+    const outerList = getFieldValue(`outerList${index}`)
+    uniquekey_2++
+    const nextList = outerList.concat({ uniquekey_2 })
+    form.setFieldsValue({
+      [`outerList${index}`]: nextList,
+    })
+  }
+
+  // 输出-内层-删除
+  const removeInnerForm2 = (index1, uniquekey_2) => {
+    const outerList = getFieldValue(`outerList${index1}`)
+    const aiOutParamList = getFieldValue(`aiOutParamList`)
+    form.setFieldsValue({
+      [`outerList${index1}`]: outerList.filter((item, key) => item.uniquekey_2 !== uniquekey_2),
+      aiOutParamList: aiOutParamList[index1].enums.filter((item, key) => item.uniquekey_2 !== uniquekey_2)
+    })
+  }
+
+  // 输出-内层-html
+  const createInnerHtml2 = (name, index1, item) => {
+    getFieldDecorator(`outerList${index1}`, { initialValue: [] })
+    const outerList = getFieldValue(`outerList${index1}`)
+    console.log('渲染的outerList', outerList)
+
+    const html2 = outerList.map((item, index2) => (
+      <div className='inline-form-item2' key={index2}>
+        <Form.Item label="名称" labelCol={{ span: 6 }}>
+          {
+            getFieldDecorator(`${name}[${item.uniquekey_2}].name`, {
+              initialValue: item.name,
+              validateTrigger: ['onChange', 'onBlur'],
+              rules: [{ required: true, whitespace: true, message: "请输入名称" }],
+            })(<Input placeholder="请输入名称" />)
+          }
+        </Form.Item>
+        <Form.Item label="数值" labelCol={{ span: 6 }}>
+          {
+            getFieldDecorator(`${name}[${item.uniquekey_2}].value`, {
+              initialValue: item.value,
+              validateTrigger: ['onChange', 'onBlur'],
+              rules: [{ required: true, whitespace: true, message: "请输入数值", },],
+            })(<Input placeholder="请输入数值" />)
+          }
+        </Form.Item>
+        <div className='delete-btn'>
+          &nbsp;&nbsp;
+          <Icon
+            key={index2}
+            type="minus-circle-o"
+            onClick={() => removeInnerForm2(index1, item.uniquekey_2)} />&nbsp;&nbsp;(*非负整数)
+        </div>
+      </div>
+    ))
+    return [html2]
+  }
+
+  // 输出-外层-新增
+  const addOutParam = () => {
+    const outParams = getFieldValue('outParams')
+    const nextKeys = outParams.concat({})
+    form.setFieldsValue({
+      outParams: nextKeys
+    })
+  }
+
+  // 输出-外层-删除
+  const deleteOutParam = (index) => {
+    const outParams = getFieldValue('outParams')
+    const aiOutParamList = getFieldValue('aiOutParamList')
+    form.setFieldsValue({
+      outParams: outParams.filter((item, key) => key !== index),
+      aiOutParamList: aiOutParamList.filter((item, key) => key !== index)
+    })
+  }
+
+  getFieldDecorator('outParams', { initialValue: [] })
+  const outParamsKeys = getFieldValue('outParams')
+  // 输出--外层---form-item
+  const outFormItems = outParamsKeys.map((item, index) => (
+    <div className='form-item-block' key={index}>
+      <Form.Item label="输出key">
+        {
+          getFieldDecorator(`aiOutParamList[${index}].key`, {
+            initialValue: item.queryParamName,
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [{ required: true, whitespace: true, message: "请输入输出key" }],
+          })(<Input placeholder="请输入输出key" />)
+        }
+      </Form.Item>
+      <Form.Item label="类型">
+        {
+          getFieldDecorator(`aiOutParamList[${index}].type`, {
+            initialValue: '',
+            validateTrigger: ['onChange', 'onBlur'],
+            rules: [{ required: true, message: '请选择类型', whitespace: true }]
+          })(
+            <Select placeholder="请选择类型">
+              <Option value="2">范围</Option>
+              <Option value="1">枚举</Option>
+            </Select>
+          )
+        }
+      </Form.Item>
+      <div className="ai-del-btn" key={index} onClick={() => deleteOutParam(index)}>删除</div>
+      {/* 数值 */}
+      {
+        getFieldValue(`aiOutParamList[${index}].type`) == '2' &&
+        <div className='rang-style'>
+          <Form.Item label="">
+            {
+              getFieldDecorator(`aiOutParamList[${index}].range.min`, {
+                initialValue: '',
+                validateTrigger: ['onChange', 'onBlur'],
+                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
+              })(<Input style={{ width: 90, marginRight: 10 }} />)
+            }
+          </Form.Item>
+          <div className='short-line'>-</div>
+          <Form.Item label="">
+            {
+              getFieldDecorator(`aiOutParamList[${index}].range.max`, {
+                initialValue: '',
+                validateTrigger: ['onChange', 'onBlur'],
+                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
+              })(<Input style={{ width: 90, marginRight: 10 }} />)
+            }
+          </Form.Item>
+          <div className='tip'>(*填写整数且后者大于前者)</div>
+        </div>
+      }
+      {/* 枚举 */}
+      {
+        getFieldValue(`aiOutParamList[${index}].type`) == '1' &&
+        <div>
+          <Form.Item label="设置参数">
+            <Button type="dashed" onClick={() => addInnerOutForm(index)} >
+              <Icon type="plus" />
+            </Button>
+          </Form.Item>
+          {createInnerHtml2(`aiOutParamList[${index}].enums`, index, item)}
         </div>
       }
     </div>
@@ -187,15 +338,15 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} autoComplete="off">
         <Form.Item label="接口地址">
           {
-            getFieldDecorator('conditionName', {
+            getFieldDecorator('aiUrl', {
               initialValue: '',
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入接口地址', whitespace: true }],
             })(<Input maxLength={20} placeholder="请输入接口地址" />)
           }
         </Form.Item>
-        <Form.Item label="备注">
-          {getFieldDecorator('comments', {
+        <Form.Item label="描述">
+          {getFieldDecorator('aiDesc', {
             initialValue: '',
             rules: [{ required: true, message: '请输入备注', whitespace: true }],
           })(<TextArea maxLength={100} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>)}
@@ -206,6 +357,14 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           </Button>
         </Form.Item>
         {formItems}
+
+        {/* 输出 */}
+        <Form.Item label="输出" style={{ marginTop: '15px' }}>
+          <Button type="dashed" onClick={() => addOutParam()}>
+            <Icon type="plus" /> 新&nbsp;&nbsp;增
+          </Button>
+        </Form.Item>
+        {outFormItems}
       </Form>
     </Modal>
   )

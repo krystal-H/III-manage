@@ -160,9 +160,23 @@ export const deleteStatusQueryRequest = (params) => {
 
 
 // AI能力列表-----------------------------------------------
-// AI能力列表
+// 获取AI能力列表
 export const AIAbilityListRequest = (params) => {
   return axios.request({
+    url: '/expert/scene/ai/getPageList/v2.0',
+    params,
+    method: 'get'
+  })
+}
 
+// 保存
+export const saveAIbilityRequest = (params) => {
+  return axios.request({
+    url: '/export/scene/ai/addOrUpdate/v2.0',
+    data: params,
+    method: 'post',
+    headers: {
+      "Content-Type": "application/json",
+    }
   })
 }

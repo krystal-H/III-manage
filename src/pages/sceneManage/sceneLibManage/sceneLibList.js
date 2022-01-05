@@ -222,13 +222,13 @@ function SceneLibList({ form }) {
   const AIColumns = [
     {
       title: '能力名称',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'aiName',
+      key: 'aiName',
     },
     {
       title: '接口地址',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'aiUrl',
+      key: 'aiUrl',
     },
     {
       title: '输入',
@@ -242,13 +242,13 @@ function SceneLibList({ form }) {
     },
     {
       title: '描述',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'aiDesc',
+      key: 'aiDesc',
     },
     {
       title: '编辑时间',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'updateTime',
+      key: 'updateTime',
     },
     {
       title: '操作',
@@ -510,12 +510,7 @@ function SceneLibList({ form }) {
               {
                 selectVal === '4' && <>
                   <Form.Item label="能力名称">
-                    {getFieldDecorator('productName', {
-                      getValueFromEvent: (e) => {
-                        const val = e.target.value;
-                        return val.replace(/[^\d]/g, '');
-                      }
-                    })(
+                    {getFieldDecorator('aiName', {})(
                       <Input placeholder="请输入能力名称" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>
