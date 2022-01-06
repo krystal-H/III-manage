@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Input, Button, Select, message, Radio, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import { getList, relData } from '../../../apis/firmwareMagement'
-import TableCom from '../../../components/Table';
-import { DateTool } from '../../../util/utils';
-import { cloneDeep } from "lodash"
+import {  relData } from '../../../apis/firmwareMagement'
 
 const FormItem = Form.Item
 const optionArr = [
@@ -110,20 +107,20 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
         console.log(getFieldsValue())
         validateFields((err, values) => {
             if (!err) {
-                const { names, status, keys } = values;
-                if (status === 3) {
-                    let params1 = {
-                        status: status,
-                        id: actionData.id,
-                    }
-                    relData(params1).then(res => {
-                        if (res.data.code === 0) {
-                            message.success('审核成功')
-                            handleOk()
-                        }
-                    })
-                    return
-                }
+                const { names,  keys } = values;
+                // if (status === 3) {
+                //     let params1 = {
+                //         status: status,
+                //         id: actionData.id,
+                //     }
+                //     relData(params1).then(res => {
+                //         if (res.data.code === 0) {
+                //             message.success('审核成功')
+                //             handleOk()
+                //         }
+                //     })
+                //     return
+                // }
                 if (!names || !names.length) {
                     message.info('至少添加一个模组/固件')
                     return
@@ -144,7 +141,7 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
                     })
                 })
                 let params = {
-                    status: status,
+                    status: 2,
                     id: actionData.id,
                     productFirmwareTypeList: arr
                 }
@@ -169,14 +166,14 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
             >
                 <div className='firm-model-wrap'>
                     <Form {...formItemLayout} >
-                        <FormItem label="审核结果">
+                        {/* <FormItem label="审核结果">
                             {getFieldDecorator('status', { initialValue: 2 })(
                                 <Radio.Group buttonStyle="solid" onChange={checkChange}>
                                     <Radio.Button value={2}>通过</Radio.Button>
                                     <Radio.Button value={3}>不通过</Radio.Button>
                                 </Radio.Group>
                             )}
-                        </FormItem>
+                        </FormItem> */}
                         {
                             isPass === 2 && <FormItem label="选择模块" >
                                 {getFieldDecorator('mode', { rules: [{ required: true, message: '请选择模块' }], initialValue: 1 })(

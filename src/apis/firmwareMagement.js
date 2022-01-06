@@ -18,3 +18,12 @@ export const relData = (data) => {
         headers: {}
     })
 };
+//查看
+export const lookData = (data) => {
+    return axios.request({
+        url: '/manage-open/product/show/firmware/config',
+        method: 'post',
+        data,
+        headers: {}
+    })
+};
