@@ -172,7 +172,7 @@ export const AIAbilityListRequest = (params) => {
 // 保存
 export const saveAIbilityRequest = (params) => {
   return axios.request({
-    url: '/export/scene/ai/addOrUpdate/v2.0',
+    url: '/expert/scene/ai/addOrUpdate/v2.0',
     data: params,
     method: 'post',
     headers: {

@@ -50,7 +50,7 @@ function SceneLibList({ form }) {
   const [sceneProductVisible, setSceneProductVisible] = useState(false)
   const [sceneProductDetail, setSceneProductDetail] = useState({}) // 场景产品列表-详情数据
 
-  const [aiAbilityVisible, setAiAbilityVisible] = useState(true) // ai能力-弹窗
+  const [aiAbilityVisible, setAiAbilityVisible] = useState(false) // ai能力-弹窗
 
   // 场景产品列表
   const sceneColumns = [
@@ -232,18 +232,53 @@ function SceneLibList({ form }) {
     },
     {
       title: '输入',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'aiInParamList',
+      key: 'aiInParamList',
+      render: (item, record) => {
+        return item && item.map(ele => {
+          let result = ''
+          if (ele.type == 2) {// 范围
+            result = <span title={`范围：${ele.range.min}~${ele.range.max}`}>
+              {`范围：${ele.range.min}~${ele.range.max}`},&nbsp;&nbsp;&nbsp;
+            </span>
+          }
+          if (ele.type == 1) {// 枚举
+            let val = ''
+            val += ele.enums.map(item2 => `${item2.name}:${item2.value}`)
+            result = <span title={`枚举：${val}`}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
+          }
+          return result
+        })
+      }
     },
     {
       title: '输出',
-      dataIndex: '',
-      key: '',
+      dataIndex: 'aiOutParamList',
+      key: 'aiOutParamList',
+      render: (item, record) => {
+        return item && item.map(ele => {
+          let result = ''
+          if (ele.type == 2) {// 范围
+            result = <span title={`范围：${ele.range.min}~${ele.range.max}`}>
+              {`范围：${ele.range.min}~${ele.range.max}`},&nbsp;&nbsp;&nbsp;
+            </span>
+          }
+          if (ele.type == 1) {// 枚举
+            let val = ''
+            val += ele.enums.map(item2 => `${item2.name}:${item2.value}`)
+            result = <span title={`枚举：${val}`}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
+          }
+          return result
+        })
+      }
     },
     {
       title: '描述',
       dataIndex: 'aiDesc',
       key: 'aiDesc',
+      render: (text) => {
+        return <span title={text}>{text}</span>
+      }
     },
     {
       title: '编辑时间',
@@ -597,7 +632,7 @@ function SceneLibList({ form }) {
         }
         {/* ai能力列表 */}
         {
-          aiAbilityVisible && 
+          aiAbilityVisible &&
           <AIAbilityModal
             visible={aiAbilityVisible}
             handleCancel={() => setAiAbilityVisible(false)}

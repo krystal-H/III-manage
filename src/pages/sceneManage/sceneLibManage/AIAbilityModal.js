@@ -14,12 +14,53 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const { getFieldDecorator, getFieldValue } = form
 
+  const filterData = (arr) => {
+    const tempArr = arr.map(item => {
+      if (item.type == '1' && item.enums) { // 枚举
+        item.enums = item.enums.filter(item2 => item2)
+        return item
+      }
+      return item
+    })
+    return tempArr
+  }
+
   // 提交数据
   const confirmSubmit = () => {
     form.validateFields((err, values) => {
       console.log('====', values)
-      let params = { ...values }
-
+      let params = {
+        aiName: values.aiName.trim(),
+        aiUrl: values.aiUrl.trim(),
+        aiDesc: values.aiDesc.trim(),
+      }
+      if (values.aiInParamList) { // 假如有----输入
+        // const aiInParamList = values.aiInParamList.map(item => {
+        //   if (item.type == '1' && item.enums) { // 枚举
+        //     item.enums = item.enums.filter(item2 => item2)
+        //     return item
+        //   }
+        //   return item
+        // })
+        params.aiInParamList = filterData(values.aiInParamList)
+      }
+      if (values.aiOutParamList) { // 假如有----输出
+        // const aiOutParamList = values.aiOutParamList.map(item => {
+        //   if (item.type == '1' && item.enums) { // 枚举
+        //     item.enums = item.enums.filter(item2 => item2)
+        //     return item
+        //   }
+        //   return item
+        // })
+        params.aiOutParamList = filterData(values.aiOutParamList)
+      }
+      console.log('最终提交的数据', params)
+      saveAIbilityRequest(params).then(res => {
+        if (res.data.code === 0) {
+          message.success(`提交成功`)
+          handleOk()
+        }
+      }).finally(() => setConfirmLoading(false))
     })
   }
 
@@ -336,6 +377,15 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       wrapClassName="ai-ability-modal"
     >
       <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} autoComplete="off">
+        <Form.Item label="能力名称">
+          {
+            getFieldDecorator('aiName', {
+              initialValue: '',
+              validateTrigger: ['onChange', 'onBlur'],
+              rules: [{ required: true, message: '请输入能力名称', whitespace: true }],
+            })(<Input maxLength={20} placeholder="请输入能力名称" />)
+          }
+        </Form.Item>
         <Form.Item label="接口地址">
           {
             getFieldDecorator('aiUrl', {
@@ -357,7 +407,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           </Button>
         </Form.Item>
         {formItems}
-
+        <div className='divider'></div>
         {/* 输出 */}
         <Form.Item label="输出" style={{ marginTop: '15px' }}>
           <Button type="dashed" onClick={() => addOutParam()}>
