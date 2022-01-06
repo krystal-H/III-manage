@@ -35,7 +35,7 @@ class ProductList extends Component {
     const _this = this
     Modal.confirm({
       title: "变更产品状态确认",
-      content: "若产品已生产或出贷到消费者端，修改产品则可能导致设备功能异常、配网异常等问题，请谨慎操作及确定无影响。",
+      content: "若产品已生产或出货到消费者端，修改产品则可能导致设备功能异常、配网异常等问题，请谨慎操作及确定无影响。",
       onOk() {
         let params = {
           productId: record.productId,
