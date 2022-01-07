@@ -94,14 +94,14 @@ function ConditionDicModal({
     })
   }
 
-  
+
   if (Object.keys(conditionDicDetailData).length && paramStyle === '2') {
     // 为了兼容老数据
     if (conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
       newData = []
     } else {
       newData = cloneDeep(conditionDicDetailData.queryParams)
-    } 
+    }
   }
   getFieldDecorator('queryParams', { initialValue: newData })
   const keys = getFieldValue('queryParams')
@@ -133,7 +133,10 @@ function ConditionDicModal({
           getFieldDecorator(`configList[${index}].queryParamValue`, {
             initialValue: k.queryParamValue,
             validateTrigger: ['onChange', 'onBlur'],
-            rules: [{ required: true, whitespace: true, message: "请输入数值", },],
+            rules: [
+              { required: true, whitespace: true, message: "请输入数值", },
+              { pattern: /^\d+$/, message: '请输入非负整数' }
+            ],
           })(<Input placeholder="请输入数值" />)
         }
       </Form.Item>
@@ -269,8 +272,21 @@ function ConditionDicModal({
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[0] + '' :
                       conditionDicDetailData.queryParams[0].queryParamName : '',
                   validateTrigger: ['onChange', 'onBlur'],
-                  rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-                })(<Input style={{ width: 90, marginRight: 10 }} />)
+                  rules: [
+                    {
+                      validator: (_, value, callback) => {
+                        const reg = /^-?[0-9]\d*$/
+                        if (!value) {
+                          callback('请输入数值')
+                        } else if (!reg.test(value)) {
+                          callback('请输入整数')
+                        } else {
+                          callback()
+                        }
+                      }
+                    }
+                  ],
+                })(<Input style={{ width: 159, marginRight: 10 }} />)
               }
             </Form.Item>
             <div className='short-line'>-</div>
@@ -282,10 +298,25 @@ function ConditionDicModal({
                     Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
                       conditionDicDetailData.queryParams[0].queryParamName : '',
-                  // conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
-                  rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-                })(<Input style={{ width: 90, marginRight: 10 }} />)
+                  rules: [
+                    {
+                      validator: (_, value, callback) => {
+                        const reg = /^-?[0-9]\d*$/
+                        if (!value) {
+                          callback('请输入数值')
+                        } else if (!reg.test(value)) {
+                          callback('请输入整数')
+                        } else
+                          if (value && Number(getFieldValue('rangArr1')) < Number(value)) {
+                            callback()
+                          } else {
+                            callback('填写整数且后者大于前者')
+                          }
+                      }
+                    }
+                  ],
+                })(<Input style={{ width: 196, marginRight: 10 }} />)
               }
             </Form.Item>
             <div className='tip'>(*填写整数且后者大于前者)</div>

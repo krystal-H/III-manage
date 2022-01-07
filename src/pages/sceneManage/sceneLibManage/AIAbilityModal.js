@@ -32,7 +32,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         }
       })
       setNewDataIn(aiAbilityDetail.aiInParamList)
-      console.log('newDataIn---', newDataIn)
+      // console.log('newDataIn---', newDataIn)
 
       // 输出列表
       aiAbilityDetail.aiOutParamList && aiAbilityDetail.aiOutParamList.forEach(item => {
@@ -48,7 +48,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         }
       })
       setNewDataOut(aiAbilityDetail.aiOutParamList)
-      console.log('newDataOut---', newDataOut)
+      // console.log('newDataOut---', newDataOut)
     }
   }, [aiAbilityDetail])
 
@@ -134,7 +134,10 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
             getFieldDecorator(`${name}[${item.uniquekey}].value`, {
               initialValue: item.value,
               validateTrigger: ['onChange', 'onBlur'],
-              rules: [{ required: true, whitespace: true, message: "请输入数值", },],
+              rules: [
+                { required: true, whitespace: true, message: "请输入数值", },
+                { pattern: /^\d+$/, message: '请输入非负整数' }
+              ],
             })(<Input placeholder="请输入数值" />)
           }
         </Form.Item>
@@ -204,7 +207,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         }
       </Form.Item>
       <div className="ai-del-btn" key={index} onClick={() => deleteParam(index)}>删除</div>
-      {/* 数值 */}
+      {/* 范围 */}
       {
         getFieldValue(`aiInParamList[${index}].type`) == '2' &&
         <div className='rang-style'>
@@ -213,8 +216,21 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               getFieldDecorator(`aiInParamList[${index}].range.min`, {
                 initialValue: item.range && item.range.min,
                 validateTrigger: ['onChange', 'onBlur'],
-                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-              })(<Input style={{ width: 90, marginRight: 10 }} />)
+                rules: [
+                  {
+                    validator: (_, value, callback) => {
+                      const reg = /^-?[0-9]\d*$/
+                      if (!value) {
+                        callback('请输入数值')
+                      } else if (!reg.test(value)) {
+                        callback('请输入整数')
+                      } else {
+                        callback()
+                      }
+                    }
+                  }
+                ],
+              })(<Input style={{ width: 159, marginRight: 10 }} />)
             }
           </Form.Item>
           <div className='short-line'>-</div>
@@ -223,8 +239,24 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               getFieldDecorator(`aiInParamList[${index}].range.max`, {
                 initialValue: item.range && item.range.max,
                 validateTrigger: ['onChange', 'onBlur'],
-                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-              })(<Input style={{ width: 90, marginRight: 10 }} />)
+                rules: [
+                  {
+                    validator: (_, value, callback) => {
+                      const reg = /^-?[0-9]\d*$/
+                      if (!value) {
+                        callback('请输入数值')
+                      } else if (!reg.test(value)) {
+                        callback('请输入整数')
+                      } else
+                        if (value && Number(getFieldValue(`aiInParamList[${index}].range.min`)) < Number(value)) {
+                          callback()
+                        } else {
+                          callback('填写整数且后者大于前者')
+                        }
+                    }
+                  }
+                ],
+              })(<Input style={{ width: 196, marginRight: 10 }} />)
             }
           </Form.Item>
           <div className='tip'>(*填写整数且后者大于前者)</div>
@@ -289,7 +321,10 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
             getFieldDecorator(`${name}[${item.uniquekey_2}].value`, {
               initialValue: item.value,
               validateTrigger: ['onChange', 'onBlur'],
-              rules: [{ required: true, whitespace: true, message: "请输入数值", },],
+              rules: [
+                { required: true, whitespace: true, message: "请输入数值", },
+                { pattern: /^\d+$/, message: '请输入非负整数' }
+              ],
             })(<Input placeholder="请输入数值" />)
           }
         </Form.Item>
@@ -354,7 +389,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         }
       </Form.Item>
       <div className="ai-del-btn" key={index} onClick={() => deleteOutParam(index)}>删除</div>
-      {/* 数值 */}
+      {/* 范围 */}
       {
         getFieldValue(`aiOutParamList[${index}].type`) == '2' &&
         <div className='rang-style'>
@@ -363,8 +398,22 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               getFieldDecorator(`aiOutParamList[${index}].range.min`, {
                 initialValue: item.range && item.range.min,
                 validateTrigger: ['onChange', 'onBlur'],
-                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-              })(<Input style={{ width: 90, marginRight: 10 }} />)
+                // rules: [{ required: true, whitespace: true, message: "请输入数值", }],
+                rules: [
+                  {
+                    validator: (_, value, callback) => {
+                      const reg = /^-?[0-9]\d*$/
+                      if (!value) {
+                        callback('请输入数值')
+                      } else if (!reg.test(value)) {
+                        callback('请输入整数')
+                      } else {
+                        callback()
+                      }
+                    }
+                  }
+                ],
+              })(<Input style={{ width: 159, marginRight: 10 }} />)
             }
           </Form.Item>
           <div className='short-line'>-</div>
@@ -373,8 +422,25 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               getFieldDecorator(`aiOutParamList[${index}].range.max`, {
                 initialValue: item.range && item.range.max,
                 validateTrigger: ['onChange', 'onBlur'],
-                rules: [{ required: true, whitespace: true, message: "请输入数值", }],
-              })(<Input style={{ width: 90, marginRight: 10 }} />)
+                // rules: [{ required: true, whitespace: true, message: "请输入数值", }],
+                rules: [
+                  {
+                    validator: (_, value, callback) => {
+                      const reg = /^-?[0-9]\d*$/
+                      if (!value) {
+                        callback('请输入数值')
+                      } else if (!reg.test(value)) {
+                        callback('请输入整数')
+                      } else
+                        if (value && Number(getFieldValue(`aiOutParamList[${index}].range.min`)) < Number(value)) {
+                          callback()
+                        } else {
+                          callback('填写整数且后者大于前者')
+                        }
+                    }
+                  }
+                ],
+              })(<Input style={{ width: 196, marginRight: 10 }} />)
             }
           </Form.Item>
           <div className='tip'>(*填写整数且后者大于前者)</div>
@@ -397,7 +463,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
 
   return (
     <Modal title="添加/编辑AI能力"
-      width={700}
+      width={787}
       visible={visible}
       onOk={confirmSubmit}
       onCancel={handleCancel}
