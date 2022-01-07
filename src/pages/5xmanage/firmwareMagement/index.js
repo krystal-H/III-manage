@@ -5,9 +5,10 @@ import { getList, relData } from '../../../apis/firmwareMagement'
 import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import CheckModal from './check'
+import InfoModal from './info'
 import './index.less'
 const FormItem = Form.Item
-const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }, { value: 3, label: '不通过' }]
+const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }]
 
 function PanelMn({ form }) {
     const { getFieldDecorator, validateFields, getFieldsValue } = form;
@@ -15,14 +16,16 @@ function PanelMn({ form }) {
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [checkVisible, setCheckVisible] = useState(false)
+    const [infoVisible, setInfoVisible] = useState(false)
     const [loading, setLoading] = useState(false)
     const [actionData, setActionData] = useState({})
     const column = [
         {
             title: '提交账号',
-            dataIndex: 'developerId',
-            key: 'developerId',
-            width: 100
+            dataIndex: 'account',
+            key: 'account',
+            width: 100,
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '提交时间',
@@ -58,6 +61,10 @@ function PanelMn({ form }) {
             title: '上传的固件名称',
             dataIndex: 'burnFileName',
             key: 'burnFileName',
+            render: (text,row) => <span >
+                {text && <>{text}
+                <a style={{marginLeft:'3px'}} onClick={() => { openInfo(row) }}>查看</a></>}
+            </span>
         },
         {
             title: '固件标识',
@@ -88,13 +95,20 @@ function PanelMn({ form }) {
             key: '',
             render: (val, record) => {
                 let text = record.status
-                if (text === 1) {
+                if (text ==1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
                 return ''
             }
         }
     ]
+    const openInfo = data => {
+        setActionData(data)
+        setInfoVisible(true)
+    }
+    const closeInfo = () => {
+        setInfoVisible(false)
+    }
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
         if (pageRows === pager.pageRows) {
@@ -156,7 +170,7 @@ function PanelMn({ form }) {
         setCheckVisible(false)
     }
     return (
-        <div className="panelMn-page" style={{minWidth:'1200px'}}>
+        <div className="panelMn-page" style={{ minWidth: '1200px' }}>
             <TitleTab title="用户免开发固件上传信息">
                 <Form layout="inline" >
                     <FormItem label="产品ID">
@@ -193,7 +207,7 @@ function PanelMn({ form }) {
             </TitleTab>
             <Card>
                 <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
-                loading={loading}
+                    loading={loading}
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,
@@ -206,6 +220,9 @@ function PanelMn({ form }) {
             </Card>
             {
                 checkVisible && <CheckModal checkVisible={checkVisible} handleOk={handleOk} handleCancel={handleCancel} actionData={actionData} />
+            }
+            {
+                infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData}/>
             }
         </div>
     )
