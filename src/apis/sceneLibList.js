@@ -181,7 +181,7 @@ export const saveAIbilityRequest = (params) => {
   })
 }
 
-// 查询详情
+// 编辑详情回显
 export const getAIbilityDetailRequest = (params) => {
   return axios.request({
     url: '/expert/scene/ai/getAiAbility/v2.0',
@@ -189,3 +189,13 @@ export const getAIbilityDetailRequest = (params) => {
     method: 'get'
   })
 }
+
+// 删除ai能力
+export const deleteAIbilityRequest = (params) => {
+  return axios.request({
+    url: '/expert/scene/ai/deleteById/v2.0',
+    params,
+    method: 'get'
+  })
+}
+

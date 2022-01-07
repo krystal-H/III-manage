@@ -14,7 +14,8 @@ import {
   getConditionDicDetailRequest,
   deleteConditionDicRequest,
   getSceneProductDetailRequest,
-  getAIbilityDetailRequest
+  getAIbilityDetailRequest,
+  deleteAIbilityRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 import { cloneDeep } from 'lodash'
@@ -362,6 +363,14 @@ function SceneLibList({ form }) {
         })
     } else if (selectVal === '3') {// 条件字典的删除
       deleteConditionDicRequest({ conditionId: record.conditionId })
+        .then(res => {
+          if (res.data.code === 0) {
+            message.success('删除成功')
+            getTableData()
+          }
+        })
+    } else if (selectVal === '4') {// ai能力
+      deleteAIbilityRequest({ aiId: record.aiId })
         .then(res => {
           if (res.data.code === 0) {
             message.success('删除成功')
