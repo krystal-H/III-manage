@@ -31,7 +31,7 @@ function ConditionDicModal({
     form.validateFields((err, values) => {
       if (!err) {
         setConfirmLoading(true)
-        console.log('values', values, typeof paramStyle)
+        console.log('values', values)
         let params = { ...values }
         if (paramStyle === '1') {// 范围
           params.queryParams = [{ queryParamName: values.rangArr1, queryParamValue: values.rangArr2 }]

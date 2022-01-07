@@ -66,7 +66,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
   // 提交数据
   const confirmSubmit = () => {
     form.validateFields((err, values) => {
-      console.log('====', values)
+      // console.log('====', values)
       let params = {
         aiName: values.aiName.trim(),
         aiUrl: values.aiUrl.trim(),
@@ -81,7 +81,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
       if (Object.keys(aiAbilityDetail).length > 0) { // 编辑
         params.aiId = aiAbilityDetail.aiId
       }
-      console.log('最终提交的数据', params)
+      console.log('submit==', params)
       saveAIbilityRequest(params).then(res => {
         if (res.data.code === 0) {
           message.success(`提交成功`)
@@ -116,7 +116,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
   const createInnerHtml = (name, index1, item) => {
     getFieldDecorator(`innerList${index1}`, { initialValue: item.enums || [] })
     const innerList = getFieldValue(`innerList${index1}`)
-    console.log('渲染的innerList', innerList)
+    console.log('innerList', innerList)
 
     const html2 = innerList.map((item, index2) => (
       <div className='inline-form-item2' key={index2}>
@@ -303,7 +303,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
   const createInnerHtml2 = (name, index1, item) => {
     getFieldDecorator(`outerList${index1}`, { initialValue: item.enums || [] })
     const outerList = getFieldValue(`outerList${index1}`)
-    console.log('渲染的outerList', outerList)
+    console.log('outerList', outerList)
 
     const html2 = outerList.map((item, index2) => (
       <div className='inline-form-item2' key={index2}>
@@ -361,7 +361,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
 
   getFieldDecorator('outParams', { initialValue: newDataOut || [] })
   const outParamsKeys = getFieldValue('outParams')
-  console.log('waicengwaiceng--------', outParamsKeys)
+  // console.log('waicengwaiceng--------', outParamsKeys)
   // 输出--外层---form-item
   const outFormItems = outParamsKeys.map((item, index) => (
     <div className='form-item-block' key={index}>
