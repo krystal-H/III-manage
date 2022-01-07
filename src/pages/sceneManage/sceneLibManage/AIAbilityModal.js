@@ -7,12 +7,50 @@ import './AIAbilityModal.less'
 const { TextArea } = Input
 const { Option } = Select
 
-let uniquekey = 0
-let uniquekey_2 = 0
+let uniquekey = 0 // 输入
+let uniquekey_2 = 0 // 输出
 
-function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
-  const [confirmLoading, setConfirmLoading] = useState(false)
+function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail = {} }) {
   const { getFieldDecorator, getFieldValue } = form
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [newDataIn, setNewDataIn] = useState([]) // 输入数据
+  const [newDataOut, setNewDataOut] = useState([]) // 输出数据
+
+  useEffect(() => {
+    if (Object.keys(aiAbilityDetail).length > 0) {
+      // 输入列表
+      aiAbilityDetail.aiInParamList && aiAbilityDetail.aiInParamList.forEach(item => {
+        if (item.type == 1) {// 枚举
+          item.enums = item.enums.map(i => {
+            uniquekey++
+            return {
+              name: i.name,
+              value: i.value,
+              uniquekey
+            }
+          })
+        }
+      })
+      setNewDataIn(aiAbilityDetail.aiInParamList)
+      console.log('newDataIn---', newDataIn)
+
+      // 输出列表
+      aiAbilityDetail.aiOutParamList && aiAbilityDetail.aiOutParamList.forEach(item => {
+        if (item.type == 1) {// 枚举
+          item.enums = item.enums.map(i => {
+            uniquekey_2++
+            return {
+              name: i.name,
+              value: i.value,
+              uniquekey_2
+            }
+          })
+        }
+      })
+      setNewDataOut(aiAbilityDetail.aiOutParamList)
+      console.log('newDataOut---', newDataOut)
+    }
+  }, [aiAbilityDetail])
 
   const filterData = (arr) => {
     const tempArr = arr.map(item => {
@@ -35,24 +73,13 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
         aiDesc: values.aiDesc.trim(),
       }
       if (values.aiInParamList) { // 假如有----输入
-        // const aiInParamList = values.aiInParamList.map(item => {
-        //   if (item.type == '1' && item.enums) { // 枚举
-        //     item.enums = item.enums.filter(item2 => item2)
-        //     return item
-        //   }
-        //   return item
-        // })
         params.aiInParamList = filterData(values.aiInParamList)
       }
       if (values.aiOutParamList) { // 假如有----输出
-        // const aiOutParamList = values.aiOutParamList.map(item => {
-        //   if (item.type == '1' && item.enums) { // 枚举
-        //     item.enums = item.enums.filter(item2 => item2)
-        //     return item
-        //   }
-        //   return item
-        // })
         params.aiOutParamList = filterData(values.aiOutParamList)
+      }
+      if (Object.keys(aiAbilityDetail).length > 0) { // 编辑
+        params.aiId = aiAbilityDetail.aiId
       }
       console.log('最终提交的数据', params)
       saveAIbilityRequest(params).then(res => {
@@ -64,10 +91,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     })
   }
 
-  const changeType = (val, pid) => {
-    console.log(val, typeof val, pid)
-  }
-
+  // 输入-------------------------------------------
   // 输入-新增--内层
   const addInnerForm = (index) => {
     const innerList = getFieldValue(`innerList${index}`)
@@ -90,8 +114,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
 
   // 输入-内层-html
   const createInnerHtml = (name, index1, item) => {
-
-    getFieldDecorator(`innerList${index1}`, { initialValue: [] })
+    getFieldDecorator(`innerList${index1}`, { initialValue: item.enums || [] })
     const innerList = getFieldValue(`innerList${index1}`)
     console.log('渲染的innerList', innerList)
 
@@ -146,7 +169,12 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     })
   }
 
-  getFieldDecorator('queryParams', { initialValue: [] })
+  // let initData = []
+  // if (Object.keys(aiAbilityDetail).length > 0) { // 编辑
+  //   initData = aiAbilityDetail.aiInParamList
+  // }
+
+  getFieldDecorator('queryParams', { initialValue: newDataIn || [] })
   const keys = getFieldValue('queryParams')
   // 输入-外层---form-item
   const formItems = keys.map((item, index) => (
@@ -154,7 +182,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <Form.Item label="输入key">
         {
           getFieldDecorator(`aiInParamList[${index}].key`, {
-            initialValue: item.queryParamName,
+            initialValue: item.key,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入输入key" }],
           })(<Input placeholder="请输入输入key" />)
@@ -163,7 +191,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <Form.Item label="类型">
         {
           getFieldDecorator(`aiInParamList[${index}].type`, {
-            initialValue: '',
+            initialValue: item.type ? item.type + '' : '',
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, message: '请选择类型', whitespace: true }]
           })(
@@ -183,7 +211,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           <Form.Item label="">
             {
               getFieldDecorator(`aiInParamList[${index}].range.min`, {
-                initialValue: '',
+                initialValue: item.range && item.range.min,
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
               })(<Input style={{ width: 90, marginRight: 10 }} />)
@@ -193,7 +221,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           <Form.Item label="">
             {
               getFieldDecorator(`aiInParamList[${index}].range.max`, {
-                initialValue: '',
+                initialValue: item.range && item.range.max,
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
               })(<Input style={{ width: 90, marginRight: 10 }} />)
@@ -241,7 +269,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
 
   // 输出-内层-html
   const createInnerHtml2 = (name, index1, item) => {
-    getFieldDecorator(`outerList${index1}`, { initialValue: [] })
+    getFieldDecorator(`outerList${index1}`, { initialValue: item.enums || [] })
     const outerList = getFieldValue(`outerList${index1}`)
     console.log('渲染的outerList', outerList)
 
@@ -296,15 +324,16 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
     })
   }
 
-  getFieldDecorator('outParams', { initialValue: [] })
+  getFieldDecorator('outParams', { initialValue: newDataOut || [] })
   const outParamsKeys = getFieldValue('outParams')
+  console.log('waicengwaiceng--------', outParamsKeys)
   // 输出--外层---form-item
   const outFormItems = outParamsKeys.map((item, index) => (
     <div className='form-item-block' key={index}>
       <Form.Item label="输出key">
         {
           getFieldDecorator(`aiOutParamList[${index}].key`, {
-            initialValue: item.queryParamName,
+            initialValue: item.key,
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, whitespace: true, message: "请输入输出key" }],
           })(<Input placeholder="请输入输出key" />)
@@ -313,7 +342,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
       <Form.Item label="类型">
         {
           getFieldDecorator(`aiOutParamList[${index}].type`, {
-            initialValue: '',
+            initialValue: item.type ? item.type + '' : '',
             validateTrigger: ['onChange', 'onBlur'],
             rules: [{ required: true, message: '请选择类型', whitespace: true }]
           })(
@@ -332,7 +361,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           <Form.Item label="">
             {
               getFieldDecorator(`aiOutParamList[${index}].range.min`, {
-                initialValue: '',
+                initialValue: item.range && item.range.min,
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
               })(<Input style={{ width: 90, marginRight: 10 }} />)
@@ -342,7 +371,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
           <Form.Item label="">
             {
               getFieldDecorator(`aiOutParamList[${index}].range.max`, {
-                initialValue: '',
+                initialValue: item.range && item.range.max,
                 validateTrigger: ['onChange', 'onBlur'],
                 rules: [{ required: true, whitespace: true, message: "请输入数值", }],
               })(<Input style={{ width: 90, marginRight: 10 }} />)
@@ -380,7 +409,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
         <Form.Item label="能力名称">
           {
             getFieldDecorator('aiName', {
-              initialValue: '',
+              initialValue: aiAbilityDetail.aiName,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入能力名称', whitespace: true }],
             })(<Input maxLength={20} placeholder="请输入能力名称" />)
@@ -389,7 +418,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
         <Form.Item label="接口地址">
           {
             getFieldDecorator('aiUrl', {
-              initialValue: '',
+              initialValue: aiAbilityDetail.aiUrl,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入接口地址', whitespace: true }],
             })(<Input maxLength={20} placeholder="请输入接口地址" />)
@@ -397,7 +426,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk }) {
         </Form.Item>
         <Form.Item label="描述">
           {getFieldDecorator('aiDesc', {
-            initialValue: '',
+            initialValue: aiAbilityDetail.aiDesc,
             rules: [{ required: true, message: '请输入备注', whitespace: true }],
           })(<TextArea maxLength={100} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>)}
         </Form.Item>

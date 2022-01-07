@@ -13,7 +13,8 @@ import {
   getUnitRequest,
   getConditionDicDetailRequest,
   deleteConditionDicRequest,
-  getSceneProductDetailRequest
+  getSceneProductDetailRequest,
+  getAIbilityDetailRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 import { cloneDeep } from 'lodash'
@@ -37,7 +38,7 @@ function SceneLibList({ form }) {
   const [totalRows, setTotalRows] = useState(0)
   const [dataSource, setDataSource] = useState([{}])
   const [loading, setLoading] = useState(false) //antd的loading控制
-  const [selectVal, setSelectVal] = useState('4') // 列表类型切换
+  const [selectVal, setSelectVal] = useState('1') // 列表类型切换
 
   const [conditionTypeVisible, setConditionTypeVisible] = useState(false) // 条件类型-弹窗
   const [conditionTypeDetailData, setConditionTypeDetailData] = useState({}) // 条件类型-详情数据
@@ -51,6 +52,7 @@ function SceneLibList({ form }) {
   const [sceneProductDetail, setSceneProductDetail] = useState({}) // 场景产品列表-详情数据
 
   const [aiAbilityVisible, setAiAbilityVisible] = useState(false) // ai能力-弹窗
+  const [aiAbilityDetail, setAiAbilityDetail] = useState({}) // ai能力-详情数据
 
   // 场景产品列表
   const sceneColumns = [
@@ -235,17 +237,17 @@ function SceneLibList({ form }) {
       dataIndex: 'aiInParamList',
       key: 'aiInParamList',
       render: (item, record) => {
-        return item && item.map(ele => {
+        return item && item.map((ele, index) => {
           let result = ''
           if (ele.type == 2) {// 范围
-            result = <span title={`范围：${ele.range.min}~${ele.range.max}`}>
+            result = <span title={`范围：${ele.range.min}~${ele.range.max}`} key={index}>
               {`范围：${ele.range.min}~${ele.range.max}`},&nbsp;&nbsp;&nbsp;
             </span>
           }
           if (ele.type == 1) {// 枚举
             let val = ''
             val += ele.enums.map(item2 => `${item2.name}:${item2.value}`)
-            result = <span title={`枚举：${val}`}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
+            result = <span title={`枚举：${val}`} key={index}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
           }
           return result
         })
@@ -256,17 +258,17 @@ function SceneLibList({ form }) {
       dataIndex: 'aiOutParamList',
       key: 'aiOutParamList',
       render: (item, record) => {
-        return item && item.map(ele => {
+        return item && item.map((ele, index) => {
           let result = ''
           if (ele.type == 2) {// 范围
-            result = <span title={`范围：${ele.range.min}~${ele.range.max}`}>
+            result = <span title={`范围：${ele.range.min}~${ele.range.max}`} key={index}>
               {`范围：${ele.range.min}~${ele.range.max}`},&nbsp;&nbsp;&nbsp;
             </span>
           }
           if (ele.type == 1) {// 枚举
             let val = ''
             val += ele.enums.map(item2 => `${item2.name}:${item2.value}`)
-            result = <span title={`枚举：${val}`}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
+            result = <span title={`枚举：${val}`} key={index}>{`枚举：${val}`}&nbsp;&nbsp;&nbsp;</span>
           }
           return result
         })
@@ -292,15 +294,15 @@ function SceneLibList({ form }) {
       width: "10%",
       render: (text, record) => (
         <div>
-          {btnArr.map((value, index) => {
+          {btnArr.map((item, index) => {
             return (
-              <Tooltip key={index} placement="top" title={value.title}>
+              <Tooltip key={index} placement="top" title={item.title}>
                 <Button style={{ marginLeft: index === 1 ? "10px" : "" }}
                   shape="circle"
                   size="small"
-                  icon={value.icon}
+                  icon={item.icon}
                   key={record.key}
-                // onClick={() => this.handleDeleteOpe(item, value)}
+                  onClick={() => handleDeleteOpe(item, record)}
                 />
               </Tooltip>
             )
@@ -388,6 +390,14 @@ function SceneLibList({ form }) {
           setConditionDicDetailData(res.data.data)
         }
       })
+    } else if (selectVal === '4') {
+      setAiAbilityVisible(true)
+      setAiAbilityDetail({})
+      getAIbilityDetailRequest({ aiId: record.aiId }).then(res => {
+        if (res.data.code === 0) {
+          setAiAbilityDetail(res.data.data)
+        }
+      })
     }
   }
 
@@ -467,7 +477,7 @@ function SceneLibList({ form }) {
     const addMap = {
       '2': () => { setConditionTypeVisible(true); setConditionTypeDetailData({}) },
       '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}) },
-      '4': () => { setAiAbilityVisible(true) }
+      '4': () => { setAiAbilityVisible(true); setAiAbilityDetail({}) }
     }
     addMap[selectVal]()
   }
@@ -476,7 +486,7 @@ function SceneLibList({ form }) {
     '1': 'deviceTypeId',
     '2': 'conditionTypeId',
     '3': 'conditionId',
-    '4': ''
+    '4': 'aiId'
   }
 
   return (
@@ -582,7 +592,6 @@ function SceneLibList({ form }) {
               onChange: pagerChange,
               pageSize: pager.pageRows,
               total: totalRows,
-              // total: dataSource.length || 0,
               showQuickJumper: true,
               pageSizeOptions: ['10'],
               showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
@@ -635,8 +644,12 @@ function SceneLibList({ form }) {
           aiAbilityVisible &&
           <AIAbilityModal
             visible={aiAbilityVisible}
+            aiAbilityDetail={aiAbilityDetail}
             handleCancel={() => setAiAbilityVisible(false)}
-            handleOk={() => setAiAbilityVisible(false)}
+            handleOk={() => {
+              setAiAbilityVisible(false)
+              getTableData()
+            }}
           />
         }
       </div>

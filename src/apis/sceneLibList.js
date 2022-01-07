@@ -180,3 +180,12 @@ export const saveAIbilityRequest = (params) => {
     }
   })
 }
+
+// 查询详情
+export const getAIbilityDetailRequest = (params) => {
+  return axios.request({
+    url: '/expert/scene/ai/getAiAbility/v2.0',
+    params,
+    method: 'get'
+  })
+}
