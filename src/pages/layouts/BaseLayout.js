@@ -19,7 +19,7 @@ const { Header, Content, Sider, Footer } = Layout;
 import Exception404 from "../exception/404";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Bread from "./components/Breadcrumb";
-
+import ss from "../sceneManage/sceneConfig";
 class App extends Component {
   componentDidMount() {
     //获取设备信息
@@ -64,7 +64,12 @@ class App extends Component {
                     ))}
                     <Redirect exact from="/" to="/home" />
                     <Route path="/home" component={Home}/>
+                    <Route path="/s" component={ss}/>
+                    
                     <Route component={Exception404} />
+
+                    
+                    
                   </Switch>
               </ErrorBoundary>
               <AuthorizedCheck />
