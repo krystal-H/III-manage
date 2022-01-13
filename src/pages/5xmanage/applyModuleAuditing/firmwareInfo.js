@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Tabs, Radio} from 'antd';
+import { Modal, Form} from 'antd';
 const FormItem = Form.Item;
 import './style.scss'
 import axios from '../../../util/api.request';

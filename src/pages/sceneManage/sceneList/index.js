@@ -1,33 +1,38 @@
 import React, { Component } from 'react'
-import { Form, Input, Button } from 'antd'
+import { Form, Input, Button,Modal } from 'antd'
+import { Link } from 'react-router-dom';
 import { DateTool } from "../../../util/utils";
 import TitleTab from '../../../components/TitleTab';
 import Table from '../../../components/Table';
 import axios from '../../../util/api.request';
-
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 16 },
+};
 class List extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      searchName: undefined,
-      searchKey:undefined,
+      userSceneId: undefined,
+      userId:undefined,
       pageIndex:1,
       list:[],
       pager:{},
-      updata:{}
+      alarmId:"",
+      dingToken:''
     };
     this.column = [
         { title: '场景名称', dataIndex: 'sceneName' },
         { title: '更新时间', dataIndex: 'createTime'},
-        { title: '场景ID', dataIndex: 'sceneId'},
+        { title: '场景ID', dataIndex: 'userSceneId'},
         { title: '用户ID', dataIndex: 'userId' },
         { title: '场景规则', dataIndex: 'deviceTypeNames'},
         { title: '场景状态', dataIndex: 'enable', render:e=><span>{ {'1':'已启用','0':'未启用'}[e]}</span> },
         { title: '操作', dataIndex: 'r',width:150,
-            render: (r,{sceneId,enable}) => <span className='comman-table-margin'>
-            <Link  target="_black" to={{ pathname: "/sceneMgt/sceneList/log", search: `?sceneId=${sceneId}` }}>详情</Link>
-            <a  >预警关联</a>
+            render: (r,{userSceneId}) => <span className='comman-table-margin'>
+            <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${userSceneId}` }}>详情</Link>
+            <a onClick={()=>this.getAlarm(userSceneId)}>预警关联</a>
             </span> 
         },
     ];
@@ -37,8 +42,8 @@ class List extends Component {
   }
   onReset = ()=>{
     this.setState({
-      searchName:undefined,
-      searchKey:undefined
+      userSceneId:undefined,
+      userId:undefined
     }, () => {
       this.getList();
     })
@@ -51,25 +56,44 @@ getList=(index)=>{
   if(index){
     this.setState({pageIndex:index})
   }
-  let {pageIndex,searchName,searchKey} = this.state;
+  let {pageIndex,userSceneId,userId} = this.state;
   let param = {
       paged:true,
       pageIndex:index||pageIndex,
       pageRows:10,
-      searchName,
-      searchKey,
+      userSceneId,
+      userId,
   }
-  axios.Post('expert/userScene/userSceneList/v2.0',param).then( ({data={}}) => {
+  axios.Post('combine/userScene/list/v2.0',param).then( ({data={}}) => {
     let res = data.data || {};
     let { list=[] , pager={} } = res
     this.setState({list,pager})
   });
 }
 
+getAlarm=userSceneId=>{
+  this.setState({
+    alarmId:userSceneId
+  })
+  axios.Get('combine/userScene/getAlarm/v2.0',{userSceneId}).then( ({data={}}) => {
+    this.setState({
+      dingToken:data.dingToken || ""
+    })
+  });
+
+}
+alarmOk=()=>{
+  const {alarmId,dingToken} = this.state;
+  axios.Post('combine/userScene/setAlarm/v2.0',{userSceneId:alarmId,dingToken}).then( ({data={}}) => {
+    this.setState({alarmId:""})
+  });
+
+}
+
 
 
   render() {
-    const { searchName, searchKey, list, pager, pageIndex  } = this.state;
+    const { userId, userSceneId, list, pager, pageIndex, alarmId,dingToken } = this.state;
     
     return (
       <div>
@@ -77,18 +101,34 @@ getList=(index)=>{
           <div className="comm-title-search-box">
 
             <span className="labeknam">用户ID：</span>
-            <Input value={searchKey} placeholder="请输入用户ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchKey",e.target.value || undefined)}}/>
+            <Input value={userId} placeholder="请输入用户ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("userId",e.target.value || undefined)}}/>
 
             <span className="labeknam">场景ID：</span>
-            <Input value={searchName} placeholder="请输入场景ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("searchName",e.target.value || undefined)}}/>
+            <Input value={userSceneId} placeholder="请输入场景ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("userSceneId",e.target.value || undefined)}}/>
             
             <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
+
+            <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${123}` }}>详情</Link>
           </div>
         </TitleTab>
         <div className="comm-contont-card">
             <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
         </div>
+        <Modal
+          visible={!!alarmId}
+          width={600}
+          title="预警关联"
+          onCancel={()=>{this.setState({alarmId:""})}}
+          onOk={this.alarmOk}
+          afterClose={()=>{this.setState({dingToken:""})}}
+        >
+        <Form {...formItemLayout}>
+            <Form.Item style={{marginBottom:"16px"}} label="设备预警方式" > 钉钉机器人 </Form.Item>
+            <Form.Item label="钉钉机器人URL" ><Input value={dingToken} onChange={e=>{ this.changeSearch("dingToken",e.target.value || "")}} maxLength={200} placeholder='请输入钉钉机器人URL' /></Form.Item>
+        </Form>
+      </Modal>
+
       </div>
     )
   }

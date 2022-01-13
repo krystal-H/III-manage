@@ -66,8 +66,8 @@ deleteH=sceneId=>{
   Modal.confirm({
     title: "提示",
     content: "是否确认删除？",
-    onOk() {
-      axios.Post('expert/scene/delete/v2.0',{sceneId}).then( (r) => {
+    onOk:()=>{
+      axios.Post('expert/scene/delete/v2.0',{sceneId}).then( () => {
         this.getList(this.state.pageIndex)
       });
     }
@@ -78,8 +78,9 @@ enableH=(sceneId,enable)=>{
   Modal.confirm({
     title: "提示",
     content: `是否确认${enable?'启用':'禁用'}?` ,
-    onOk() {
-      axios.Post('expert/scene/enable/v2.0',{sceneId,enable}).then( (r) => {
+    onOk:()=>{
+      axios.Post('expert/scene/enable/v2.0',{sceneId,enable}).then( () => {
+        console.log(r)
         this.getList(this.state.pageIndex)
       });
     }
