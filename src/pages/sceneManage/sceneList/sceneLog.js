@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Button,Select,DatePicker ,notification} from 'antd'
+import { Form, Modal, Button,Select,DatePicker ,notification} from 'antd'
 import moment from "moment";
 import { DateTool, JSTool } from "../../../util/utils";
 import TitleTab from '../../../components/TitleTab';
@@ -128,7 +128,7 @@ getList=(index)=>{
 
 
   render() {
-    const { a, b, time, list, pager, pageIndex, ruleList,resultStatus,ruleId  } = this.state;
+    const { a, b, time, list, pager, pageIndex, ruleList,resultStatus,ruleId , logDetail   } = this.state;
     
     return (
       <div className='page-scene-log'>
@@ -198,9 +198,7 @@ getList=(index)=>{
           onCancel={this.closeDetail}
           onOk={this.closeDetail}
         >
-        <Form {...formItemLayout}>
-            
-        </Form>
+        
       </Modal>
 
 
