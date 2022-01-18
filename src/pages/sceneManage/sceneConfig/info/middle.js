@@ -1,0 +1,432 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { Tabs, Button, notification, Spin, Icon, Menu, Dropdown, } from 'antd';
+import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList } from '../../../apis/ruleSet'
+import { cloneDeep } from "lodash"
+const { TabPane } = Tabs;
+import { Context } from "./index";
+export default function MiddleCom() {
+    const { state, dispatch,wholeScenceId } = useContext(Context);
+    const [rightData, setRightData] = useState([])
+    const [middleData, setMiddleData] = useState([])
+    const [leftData, setLeftData] = useState([])
+    const [subSceneIndex, setSubSceneIndex] = useState(0)
+    const [loadingPage, setLoadingPage] = useState(false)
+    //改变tab
+    const changeCurrent = (val, e) => {
+        e.stopPropagation()
+        let index = state.pannelTab.findIndex(item => {
+            if (item.ruleId < 0) {
+                return true
+            }
+        })
+        if (index > -1) {
+            notification.info({
+                message: '提示',
+                description: '先完成当前新增规则',
+            });
+            return
+        }
+        if (val == state.currentRule) {
+            return
+        }
+        dispatch({ type: "translateTab", payload: val })
+    }
+    //新增
+    const newTab = (e) => {
+        e.stopPropagation()
+        let index = state.pannelTab.findIndex(item => {
+            return item.ruleId < 0
+        })
+        if (index > -1) {
+            return
+        }
+        dispatch({ type: "newTab" })
+    }
+    //点击节点
+    const clickNode = (data, nodeType, index, e) => {
+        e.stopPropagation()
+        if (state.activePropsId == data.conditionId + '_' + index && nodeType == 1) {
+            return
+        }
+        if (state.activePropsId == data.actionsId + '_' + index && nodeType == 3) {
+            return
+        }
+        if (state.activePropsId == data.title + '_' + index && nodeType == 2) {
+            return
+        }
+        dispatch({ type: "clickNode", payload: { data, nodeType, index } })
+    }
+    //渲染左边
+    const renderDomL = () => {
+        return leftData.map((item, index) => {
+            return <div className={['item', state.activePropsId == item.conditionId + '_' + index ? 'current-node-light' : ''].join(' ')}
+                key={index} onClick={(e) => { clickNode(item, 1, index, e) }}>
+                <div className='left'>
+                    <img />
+                </div>
+                <div className='right'>
+                    <div>
+                        <span>{item.conditionTypeName}：</span>
+                        <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
+                    </div>
+                    <div>
+                        {item.conditionExpression}
+                    </div>
+                </div>
+                <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} />
+            </div>
+        })
+
+    }
+    //删除条件
+    const delFactor = (index, e) => {
+        e.stopPropagation()
+        setLeftData(pre => {
+            let arr = cloneDeep(pre)
+            arr.splice(index, 1)
+            return arr
+        })
+        dispatch({ type: "overViewRule" })
+    }
+    //渲染中间
+    const renderDomM = () => {
+        return middleData.map((item, index) => {
+            return <div className={['item', state.activePropsId == item.title ? 'current-node-light' : ''].join(' ')}
+                key={index} onClick={(e) => { clickNode(item, 2, index, e) }}>
+                <div className='left'><img /></div>
+                <div className='right'>
+                    <div>逻辑符：</div>
+                    <div>{item.title}</div>
+                </div>
+                <Icon type="close" className='del-btn' onClick={(e) => { delLogic(e) }} />
+            </div>
+        })
+    }
+    //删除逻辑
+    const delLogic = e => {
+        e.stopPropagation()
+        setMiddleData([])
+    }
+    //渲染右边
+    const renderDomR = () => {
+        return rightData.map((item, index) => {
+            let text = ''
+            if (item.actionsId) {
+                item.actionsItems.forEach(item => {
+                    if(item.actionParamValue.indexOf('clifeai,')>-1){
+                        text += item.deviceFunctionName + ':' + '关联AI'+ ';'
+                    }else{
+                        text += item.deviceFunctionName + ':' + item.functionParamName + ';'
+                    }
+                    
+                })
+            }
+            return <div className={['item', state.activePropsId == item.actionsId + '_' + index ? 'current-node-light' : ''].join(' ')}
+                key={index} onClick={(e) => { clickNode(item, 3, index, e) }}>
+                <div className='left'><img /></div>
+                <div className='right'>
+                    <div>
+                        <span>设备动作：</span>
+                        <span>{item.deviceTypeName}</span>
+                    </div>
+                    <div>
+                        {text}
+                    </div>
+                </div>
+                <Icon type="close" className='del-btn' onClick={(e) => { delAction(item, index, e) }} />
+            </div>
+        })
+    }
+    //删除设备动作
+    const delAction = (data, index, e) => {
+        e.stopPropagation()
+        if (!data.actionsId) {
+            setRightData(pre => {
+                let arr = cloneDeep(pre)
+                arr.splice(index, 1)
+                return arr
+            })
+            dispatch({ type: "overViewRule" })
+            return
+        }
+        delActiveItem({ actionsId: data.actionsId }).then(res => {
+            if (res.data.code == 0) {
+                setRightData(pre => {
+                    let arr = cloneDeep(pre)
+                    arr.splice(index, 1)
+                    return arr
+                })
+                dispatch({ type: "overViewRule" })
+                notification.success({
+                    message: '提示',
+                    description: '删除成功',
+                });
+            }
+        })
+    }
+    useEffect(() => {
+        setRightData([])
+        setMiddleData([])
+        setLeftData([])
+        if (state.currentRule > 0) {
+            let value
+            state.pannelTab.forEach((item, index) => {
+                if (item.ruleId == state.currentRule) {
+                    value = index
+                    setSubSceneIndex(index)
+                }
+            })
+            getActive(value)
+            getFactor(value)
+        }
+    }, [state.currentRule])
+    const checkIsContinue = () => {
+        let check1 = leftData.findIndex(item => {
+            if (typeof item.operatorId == 'undefined') {
+                return true
+            }
+        })
+        let check2 = rightData.findIndex(item => {
+            if (typeof item.actionsId == 'undefined') {
+                return true
+            }
+        })
+        let check3 = state.pannelTab.findIndex(item => {
+            if (item.ruleId < 0) {
+                return true
+            }
+        })
+        if (check1 > -1 || check2 > -1 || check3 > -1) {
+            return false
+        }
+        return true
+    }
+    useEffect(() => {
+        if (state.currentEvent === 'addNode') {
+            let isTrue = checkIsContinue()
+            if (!isTrue) {
+                notification.info({
+                    message: '提示',
+                    description: '有未完善数据',
+                });
+                dispatch({ type: "callBackEvent" })
+                return
+            }
+            if (state.nodeInfo.nodeType == 1) {
+                setLeftData(pre => {
+                    let arr = cloneDeep(pre)
+                    arr.push(state.nodeInfo.nodeInfo)
+                    return arr
+                })
+            } else if (state.nodeInfo.nodeType == 2) {
+                setMiddleData([state.nodeInfo.nodeInfo])
+            } else if (state.nodeInfo.nodeType == 3) {
+                setRightData(pre => {
+                    let arr = cloneDeep(pre)
+                    arr.push(state.nodeInfo.nodeInfo)
+                    return arr
+                })
+            }
+
+        } else if (state.currentEvent === 'saveNode') {
+            if (state.formDom.nodeType == 1) {
+                setLeftData(pre => {
+                    let arr = cloneDeep(pre)
+                    arr.splice(state.formDom.index, 1, state.formDom.data)
+                    return arr
+                })
+            }
+        } else if (state.currentEvent === 'reFreshNode') {
+            getActive()
+        }
+        dispatch({ type: "callBackEvent" })
+    }, [state.currentEvent])
+    // useEffect(() => {
+    //     setLoadingPage(true)
+    //     setTimeout(() => {
+    //         setLoadingPage(false)
+    //     }, 2000)
+    // }, [state.activePropsId])
+    //刷新动作卡片
+    const getActive = (index) => {
+        if (typeof index != 'number') {
+            index = subSceneIndex
+        }
+        let params = {
+            sceneId: wholeScenceId,
+            subSceneIndex: index
+        }
+        getActiveInfo(params).then(res => {
+            if (res.data.code == 0) {
+                setRightData(res.data.data)
+            }
+        })
+    }
+    //获取条件卡片
+    const getFactor = (index) => {
+        if (typeof index != 'number') {
+            index = subSceneIndex
+        }
+        let params = {
+            sceneId: wholeScenceId,
+            subSceneIndex: index
+        }
+        getFatcorInfo(params).then(res => {
+            if (res.data.code == 0) {
+                setLeftData(res.data.data)
+                if (res.data.data.length && res.data.data.length > 1) {
+                    if (res.data.data[0].suffix === "&&") {
+                        setMiddleData([{ title: 'AND', key: '2-and' }])
+                    } else {
+                        setMiddleData([{ title: 'OR', key: '2-or' }])
+                    }
+                }
+            }
+        })
+    }
+    //提交提交数据
+    const saveData = (e) => {
+        e.stopPropagation()
+        if (leftData.length) {
+            let arr = []
+            if (leftData.length > 1 && middleData.length === 0) {
+                if (middleData.length === 0) {
+                    notification.info({
+                        message: '提示',
+                        description: '请选择逻辑符',
+                    });
+                    return
+                }
+            }
+            let equivalentConditionId = new Date().getTime()
+            let unikeyT = 0
+            leftData.forEach((item, index) => {
+                unikeyT++
+                let obj = {
+                    conditionId: item.conditionId,
+                    conditionValue: item.conditionValue,
+                    conditionIndex: index,
+                    ruleId: state.currentRule,
+                    sceneId: wholeScenceId,
+                    operatorId: item.operatorId,
+                    equivalentConditionId: equivalentConditionId + unikeyT,
+                    subSceneIndex
+                }
+                if (index + 1 !== leftData.length && leftData.length > 1) {
+                    obj.suffix = middleData[0].title == 'AND' ? '&&' : '||'
+                }
+                if (item.deviceTypeId) {
+                    obj.deviceTypeId = item.deviceTypeId
+                }
+                arr.push(obj)
+            })
+            saveFactor(arr).then(res => {
+                if (res.data.code == 0) {
+                    notification.success({
+                        message: '提示',
+                        description: '保存成功',
+                    });
+                }
+            })
+        } else {
+            if (middleData.length === 0) {
+                notification.info({
+                    message: '提示',
+                    description: '没有需要保存的数据',
+                });
+                return
+            }
+        }
+    }
+    //删除设备动作
+    const delTab = (id, e) => {
+        e.stopPropagation()
+        let index = state.pannelTab.findIndex(item => {
+            return item.ruleId == id
+        })
+        if (id > 0) {
+            delRule({ ruleId: id }).then(res => {
+                if (res.data.code == 0) {
+                    notification.success({
+                        message: '提示',
+                        description: '删除成功',
+                    });
+                    dispatch({ type: "delRule", payload: { index, isSame: id == state.currentRule ? true : false } })
+                }
+            })
+        } else {
+            notification.success({
+                message: '提示',
+                description: '删除成功',
+            });
+            dispatch({ type: "delRule", payload: { index, isSame: id == state.currentRule ? true : false } })
+        }
+
+    }
+    //
+    const lookProps = (e) => {
+        e.stopPropagation()
+        if (state.currentRule > 0) {
+            dispatch({ type: "overViewRule" })
+        }
+    }
+    const menu = () => {
+        return <Menu>
+            {
+                state.pannelTab.map(item => {
+                    return <Menu.Item key={item.ruleId}>
+                        <div className={[state.currentRule === item.ruleId ? 'tab-item-active' : '', 'tab-item'].join(' ')}
+                            key={item.ruleId} onClick={(e) => { changeCurrent(item.ruleId, e) }}>
+                            <span title={item.ruleName}>{item.ruleName}</span>
+                        </div>
+                    </Menu.Item>
+                })
+            }
+        </Menu>
+    }
+    return (
+        <div className='rule-middle'>
+            <div className='rule-title'>
+                <div className='rule-title-middle'>
+                    <div className='wrap'>
+                        {
+                            state.pannelTab.map(item => {
+                                return <div className={[state.currentRule === item.ruleId ? 'tab-item-active' : '', 'tab-item'].join(' ')}
+                                    key={item.ruleId} onClick={(e) => { changeCurrent(item.ruleId, e) }}>
+                                    <span title={item.ruleName}>{item.ruleName}</span>
+                                    <Icon type="close" className='del-title-btn' onClick={(e) => { delTab(item.ruleId, e) }} />
+                                </div>
+                            })
+                        }
+                    </div>
+                    <div className='rule-btn-wrap'>
+                        <div className='btn-add' onClick={(e) => { newTab(e) }}></div>
+                        <div className='btn-save' onClick={e => { saveData(e) }}></div>
+                        {/* <div className='btn-menu'></div> */}
+                        <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
+                            <div className='btn-menu'></div>
+                        </Dropdown>
+                    </div>
+                </div>
+            </div>
+            <div className='middle-content' onClick={(e) => { lookProps(e) }}>
+                <div className='conditions'>
+                    {
+                        renderDomL()
+                    }
+                </div>
+                <div className='logic'>
+                    {
+                        renderDomM()
+                    }
+                </div>
+                <div className='action'>
+                    {
+                        renderDomR()
+                    }
+                </div>
+            </div>
+        </div>
+
+    )
+}
