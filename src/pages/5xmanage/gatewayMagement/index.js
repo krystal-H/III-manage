@@ -62,7 +62,7 @@ function PanelMn({ form }) {
             width: 180,
             render: (text, record) => (
                 <span>
-                    <a onClick={() => { openEdit(record) }} style={{ marginRight: '10px' }}>编辑</a>
+                    {/* <a onClick={() => { openEdit(record) }} style={{ marginRight: '10px' }}>编辑</a> */}
                     <a onClick={() => { relPanel(record) }} >删除</a>
                 </span>
             ),
