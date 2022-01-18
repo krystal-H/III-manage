@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs, Form, Input, Upload, Icon, Select, Checkbox, Button,notification  } from 'antd';
-import { fileHost } from "../../../util/utils";
-import { getAIList, getAppList, saveGloalInfo, getsceneDetail } from '../../../apis/ruleSet'
+import { fileHost } from "../../../../util/utils";
+import { getAIList, getAppList, saveGloalInfo, getsceneDetail } from '../../../../apis/ruleSet'
 import { Context } from "./index";
 const { TabPane } = Tabs;
 const { TextArea } = Input;
@@ -94,7 +94,7 @@ function RightComH({ form }) {
         getsceneDetail(wholeScenceId).then(res => {
             if (res.data.code == 0) {
                 let data = res.data.data.scene
-                setOriginData(res.data.data.scene)
+                // setOriginData(res.data.data.scene)
                 let relSceneApps = data.relSceneApps.map(item => {
                     return item.sceneId
                 })

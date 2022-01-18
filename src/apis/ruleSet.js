@@ -107,10 +107,10 @@ export const getAIPropsList = (val) => {
     })
 }
 //规则列表
-export const getRuleList = () => {
+export const getRuleList = (val) => {
     let params = {
         paged: false,
-        sceneId: 931,
+        sceneId: val,
     }
     return axios.request({
         url: prefix + '/rule/list',

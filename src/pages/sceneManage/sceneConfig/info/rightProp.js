@@ -3,7 +3,7 @@ import { Tabs, Form, Input, Upload, Icon, Select, Checkbox, Button, InputNumber,
 import {
     getMenuList, getProductList, getfactorByProduct, getfactor, getAvtiveByProduct, getAIPropsList,
     getRuleLabelList, addRule, getRuleList, getRuleDetail, getActiveProductList, updateActive
-} from '../../../apis/ruleSet'
+} from '../../../../apis/ruleSet'
 import { Context } from "./index";
 import { cloneDeep, isEqual } from "lodash"
 import moment from 'moment';
@@ -104,7 +104,7 @@ function RightCom({ form }) {
         }
         addRule(params).then(res => {
             if (res.data.code == 0) {
-                getRuleList().then(res2 => {
+                getRuleList(wholeScenceId).then(res2 => {
                     if (state.currentRule > 0) {
                         notification.success({
                             message: '提示',

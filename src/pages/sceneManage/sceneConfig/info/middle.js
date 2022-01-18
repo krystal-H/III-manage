@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs, Button, notification, Spin, Icon, Menu, Dropdown, } from 'antd';
-import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList } from '../../../apis/ruleSet'
+import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList } from '../../../../apis/ruleSet'
 import { cloneDeep } from "lodash"
 const { TabPane } = Tabs;
 import { Context } from "./index";
@@ -390,7 +390,7 @@ export default function MiddleCom() {
                 <div className='rule-title-middle'>
                     <div className='wrap'>
                         {
-                            state.pannelTab.map(item => {
+                            state.pannelTab.slice(0,6).map(item => {
                                 return <div className={[state.currentRule === item.ruleId ? 'tab-item-active' : '', 'tab-item'].join(' ')}
                                     key={item.ruleId} onClick={(e) => { changeCurrent(item.ruleId, e) }}>
                                     <span title={item.ruleName}>{item.ruleName}</span>

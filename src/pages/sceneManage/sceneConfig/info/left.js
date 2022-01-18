@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useContext, useMemo } from 'react';//首先引入hooks常用方法
 import { connect } from 'react-redux';
-import { getMenuList, getMenuList2 } from '../../../apis/ruleSet'
+import { getMenuList, getMenuList2 } from '../../../../apis/ruleSet'
 import { Tree, Input } from 'antd';  //引入组件
 import TreeCom from './treeCom'
 import { Context } from "./index";

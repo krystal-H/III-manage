@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useReducer, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useReducer, useLayoutEffect,useMemo } from 'react';
 import RightCom from './right'
 import LeftCom from './left'
 import MiddleCom from './middle'
 import { cloneDeep } from "lodash"
 import { Spin } from 'antd';
-import { getRuleList } from '../../../apis/ruleSet'
+import { getRuleList } from '../../../../apis/ruleSet'
+
+import { useHistory } from "react-router-dom";
 import './index.less'
 const initState = {
     sentId: 0,
@@ -41,7 +43,6 @@ function loginReducer(state2, action) {
             }
         //获取场景id
         case 'getSceneID':
-            console.log(action.payload,99999999999)
             return {
                 ...state,
                 scenceId: action.payload,
@@ -100,7 +101,6 @@ function loginReducer(state2, action) {
             }
         //添加规则节点===
         case 'addNode':
-            console.log(action.payload, '==点击的节点===')
             return {
                 ...state,
                 currentEvent: 'addNode',
@@ -132,7 +132,6 @@ function loginReducer(state2, action) {
             if (action.payload.nodeType === 1) {
                 data.content[action.payload.nodeType - 1].push(action.payload)
             }
-            console.log(state, '=====添加规则节点=====')
             return {
                 ...state,
                 propsId: action.payload.nodeId
@@ -205,19 +204,20 @@ function loginReducer(state2, action) {
 // 定义 context函数
 export const Context = React.createContext();
 
-export default function FirmwareMagement() {
+export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
-    // uselayouteffect(() => {
-    //     // dispatch({ type: "getSceneID", payload: 931 })
-    //     alert(1)
-    // }, [])
-    const wholeScenceId=931
-    useLayoutEffect(()=>{
-        dispatch({ type: "getSceneID", payload: 931 })
-      },[])
+    const wholeScenceId=useMemo(()=>{
+        return math.location.search.split('=')[1]
+    },[])
+    if(!wholeScenceId){
+        return '无内容'
+    }
+    // useLayoutEffect(()=>{
+    //     dispatch({ type: "getSceneID", payload: 931 })
+    //   },[])
     useEffect(() => {
-        getRuleList().then(res => {
+        getRuleList(wholeScenceId).then(res => {
             if (res.data.code == 0) {
                 dispatch({ type: "reRule", payload: res.data.data })
             }

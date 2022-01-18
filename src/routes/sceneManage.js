@@ -6,7 +6,7 @@ const SceneLibManage = asyncComponent(() => import('../pages/sceneManage/sceneLi
 const SceneList = asyncComponent(() => import('../pages/sceneManage/sceneList'))
 const SceneLog = asyncComponent(() => import('../pages/sceneManage/sceneList/SceneLog'))
 const SceneConfig = asyncComponent(() => import('../pages/sceneManage/sceneConfig'))
-const SceneConfigInfo = asyncComponent(() => import('../pages/sceneManage/sceneConfig/detail'))
+const SceneConfigInfo = asyncComponent(() => import('../pages/sceneManage/sceneConfig/info'))
 const route = {
   icon: "apartment",
   name: '场景管理',

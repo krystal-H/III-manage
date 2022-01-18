@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';//首先引入hooks常用方法
 import { connect } from 'react-redux';
 import { Tree, Input, notification } from 'antd';  //引入组件
-import { getfactor } from '../../../apis/ruleSet'
+import { getfactor } from '../../../../apis/ruleSet'
 import { Context } from "./index";
-import { isContinueSub } from './reduce'
 const { TreeNode } = Tree;
 const myDemo = ({ treeData = [], tabType }) => {
     const { state, dispatch } = useContext(Context);
