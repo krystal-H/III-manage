@@ -108,7 +108,9 @@ function DeviceLog({ form }) {
   }
 
   useEffect(() => {
-    getTableData()
+    if ((form.getFieldValue('productName') || form.getFieldValue('opeType')) && form.getFieldValue('time')) {
+      getTableData()
+    }
   }, [pager.pageRows, pager.pageIndex])
 
   // 搜索按钮触发,默认请求第一页的数据
@@ -129,7 +131,10 @@ function DeviceLog({ form }) {
   // 重置按钮触发
   const reset = () => {
     form.resetFields()
-    searchClick()
+    setStartTime()
+    setEndTime()
+    setDataSource([])
+    setTotalRows(0)
   }
 
   // 翻页
