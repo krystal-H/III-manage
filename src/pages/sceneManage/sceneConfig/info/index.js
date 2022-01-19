@@ -208,7 +208,8 @@ export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
     const wholeScenceId=useMemo(()=>{
-        return math.location.search.split('=')[1]
+        console.log(math,'啧啧啧',math.location.pathname.split('/').slice(-1)[0])
+        return math.location.pathname.split('/').slice(-1)[0]
     },[])
     if(!wholeScenceId){
         return '无内容'
