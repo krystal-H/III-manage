@@ -19,7 +19,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
         validateFields().then(val => {
             let params = {}
             params.gatewayType = val.gatewayType
-            params.gatewayName = val.gatewayType === 1 ? 'IOT路由器' : 'ZigBee3.0网关'
+            params.gatewayName = val.gatewayType === 11133 ? 'IOT路由器' : 'ZigBee3.0网关'
             params.productName = productInfo.productName
             params.productCode = productInfo.productCode
             params.brandName = productInfo.brandName
