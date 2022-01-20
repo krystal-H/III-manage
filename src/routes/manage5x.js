@@ -28,6 +28,9 @@ const proFirmwareUpdate = asyncComponent(() => import('../pages/5xmanage/proFirm
 //网关子设备管理
 const gatewayMagement =asyncComponent(() => import( '../pages/5xmanage/gatewayMagement'))
 
+// 设备日志
+const deviceLog = asyncComponent(() => import('../pages/5xmanage/deviceLog'))
+
 const route = {
   icon: "tool",
   name: '5.X管理',
@@ -93,6 +96,11 @@ const route = {
       name: '网关子设备管理',
       path: '/5xmanage/gatewayMagement',
       component: gatewayMagement
+    },
+    {
+      name: '设备日志',
+      path: '/5xmanage/deviceLog',
+      component: deviceLog
     }  
   ]
 

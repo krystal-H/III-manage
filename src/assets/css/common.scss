@@ -7,10 +7,10 @@
 
 .comm-title-search-box{
   .labeknam{
-    margin-right: 10px;
+    margin-right: 8px;
     
   }
-  input{
+  input,.select{
     margin-right: 24px;
     width: 240px;
   }
@@ -20,6 +20,9 @@
   .btn{
     margin-left: 16px;
   }
+  .btnright{
+    float: right;
+  }
 }
 
 .comm-contont-card{
@@ -27,3 +30,12 @@
   background-color: #fff;
 }
 
+.comman-table-margin {
+  a {
+    margin-right: 10px;
+  }
+
+}
+.ant-layout{
+  overflow-x: visible !important;
+}

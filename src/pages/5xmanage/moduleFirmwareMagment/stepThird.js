@@ -115,7 +115,11 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
         const freeParams = {
           ...commonParam,
           customConfigJson: JSON.stringify(values.funcDefList) || JSON.stringify([]),
-          pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : ''
+          pinDiagram: pinDiagram && pinDiagram.length ? pinDiagram[0].url : '',
+          // 产品又让追加的  模组固件名称、版本号等
+          burnFile: burnFile && burnFile.length ? burnFile[0].url : '', // 模组固件
+          burnFileVersion: values.burnFileVersion, // 模组固件版本
+          burnFileName: values.burnFileName, // 模组固件名称
         }
         // mcu方案的参数
         const mcuParams = {
@@ -489,37 +493,9 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           ],
         })(<Input placeholder="请输入价格" style={{ width: 405 }} />)}&nbsp;&nbsp;人民币/个
       </Form.Item>
-      {/* 免开发方案 */}
+      {/* MCU方案   免开发方案*/}
       {
-        schemeType === 1 &&
-        <Form.Item
-          label="可配置固件引脚示意图"
-          extra="请上传尺寸为227*404px，格式为png的引脚示意图"
-          wrapperCol={{ span: 13 }}>
-          {getFieldDecorator("pinDiagram", {
-            initialValue: editInfo.pinDiagram,
-            rules: [{ required: false, message: "请上传可配置固件引脚示意图" }]
-          })(
-            <div>
-              <Upload
-                {...uploadConfigs}
-                listType="picture"
-                defaultFileList={pinDiagram || []}
-                onPreview={() => handlePreview(true, pinDiagram)}
-                beforeUpload={modulePictureBeforeUpload}
-                onRemove={(file) => removePic(file, 'pinDiagram')}
-                accept="image/png"
-                onChange={(info) => handleChange(info, 'pinDiagram')}>
-                {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
-              </Upload>
-            </div>
-          )}
-        </Form.Item>
-      }
-
-      {/* MCU方案 */}
-      {
-        schemeType === 2 &&
+        (schemeType === 2 || schemeType === 1 ) &&
         <>
           <Form.Item label="模组固件" extra="请上传格式为.zip压缩包，大小40M的文件">
             <Form.Item style={{ display: "inline-block", marginBottom: 0, width: 215 }} >
@@ -559,6 +535,35 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
           </Form.Item>
         </>
       }
+
+      {/* 免开发方案 */}
+      {
+        schemeType === 1 &&
+        <Form.Item
+          label="可配置固件引脚示意图"
+          extra="请上传尺寸为227*404px，格式为png的引脚示意图"
+          wrapperCol={{ span: 13 }}>
+          {getFieldDecorator("pinDiagram", {
+            initialValue: editInfo.pinDiagram,
+            rules: [{ required: false, message: "请上传可配置固件引脚示意图" }]
+          })(
+            <div>
+              <Upload
+                {...uploadConfigs}
+                listType="picture"
+                defaultFileList={pinDiagram || []}
+                onPreview={() => handlePreview(true, pinDiagram)}
+                beforeUpload={modulePictureBeforeUpload}
+                onRemove={(file) => removePic(file, 'pinDiagram')}
+                accept="image/png"
+                onChange={(info) => handleChange(info, 'pinDiagram')}>
+                {pinDiagram && pinDiagram.length >= 1 ? null : uploadButton('上传图片')}
+              </Upload>
+            </div>
+          )}
+        </Form.Item>
+      }
+
       {/* Soc方案 */}
       {
         schemeType === 3 &&
