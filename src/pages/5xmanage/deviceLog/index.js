@@ -158,7 +158,7 @@ function DeviceLog({ form }) {
             <div className='inline-form-item'>
               <Form.Item label='设备条件' className='form-item'>
                 {getFieldDecorator('opeType')(
-                  <Select style={{ width: 130, marginBottom: 0 }} placeholder="请选择条件">
+                  <Select style={{ width: 130, marginBottom: 0 }} placeholder="请选择条件" allowClear>
                     <Option value="did">设备did</Option>
                     <Option value="macAddress">设备mac</Option>
                     <Option value="physicalAddr">物理地址</Option>
@@ -176,7 +176,7 @@ function DeviceLog({ form }) {
             </div>
             <Form.Item label='设备事件'>
               {getFieldDecorator('eventType')(
-                <Select style={{ width: 150, marginBottom: 0 }} placeholder="请选择设备事件">
+                <Select style={{ width: 150, marginBottom: 0 }} placeholder="请选择设备事件" allowClear>
                   {
                     deviceEvents.map((item, index) => (
                       <Option value={item} key={index}>{item}</Option>
