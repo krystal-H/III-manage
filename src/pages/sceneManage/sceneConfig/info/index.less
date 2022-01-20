@@ -1,0 +1,298 @@
+.rule-configuration {
+  display: flex;
+  min-height: calc(100vh - 117px);
+  border: 1px solid #888;
+  min-height: 400px;
+
+  // width: fit-content;
+  >div {
+    overflow: auto;
+  }
+
+  .rule-left {
+    width: 240px;
+    padding: 0 20px;
+    min-width: 220px;
+
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 8px 0;
+    }
+
+    .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: transparent;
+      user-select: none
+    }
+
+    .ant-tree-node-content-wrapper:hover {
+      background-color: transparent;
+    }
+
+    .active-tree {
+      background-color: #999;
+    }
+  }
+
+  .rule-middle {
+    flex: 1;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+    min-width: 800px;
+
+    .tab-item-active {
+      background-color: #008dff;
+      color: aliceblue;
+    }
+
+    .rule-title-middle {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+
+      .wrap {
+        display: flex;
+
+        .tab-item {
+          line-height: 46px;
+          position: relative;
+          height: 46px;
+          width: 130px;
+          padding: 0 5px;
+          text-align: center;
+          border: 1px solid #999;
+          border-top: none;
+          border-left: none;
+          cursor: pointer;
+
+          .del-title-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+          }
+
+          span {
+            overflow: hidden;
+            display: inline-block;
+            text-overflow: ellipsis;
+            width: 120px;
+            white-space: nowrap;
+          }
+        }
+
+
+      }
+
+      .rule-btn-wrap {
+        display: flex;
+        align-items: center;
+
+        >div {
+          
+        }
+
+        .btn-save {
+          display: inline-block;
+          cursor: pointer;
+          background: url(../../../../assets/images/ruleImage/save.png) no-repeat 0 center;
+          background-size: auto 28px;
+          height: 30px;
+          width: 30px;
+          margin-right: 10px;
+        }
+
+        .btn-add {
+          display: inline-block;
+          cursor: pointer;
+          background: url(../../../../assets/images/ruleImage/new.png) no-repeat 0 center;
+          background-size: auto 28px;
+          height: 30px;
+          width: 30px;
+          margin-right: 10px;
+        }
+
+        .btn-menu {
+          display: inline-block;
+          cursor: pointer;
+          background: url(../../../../assets/images/ruleImage/menu.png) no-repeat 0 center;
+          background-size: auto 28px;
+          height: 30px;
+          width: 30px;
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .middle-content {
+      display: flex;
+      padding: 20px;
+      justify-content: center;
+      min-height: 300px;
+      .item {
+        position: relative;
+        border: 1px solid #999;
+        margin-bottom: 20px;
+        display: flex;
+
+        .del-btn {}
+
+        .left {
+          width: 80px;
+          display: flex;
+          align-items: center;
+          text-align: center;
+          justify-content: center;
+
+          img {
+            border-radius: 50%;
+            border: 1px solid #333;
+            height: 40px;
+            width: 40px;
+          }
+        }
+
+        .right {
+          flex: 1;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          align-self: center;
+
+          div {
+            width: 100%;
+          }
+        }
+      }
+
+      .current-node-light {
+        border-color: royalblue;
+      }
+
+      .conditions {
+        margin-right: 60px;
+        width: 300px;
+
+        .item {
+          width: 100%;
+          height: 80px;
+
+        }
+      }
+
+      .logic {
+        width: 200px;
+        margin-right: 60px;
+
+        .item {
+          width: 100%;
+          height: 80px;
+        }
+      }
+
+      .action {
+        width: 300px;
+
+        .item {
+          width: 100%;
+          height: 80px;
+        }
+      }
+    }
+
+
+  }
+
+  .rule-right {
+    width: 350px;
+    min-width: 350px;
+
+    .rule-title-right {
+      background-color: #999;
+      padding: 0 20px;
+
+      .active-tab {
+        color: aqua;
+      }
+
+      >div {
+        font-size: 18px;
+        font-weight: 600;
+        margin-right: 10px;
+      }
+    }
+
+    .content {
+      padding: 0 10px;
+
+      .props-title {
+        color: #333;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 10px 0;
+
+        img {
+          border-radius: 50%;
+          border: 1px solid #333;
+          height: 40px;
+          width: 40px;
+          margin-right: 4px;
+        }
+      }
+
+      .ant-checkbox-wrapper {
+        width: auto;
+      }
+
+      .tab1 {
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+
+        .ant-upload-picture-card-wrapper,
+        .ant-upload.ant-upload-select-picture-card {
+          width: 100%;
+        }
+
+        .time-wrap {
+          display: flex;
+          flex-wrap: wrap;
+
+          >div {
+            border: 1px solid #333;
+            line-height: 20px;
+            border-radius: 3px;
+            margin-right: 6px;
+            padding: 0 2px;
+          }
+        }
+
+        .tab-btn {
+          margin: 30px 0;
+          text-align: center;
+          width: 100%;
+        }
+      }
+
+      .function-item-wrap {
+        margin-top: 20px;
+
+        .title {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 6px;
+        }
+
+        .ant-form-item-label {
+          line-height: 16px;
+        }
+      }
+    }
+  }
+
+  .rule-title {
+    height: 46px;
+    display: flex;
+    align-items: center;
+  }
+}

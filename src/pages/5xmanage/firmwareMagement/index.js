@@ -32,7 +32,8 @@ function PanelMn({ form }) {
             dataIndex: 'createTime',
             key: 'createTime',
             render(createTime) {
-                return createTime && DateTool.utcToDev(createTime);
+                let text = createTime && DateTool.utcToDev(createTime)
+                return <span title={text}>{text}</span>;
             }
         },
         {
@@ -61,9 +62,9 @@ function PanelMn({ form }) {
             title: '上传的固件名称',
             dataIndex: 'burnFileName',
             key: 'burnFileName',
-            render: (text,row) => <span >
+            render: (text, row) => <span >
                 {text && <>{text}
-                <a style={{marginLeft:'3px'}} onClick={() => { openInfo(row) }}>查看</a></>}
+                    <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></>}
             </span>
         },
         {
@@ -95,7 +96,7 @@ function PanelMn({ form }) {
             key: '',
             render: (val, record) => {
                 let text = record.status
-                if (text ==1) {
+                if (text == 1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
                 return ''
@@ -141,7 +142,7 @@ function PanelMn({ form }) {
         getList(params).then(res => {
             if (res.data.code == 0) {
                 setdataSource(res.data.data.records)
-                setTotalRows(res.data.data.totalRows)
+                setTotalRows(res.data.data.total)
             }
         }).finally(() => { setLoading(false) })
     }
@@ -222,7 +223,7 @@ function PanelMn({ form }) {
                 checkVisible && <CheckModal checkVisible={checkVisible} handleOk={handleOk} handleCancel={handleCancel} actionData={actionData} />
             }
             {
-                infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData}/>
+                infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData} />
             }
         </div>
     )
