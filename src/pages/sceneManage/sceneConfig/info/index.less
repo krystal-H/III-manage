@@ -1,8 +1,9 @@
 .rule-configuration {
   display: flex;
   min-height: calc(100vh - 117px);
-  border: 1px solid #888;
+  // border: 1px solid #888;
   min-height: 400px;
+  margin: 0 -20px;
 
   // width: fit-content;
   >div {
@@ -13,6 +14,7 @@
     width: 240px;
     padding: 0 20px;
     min-width: 220px;
+    background-color: aliceblue;
 
     h1 {
       font-size: 18px;
@@ -36,8 +38,9 @@
 
   .rule-middle {
     flex: 1;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
+    // border-left: 1px solid #666;
+    // border-right: 1px solid #666;
+    background-color: bisque;
     min-width: 800px;
 
     .tab-item-active {
@@ -50,6 +53,7 @@
       justify-content: space-between;
       width: 100%;
       height: 100%;
+      background-color: #84a4ca;
 
       .wrap {
         display: flex;
@@ -88,9 +92,7 @@
         display: flex;
         align-items: center;
 
-        >div {
-          
-        }
+        >div {}
 
         .btn-save {
           display: inline-block;
@@ -129,6 +131,7 @@
       padding: 20px;
       justify-content: center;
       min-height: 300px;
+
       .item {
         position: relative;
         border: 1px solid #999;
@@ -149,6 +152,7 @@
             border: 1px solid #333;
             height: 40px;
             width: 40px;
+            object-fit: cover;
           }
         }
 
@@ -206,7 +210,7 @@
   .rule-right {
     width: 350px;
     min-width: 350px;
-
+    background-color: #f0f2f5;
     .rule-title-right {
       background-color: #999;
       padding: 0 20px;

@@ -2,15 +2,54 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Tabs, Button, notification, Spin, Icon, Menu, Dropdown, } from 'antd';
 import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList } from '../../../../apis/ruleSet'
 import { cloneDeep } from "lodash"
+import actionImg from '../../../../assets/images/ruleImage/action.png';
+import touchImg from '../../../../assets/images/ruleImage/touch.png';
+import userEventImg from '../../../../assets/images/ruleImage/userEvent.png';
+import userPropsImg from '../../../../assets/images/ruleImage/userProps.png';
+import temperatureImg from '../../../../assets/images/ruleImage/temperature.png';
+import humidityImg from '../../../../assets/images/ruleImage/humidity.png';
+import weatherImg from '../../../../assets/images/ruleImage/weather.png';
+import quarterImg from '../../../../assets/images/ruleImage/quarter.png';
+import orImg from '../../../../assets/images/ruleImage/or.png';
+import andImg from '../../../../assets/images/ruleImage/and.png';
+import pmImg from '../../../../assets/images/ruleImage/pm.png';
+import defaultImg from '../../../../assets/images/ruleImage/default.png';
 const { TabPane } = Tabs;
 import { Context } from "./index";
 export default function MiddleCom() {
-    const { state, dispatch,wholeScenceId } = useContext(Context);
+    const { state, dispatch, wholeScenceId } = useContext(Context);
     const [rightData, setRightData] = useState([])
     const [middleData, setMiddleData] = useState([])
     const [leftData, setLeftData] = useState([])
     const [subSceneIndex, setSubSceneIndex] = useState(0)
     const [loadingPage, setLoadingPage] = useState(false)
+    const getImg = info => {
+        if (info.conditionTypeId == 1) {
+            return touchImg
+        }
+        if (info.conditionTypeName === '用户事件') {
+            return userEventImg
+        }
+        if (info.conditionTypeName === '用户属性') {
+            return userPropsImg
+        }
+        if (info.conditionName === '湿度') {
+            return humidityImg
+        }
+        if (info.conditionName === '温度') {
+            return temperatureImg
+        }
+        if (info.conditionName === '季节') {
+            return quarterImg
+        }
+        if (info.conditionName === '天气') {
+            return weatherImg
+        }
+        if (info.conditionName === 'PM2.5') {
+            return pmImg
+        }
+        return defaultImg
+    }
     //改变tab
     const changeCurrent = (val, e) => {
         e.stopPropagation()
@@ -44,6 +83,7 @@ export default function MiddleCom() {
     }
     //点击节点
     const clickNode = (data, nodeType, index, e) => {
+        console.log(data, '====')
         e.stopPropagation()
         if (state.activePropsId == data.conditionId + '_' + index && nodeType == 1) {
             return
@@ -62,7 +102,7 @@ export default function MiddleCom() {
             return <div className={['item', state.activePropsId == item.conditionId + '_' + index ? 'current-node-light' : ''].join(' ')}
                 key={index} onClick={(e) => { clickNode(item, 1, index, e) }}>
                 <div className='left'>
-                    <img />
+                    <img src={getImg(item)} />
                 </div>
                 <div className='right'>
                     <div>
@@ -93,7 +133,7 @@ export default function MiddleCom() {
         return middleData.map((item, index) => {
             return <div className={['item', state.activePropsId == item.title ? 'current-node-light' : ''].join(' ')}
                 key={index} onClick={(e) => { clickNode(item, 2, index, e) }}>
-                <div className='left'><img /></div>
+                <div className='left'><img src={item.title == "AND" ? andImg : orImg} /></div>
                 <div className='right'>
                     <div>逻辑符：</div>
                     <div>{item.title}</div>
@@ -113,17 +153,17 @@ export default function MiddleCom() {
             let text = ''
             if (item.actionsId) {
                 item.actionsItems.forEach(item => {
-                    if(item.actionParamValue.indexOf('clifeai,')>-1){
-                        text += item.deviceFunctionName + ':' + '关联AI'+ ';'
-                    }else{
+                    if (item.actionParamValue.indexOf('clifeai,') > -1) {
+                        text += item.deviceFunctionName + ':' + '关联AI' + ';'
+                    } else {
                         text += item.deviceFunctionName + ':' + item.functionParamName + ';'
                     }
-                    
+
                 })
             }
             return <div className={['item', state.activePropsId == item.actionsId + '_' + index ? 'current-node-light' : ''].join(' ')}
                 key={index} onClick={(e) => { clickNode(item, 3, index, e) }}>
-                <div className='left'><img /></div>
+                <div className='left'><img src={actionImg} /></div>
                 <div className='right'>
                     <div>
                         <span>设备动作：</span>
@@ -280,7 +320,7 @@ export default function MiddleCom() {
                     } else {
                         setMiddleData([{ title: 'OR', key: '2-or' }])
                     }
-                }
+                } 
             }
         })
     }
@@ -390,7 +430,7 @@ export default function MiddleCom() {
                 <div className='rule-title-middle'>
                     <div className='wrap'>
                         {
-                            state.pannelTab.slice(0,6).map(item => {
+                            state.pannelTab.slice(0, 6).map(item => {
                                 return <div className={[state.currentRule === item.ruleId ? 'tab-item-active' : '', 'tab-item'].join(' ')}
                                     key={item.ruleId} onClick={(e) => { changeCurrent(item.ruleId, e) }}>
                                     <span title={item.ruleName}>{item.ruleName}</span>

@@ -6,6 +6,18 @@ import {
 } from '../../../../apis/ruleSet'
 import { Context } from "./index";
 import { cloneDeep, isEqual } from "lodash"
+import actionImg from '../../../../assets/images/ruleImage/action.png';
+import touchImg from '../../../../assets/images/ruleImage/touch.png';
+import userEventImg from '../../../../assets/images/ruleImage/userEvent.png';
+import userPropsImg from '../../../../assets/images/ruleImage/userProps.png';
+import temperatureImg from '../../../../assets/images/ruleImage/temperature.png';
+import humidityImg from '../../../../assets/images/ruleImage/humidity.png';
+import weatherImg from '../../../../assets/images/ruleImage/weather.png';
+import quarterImg from '../../../../assets/images/ruleImage/quarter.png';
+import orImg from '../../../../assets/images/ruleImage/or.png';
+import andImg from '../../../../assets/images/ruleImage/and.png';
+import pmImg from '../../../../assets/images/ruleImage/pm.png';
+import defaultImg from '../../../../assets/images/ruleImage/default.png';
 import moment from 'moment';
 const { TabPane } = Tabs;
 const { TextArea } = Input;
@@ -36,7 +48,33 @@ function RightCom({ form }) {
     // if (state.currentRule === 0) {
     //     return <div></div>
     // }
-
+    const getImg = info => {
+        if (info.conditionTypeId == 1) {
+            return touchImg
+        }
+        if (info.conditionTypeName === '用户事件') {
+            return userEventImg
+        }
+        if (info.conditionTypeName === '用户属性') {
+            return userPropsImg
+        }
+        if (info.conditionName === '湿度') {
+            return humidityImg
+        }
+        if (info.conditionName === '温度') {
+            return temperatureImg
+        }
+        if (info.conditionName === '季节') {
+            return quarterImg
+        }
+        if (info.conditionName === '天气') {
+            return weatherImg
+        }
+        if (info.conditionName === 'PM2.5') {
+            return pmImg
+        }
+        return defaultImg
+    }
     useEffect(() => {
         //设备触发-产品列表
         getProductList(1).then(res => {
@@ -83,7 +121,6 @@ function RightCom({ form }) {
     //刷新规则tab
     const refreshRule = () => {
         let params = getFieldsValue()
-        console.log(params, 'params======')
         params.times = params.times || []
         if (!params.times.length || !params.ruleName) {
             notification.info({
@@ -565,18 +602,15 @@ function RightCom({ form }) {
     const factorNoDeviceDom = () => {
         getFieldDecorator('operatorId', {});
         getFieldDecorator('conditionValue', {});
-        // if (isNoting) {
-        //     return <div className='props-title'><img /> {state.formDom.data.conditionName}</div>
-        // }
         let domDataCopy = cloneDeep(domData)
         domDataCopy = domDataCopy || {}
         domDataCopy.operators = domDataCopy.operators || []
         domDataCopy.paramStyleId = domDataCopy.paramStyleId || 1
         domDataCopy.queryParams = domDataCopy.queryParams || []
         return <>
-            <div className='props-title' style={{ display: isNoting ? 'block' : 'none' }}><img /> {state.formDom.data.conditionName}</div>
+            <div className='props-title' style={{ display: isNoting ? 'block' : 'none' }}><img src={defaultImg} /> {state.formDom.data.conditionName}</div>
             <div style={{ display: !isNoting ? 'block' : 'none' }}>
-                <div className='props-title'><img /> {domDataCopy.conditionName}</div>
+                <div className='props-title'><img src={getImg(domDataCopy)} /> {domDataCopy.conditionName}</div>
                 {
                     <Form.Item label={`设置${domDataCopy.conditionName}`} style={{ marginBottom: 0 }}>
                         <Form.Item
@@ -626,7 +660,7 @@ function RightCom({ form }) {
         getFieldDecorator('operatorId', {});
         getFieldDecorator('conditionValue', {});
         return <>
-            <div className='props-title'><img /> 设备触发</div>
+            <div className='props-title'><img src={touchImg} /> 设备触发</div>
             <div>请选择您的产品来完成对设备触发条件的设置</div>
             <Form.Item label='选择产品'>
                 {getFieldDecorator('conditionOptionId', {})(
@@ -702,7 +736,7 @@ function RightCom({ form }) {
     //触发动作
     const activeDom = () => {
         return <>
-            <div className='props-title'><img /> 设备动作</div>
+            <div className='props-title'><img src={actionImg} /> 设备动作</div>
             <div>请选择您的产品来完成对设备动作条件的设置</div>
             <Form.Item label='选择产品'>
                 {getFieldDecorator('deviceTypeId', {})(
@@ -721,9 +755,9 @@ function RightCom({ form }) {
                 getActiveDom()
             }
             <a onClick={addItem} className='add-btn'>新增</a>
-            <Form.Item label='延时设置'>
+            <Form.Item label='延时设置(秒)'>
                 {getFieldDecorator('delayTime', {})(
-                    <InputNumber style={{ width: '100%' }} />
+                    <InputNumber style={{ width: '100%' }} min={0} />
                 )}
             </Form.Item>
         </>
@@ -731,7 +765,7 @@ function RightCom({ form }) {
     //逻辑符
     const renderLogic = () => {
         return <>
-            <div className='props-title' ><img /> {state.activePropsId}</div>
+            <div className='props-title' ><img src={state.activePropsId == "AND" ? andImg : orImg} /> {state.activePropsId}</div>
             <div>{state.activePropsId === 'AND' ? '逻辑与，当此功能条件左连接的多个触发条件同时满足的时候，会触发此功能条件右连接的动作动作' : '逻辑或，当此功能条件左连接的多个触发条件满足任意一个的时候，会触发此功能条件右连接的动作动作。'}</div>
         </>
     }

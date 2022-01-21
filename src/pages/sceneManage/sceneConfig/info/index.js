@@ -208,7 +208,6 @@ export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
     const wholeScenceId=useMemo(()=>{
-        console.log(math,'啧啧啧',math.location.pathname.split('/').slice(-1)[0])
         return math.location.pathname.split('/').slice(-1)[0]
     },[])
     if(!wholeScenceId){
@@ -221,6 +220,9 @@ export default function FirmwareMagement(math) {
         getRuleList(wholeScenceId).then(res => {
             if (res.data.code == 0) {
                 dispatch({ type: "reRule", payload: res.data.data })
+                if(res.data.data.length){
+                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+                }
             }
         })
     }, [])
