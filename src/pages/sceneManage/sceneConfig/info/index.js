@@ -86,6 +86,7 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: action.payload,
                 showTab: '2',
+                activePropsId:0
             }
         //更换节点
         case 'changeNode':

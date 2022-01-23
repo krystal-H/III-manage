@@ -111,6 +111,7 @@ export default function MiddleCom() {
                     </div>
                     <div>
                         {item.conditionExpression}
+                        {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
                 </div>
                 <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} />

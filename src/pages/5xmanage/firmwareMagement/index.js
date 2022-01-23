@@ -141,8 +141,8 @@ function PanelMn({ form }) {
         setLoading(true)
         getList(params).then(res => {
             if (res.data.code == 0) {
-                setdataSource(res.data.data.records)
-                setTotalRows(res.data.data.total)
+                setdataSource(res.data.data.list)
+                setTotalRows(res.data.data.pager.totalRows)
             }
         }).finally(() => { setLoading(false) })
     }
