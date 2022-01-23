@@ -195,6 +195,7 @@ function RightCom({ form }) {
             })
             if (factorSource.paramStyleId == 1) {
                 data.conditionExpression += data.conditionValue
+                data.unitCode = factorSource.unitCode
             } else {
                 factorSource.queryParams.forEach(item => {
                     if (item.queryParamValue == data.conditionValue) {
@@ -222,6 +223,7 @@ function RightCom({ form }) {
             })
             if (factorSource.paramStyleId == 1) {
                 data.conditionExpression += data.conditionValue
+                data.unitCode = factorSource.unitCode
             } else {
                 factorSource.queryParams.forEach(item => {
                     if (item.queryParamValue == data.conditionValue) {
@@ -304,6 +306,25 @@ function RightCom({ form }) {
     }
     //设备触发-产品改变
     const productChange = (val) => {
+        setFieldsValue({
+            conditionId:'',
+            conditionValue:'',
+            operatorId:''
+        })
+        getfactorByProduct(val).then(res => {
+            if (res.data.code === 0) {
+                res.data.data.forEach(item => {
+                    //兼容设备触发
+                    if (item.queryParams.length == 1 && item.queryParams[0].queryParamValue.indexOf(',') > -1) {
+                        item.queryParams[0].queryParamValue = item.queryParams[0].queryParamValue.replace('(', '[')
+                        item.queryParams[0].queryParamValue = item.queryParams[0].queryParamValue.replace(')', ']')
+                    }
+                })
+                setProductDom(res.data.data)
+            }
+        })
+    }
+    const productChange2 = (val) => {
         getfactorByProduct(val).then(res => {
             if (res.data.code === 0) {
                 res.data.data.forEach(item => {
@@ -339,7 +360,7 @@ function RightCom({ form }) {
                     })
                 } else {
                     if (state.formDom.data.conditionExpression) {
-                        productChange(state.formDom.data.conditionOptionId)
+                        productChange2(state.formDom.data.conditionOptionId)
                         setFieldsValue({
                             conditionOptionId: state.formDom.data.conditionOptionId,
                             conditionId: state.formDom.data.conditionId,
@@ -427,12 +448,24 @@ function RightCom({ form }) {
     const productActiveChange = val => {
         let params = { deviceTypeId: val }
         getAvtiveByProduct(params).then(res => {
+            res.data.data.forEach(item => {
+                if (item.paramStyleId == 1) {
+                    item.functionParams[0].functionParamValue = item.functionParams[0].functionParamValue.replace('(', '[')
+                    item.functionParams[0].functionParamValue = item.functionParams[0].functionParamValue.replace(')', ']')
+                }
+            })
             setProductActiveOP(res.data.data)
         })
     }
     const productActiveChange2 = val => {
         let params = { deviceTypeId: val }
         getAvtiveByProduct(params).then(res => {
+            res.data.data.forEach(item => {
+                if (item.paramStyleId == 1) {
+                    item.functionParams[0].functionParamValue = item.functionParams[0].functionParamValue.replace('(', '[')
+                    item.functionParams[0].functionParamValue = item.functionParams[0].functionParamValue.replace(')', ']')
+                }
+            })
             setProductActiveOP(res.data.data)
         })
         setFieldsValue({
@@ -462,8 +495,22 @@ function RightCom({ form }) {
             keys: keys.filter(key => key.unlkey !== k),
         });
     }
+    const getCriticalVal = (type, data) => {
+        if (!data.length) {
+            return type == 'min' ? -9999 : 9999
+        } else {
+            if (type == 'min') {
+                return JSON.parse(data[0].queryParamValue)[0]
+            }
+            if (type = 'max') {
+                return JSON.parse(data[0].queryParamValue)[1]
+            }
+        }
+
+    }
     //渲染功能点dom
     const getFunctionDom = () => {
+
         getFieldDecorator('operatorId', {});
         getFieldDecorator('conditionValue', {});
         let data = productDom.find(item => {
@@ -493,9 +540,10 @@ function RightCom({ form }) {
             <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 12px)' }}>
                 {getFieldDecorator('conditionValue')(
                     data.paramStyleId == 1 ?
-                        <InputNumber min={data.queryParams.length && JSON.parse(data.queryParams[0].queryParamValue)[0]}
-                            max={data.queryParams.length && JSON.parse(data.queryParams[0].queryParamValue)[1]}
-                            style={{ width: '100%' }} /> :
+                        <InputNumber min={getCriticalVal('min', data.queryParams)}
+                            max={getCriticalVal('max', data.queryParams)}
+                            style={{ width: '100%' }} formatter={value => data.unitCode ? `${value}${data.unitCode}` : value}
+                            parser={value => data.unitCode ? value.replace(data.unitCode, '') : value} /> :
                         <Select>
                             {data.queryParams.map((item, index) => (
                                 <Select.Option key={item.queryParamValue} value={item.queryParamValue} label={item.queryParamName}>
@@ -516,6 +564,17 @@ function RightCom({ form }) {
     }
     //设备动作dom
     const getActiveDom = () => {
+        function getCriticalVal2(type, data) {
+            if (!data.length) {
+                return type == 'min' ? -9999 : 9999
+            }
+            if (type == 'min') {
+                return JSON.parse(data[0].functionParamValue)[0]
+            }
+            if (type = 'max') {
+                return JSON.parse(data[0].functionParamValue)[1]
+            }
+        }
         getFieldDecorator('keys', { initialValue: [] });
         const keys = getFieldValue('keys');
         const formItems = keys.map((k, index) => (
@@ -568,7 +627,6 @@ function RightCom({ form }) {
                                     let data = productActiveOP.find(item => {
                                         return item.deviceFunctionId == getFieldValue(`names[${k.unlkey}].deviceFunctionId`)
                                     })
-                                    console.log(data, '===data', getFieldValue(`names[${k.unlkey}].light`))
                                     data = data || {}
                                     if (getFieldValue(`names[${k.unlkey}].light`) != '无') {
                                         data = {}
@@ -576,8 +634,10 @@ function RightCom({ form }) {
                                     data.paramStyleId = data.paramStyleId || 1
                                     data.functionParams = data.functionParams || []
                                     if (data.paramStyleId === 1) {
-                                        return <InputNumber min={data.functionParams.length && JSON.parse(data.functionParams[0].functionParamValue)[0]}
-                                            max={data.functionParams.length && JSON.parse(data.functionParams[0].functionParamValue)[1]} style={{ width: "100%" }} />
+                                        return <InputNumber min={getCriticalVal2('min', data.functionParams)}
+                                            max={getCriticalVal2('max', data.functionParams)} style={{ width: "100%" }}
+                                            formatter={value => data.unit ? `${value}${data.unit.unitCode}` : value}
+                                            parser={value => data.unit ? value.replace(data.unit.unitCode, '') : value} />
                                     } else {
                                         return <Select>
                                             {data.functionParams.map((item, index) => (
@@ -633,8 +693,8 @@ function RightCom({ form }) {
                         <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 12px)' }}>
                             {getFieldDecorator('conditionValue')(
                                 domDataCopy.paramStyleId == 1 ?
-                                    <InputNumber min={domDataCopy.queryParams.length && JSON.parse(domDataCopy.queryParams[0].queryParamValue)[0]}
-                                        max={domDataCopy.queryParams.length && JSON.parse(domDataCopy.queryParams[0].queryParamValue)[1]} /> :
+                                    <InputNumber min={getCriticalVal('min', domDataCopy.queryParams)}
+                                        max={getCriticalVal('max', domDataCopy.queryParams)} /> :
                                     <Select>
                                         {domDataCopy.queryParams.map((item, index) => (
                                             <Select.Option key={item.queryParamValue} value={item.queryParamValue} label={item.queryParamName}>
@@ -664,10 +724,13 @@ function RightCom({ form }) {
             <div>请选择您的产品来完成对设备触发条件的设置</div>
             <Form.Item label='选择产品'>
                 {getFieldDecorator('conditionOptionId', {})(
-                    <Select onChange={productChange}>
+                    <Select onChange={productChange} filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    } showSearch optionFilterProp="children">
                         {
                             productList.map((item, index) => (
-                                <Select.Option key={item.conditionOptionId} value={item.conditionOptionId} label={item.deviceTypeName}>
+                                <Select.Option key={item.conditionOptionId} value={item.conditionOptionId} label={item.deviceTypeName}
+                                >
                                     {item.deviceTypeName}
                                 </Select.Option>
                             ))
@@ -740,7 +803,9 @@ function RightCom({ form }) {
             <div>请选择您的产品来完成对设备动作条件的设置</div>
             <Form.Item label='选择产品'>
                 {getFieldDecorator('deviceTypeId', {})(
-                    <Select onChange={productActiveChange2}>
+                    <Select onChange={productActiveChange2} filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    } showSearch optionFilterProp="children">
                         {
                             productList2.map((item, index) => (
                                 <Select.Option key={item.deviceTypeId} value={item.deviceTypeId} label={item.deviceTypeName}>

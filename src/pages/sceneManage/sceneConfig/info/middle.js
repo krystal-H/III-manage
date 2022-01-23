@@ -83,7 +83,6 @@ export default function MiddleCom() {
     }
     //点击节点
     const clickNode = (data, nodeType, index, e) => {
-        console.log(data, '====')
         e.stopPropagation()
         if (state.activePropsId == data.conditionId + '_' + index && nodeType == 1) {
             return
@@ -157,7 +156,12 @@ export default function MiddleCom() {
                     if (item.actionParamValue.indexOf('clifeai,') > -1) {
                         text += item.deviceFunctionName + ':' + '关联AI' + ';'
                     } else {
-                        text += item.deviceFunctionName + ':' + item.functionParamName + ';'
+                        if(item.paramStyleId ==1){
+                            text += item.deviceFunctionName + ':' + item.actionParamValue + item.unitCode+';'
+                        }else{
+                            text += item.deviceFunctionName + ':' + item.functionParamName + ';'
+                        }
+                        
                     }
 
                 })
