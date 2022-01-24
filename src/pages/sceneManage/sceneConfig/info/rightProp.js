@@ -307,9 +307,9 @@ function RightCom({ form }) {
     //设备触发-产品改变
     const productChange = (val) => {
         setFieldsValue({
-            conditionId:'',
-            conditionValue:'',
-            operatorId:''
+            conditionId: '',
+            conditionValue: '',
+            operatorId: ''
         })
         getfactorByProduct(val).then(res => {
             if (res.data.code === 0) {
@@ -694,7 +694,9 @@ function RightCom({ form }) {
                             {getFieldDecorator('conditionValue')(
                                 domDataCopy.paramStyleId == 1 ?
                                     <InputNumber min={getCriticalVal('min', domDataCopy.queryParams)}
-                                        max={getCriticalVal('max', domDataCopy.queryParams)} /> :
+                                        max={getCriticalVal('max', domDataCopy.queryParams)}
+                                        formatter={value => domDataCopy.unitCode ? `${value}${domDataCopy.unitCode}` : value}
+                                        parser={value => domDataCopy.unitCode ? value.replace(domDataCopy.unitCode, '') : value} /> :
                                     <Select>
                                         {domDataCopy.queryParams.map((item, index) => (
                                             <Select.Option key={item.queryParamValue} value={item.queryParamValue} label={item.queryParamName}>
