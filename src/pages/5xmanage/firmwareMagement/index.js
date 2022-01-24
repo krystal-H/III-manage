@@ -62,8 +62,9 @@ function PanelMn({ form }) {
             title: '上传的固件名称',
             dataIndex: 'burnFileName',
             key: 'burnFileName',
+            width:'180px',
             render: (text, row) => <span >
-                {text && <>{text}
+                {text && <><span className='firmware-text' title={text}>{text} </span>
                     <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></>}
             </span>
         },
@@ -92,7 +93,7 @@ function PanelMn({ form }) {
         },
         {
             title: '操作',
-            width: 200,
+            width: 100,
             key: '',
             render: (val, record) => {
                 let text = record.status
