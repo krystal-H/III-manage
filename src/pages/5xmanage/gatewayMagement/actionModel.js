@@ -71,6 +71,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
         }
         let params = {
             productName: value,
+            pageRows:999
         }
         setFetching(true)
         setProductList([])
@@ -123,7 +124,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                     <Form {...formItemLayout}>
 
                         <FormItem label="网关名称">
-                            {getFieldDecorator('gatewayType', { rules: [{ required: true }] })(
+                            {getFieldDecorator('gatewayType', { rules: [{ required: true ,message:'请选择网关'}] })(
                                 <Select disabled={modelType === 'edit' ? true : false}>
                                     {
                                         optionList.map((item, index) => (
@@ -147,7 +148,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                             )} */}
                         </FormItem>
                         <FormItem label="产品名称">
-                            {getFieldDecorator('productId', { rules: [{ required: true }] })(
+                            {getFieldDecorator('productId', { rules: [{ required: true ,message:'请输入产品名称'}] })(
                                 // <Select  showSearch  filterOption={false} onSearch={fetchUser} notFoundContent={fetching ? <Spin size="small" /> : null}>
                                 //     {
                                 //         productList.map((item, index) => (

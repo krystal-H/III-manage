@@ -40,11 +40,18 @@ function PanelMn({ form }) {
             title: '产品名称',
             dataIndex: 'productName',
             key: 'productName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '产品型号',
             dataIndex: 'productCode',
             key: 'productCode',
+        },
+        {
+            title: '品牌',
+            dataIndex: 'brandName',
+            key: 'brandName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '产品ID',
