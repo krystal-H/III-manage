@@ -1,10 +1,15 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Modal } from 'antd'
+import { Form, Input, Button, Modal,message } from 'antd'
 import { Link } from 'react-router-dom';
 import TitleTab from '../../../components/TitleTab';
 import Table from '../../../components/Table';
 import axios from '../../../util/api.request';
-
+import { saveGloalInfo } from '../../../apis/ruleSet'
+const { TextArea } = Input;
+const formItemLayout = {
+  labelCol: { span: 6 },
+  wrapperCol: { span: 14 },
+};
 class List extends Component {
 
   constructor(props) {
@@ -14,6 +19,7 @@ class List extends Component {
       pageIndex: 1,
       list: [],
       pager: {},
+      addVisable: false
     };
     this.column = [
       { title: '标题', dataIndex: 'sceneName', width: 250 },
@@ -90,11 +96,26 @@ class List extends Component {
       }
     });
   }
-
-
+  newScene = () => {
+    this.setState({ addVisable: true })
+  }
+  handleOk = () => {
+    this.props.form.validateFields().then(val => {
+      saveGloalInfo(val).then(res => {
+        if (res.data.code == 0) {
+          message.success('新建场景成功')
+          this.setState({ addVisable: true })
+          this.getList(this.state.pageIndex)
+        }
+    })
+    })
+  }
+  handleCancel = () => {
+    this.setState({ addVisable: false })
+  }
   render() {
-    const { sceneName, list, pager, pageIndex } = this.state;
-
+    const { sceneName, list, pager, pageIndex, addVisable } = this.state;
+    const { getFieldDecorator } = this.props.form;
     return (
       <div>
         <TitleTab title="系统场景管理">
@@ -105,13 +126,55 @@ class List extends Component {
             <Button className='btn' type="primary" onClick={() => { this.getList() }} >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
 
-            <Button className='btnright' type="primary" href="#/home" target="_black" >+ 新建场景</Button>
+            <Button className='btnright' type="primary" onClick={this.newScene} >+ 新建场景</Button>
           </div>
         </TitleTab>
         <div className="comm-contont-card">
           <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{ ...pager, pageIndex }} onPageChange={this.getList} />
         </div>
-
+        <Modal
+          title="新建场景"
+          visible={addVisable}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <Form  {...formItemLayout}>
+            <Form.Item
+              label="场景名称"
+            >
+              {getFieldDecorator('sceneName', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入场景名称',
+                  },
+                  {
+                    max: 20,
+                    message: '场景名称不能超过20个字符',
+                  },
+                ],
+              })
+                (<Input placeholder='请输入场景名称' />)}
+            </Form.Item>
+            <Form.Item
+              label="场景描述"
+            >
+              {getFieldDecorator('summary', {
+                rules: [
+                  {
+                    required: true,
+                    message: '请输入场景描述',
+                  },
+                  {
+                    max: 100,
+                    message: '场景描述不能超过100个字符',
+                  },
+                ],
+              })
+                (<TextArea placeholder='请输入场景描述' />)}
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     )
   }
