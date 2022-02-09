@@ -42,7 +42,7 @@ class List extends Component {
         { title: '场景ID', dataIndex: 'sceneId'},
         { title: '用户ID', dataIndex: 'userId' },
         { title: '关联设备', dataIndex: 'deviceName'},
-        { title: '执行状态', dataIndex: 'enable', render:e=><span>{ {'1':'成功','0':'失败'}[e]}</span> },
+        { title: '执行状态', dataIndex: 'resultMsg'},
         { title: '操作', dataIndex: 'n',width:150,
             render: (n,{id}) => <a onClick={()=>this.getDetail(id)}>详情</a>
         },
@@ -58,8 +58,9 @@ class List extends Component {
   }
   getDetail=id=>{
     axios.Get('expert/scene/trigger/log/detail/v2.0',{id}).then( ({data={}}) => {
+      let d = data.data || {}
       this.setState({
-        logDetail:data.data || []
+        logDetail:[d]
       })
     });
   
@@ -185,7 +186,7 @@ getList=(index)=>{
           </div>
         </TitleTab>
         <div className="comm-contont-card">
-            <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
+            <Table rowKey="id" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
         </div>
 
 
@@ -196,7 +197,7 @@ getList=(index)=>{
           onCancel={this.closeDetail}
           onOk={this.closeDetail}
         >
-          <Table rowKey={({mac,executeTime}) => mac+"_"+executeTime} columns={logcolumn} dataSource={logDetail} />
+          <Table rowKey={({mac,executeTime}) => mac+"_"+executeTime} columns={logcolumn} dataSource={logDetail} pager={{}} />
         
         </Modal>
 

@@ -27,8 +27,8 @@ class List extends Component {
         { title: '更新时间', dataIndex: 'createTime'},
         { title: '场景ID', dataIndex: 'userSceneId'},
         { title: '用户ID', dataIndex: 'userId' },
-        { title: '场景规则', dataIndex: 'deviceTypeNames'},
-        { title: '场景状态', dataIndex: 'enable', render:e=><span>{ {'1':'已启用','0':'未启用'}[e]}</span> },
+        { title: '场景规则', dataIndex: 'ruleNames'},
+        { title: '场景状态', dataIndex: 'runStatus', render:e=><span>{ {'1':'已启用','0':'未启用'}[e]}</span> },
         { title: '操作', dataIndex: 'r',width:150,
             render: (r,{userSceneId}) => <span className='comman-table-margin'>
             <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${userSceneId}` }}>详情</Link>
@@ -114,7 +114,7 @@ alarmOk=()=>{
           </div>
         </TitleTab>
         <div className="comm-contont-card">
-            <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
+            <Table rowKey="userSceneId" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
         </div>
         <Modal
           visible={!!alarmId}
