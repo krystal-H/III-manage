@@ -64,7 +64,7 @@ getList=(index)=>{
       userSceneId,
       userId,
   }
-  axios.Post('combine/userScene/list/v2.0',param).then( ({data={}}) => {
+  axios.Post('expert/combine/userScene/list/v2.0',param).then( ({data={}}) => {
     let res = data.data || {};
     let { list=[] , pager={} } = res
     this.setState({list,pager})
@@ -75,18 +75,19 @@ getAlarm=userSceneId=>{
   this.setState({
     alarmId:userSceneId
   })
-  axios.Get('combine/userScene/getAlarm/v2.0',{userSceneId}).then( ({data={}}) => {
+  axios.Get('expert/combine/userScene/getAlarm/v2.0',{userSceneId}).then( ({data={}}) => {
     this.setState({
-      dingToken:data.dingToken || ""
+      dingToken:data.data && data.data.dingToken || ""
     })
   });
 
 }
 alarmOk=()=>{
   const {alarmId,dingToken} = this.state;
-  axios.Post('combine/userScene/setAlarm/v2.0',{userSceneId:alarmId,dingToken}).then( ({data={}}) => {
+  axios.Post('expert/combine/userScene/setAlarm/v2.0',{userSceneId:alarmId,dingToken},{ headers: {"Content-Type":"application/json"}}).then( ({data={}}) => {
     this.setState({alarmId:""})
   });
+
 
 }
 
@@ -109,7 +110,7 @@ alarmOk=()=>{
             <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
 
-            <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${123}` }}>详情</Link>
+            {/* <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${123}` }}>详情</Link> */}
           </div>
         </TitleTab>
         <div className="comm-contont-card">

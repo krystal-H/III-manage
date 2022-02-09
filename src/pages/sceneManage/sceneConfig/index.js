@@ -104,7 +104,7 @@ class List extends Component {
       saveGloalInfo(val).then(res => {
         if (res.data.code == 0) {
           message.success('新建场景成功')
-          this.setState({ addVisable: true })
+          this.setState({ addVisable: false })
           this.getList(this.state.pageIndex)
         }
     })
