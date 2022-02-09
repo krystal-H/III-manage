@@ -24,7 +24,7 @@ class List extends Component {
     };
     this.column = [
         { title: '场景名称', dataIndex: 'sceneName' },
-        { title: '更新时间', dataIndex: 'createTime'},
+        { title: '更新时间', dataIndex: 'updateTime'},
         { title: '场景ID', dataIndex: 'userSceneId'},
         { title: '用户ID', dataIndex: 'userId' },
         { title: '场景规则', dataIndex: 'ruleNames'},
