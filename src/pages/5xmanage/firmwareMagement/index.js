@@ -6,6 +6,7 @@ import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import CheckModal from './check'
 import InfoModal from './info'
+import DetailModal from './detail';
 import './index.less'
 const FormItem = Form.Item
 const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }]
@@ -15,8 +16,9 @@ function PanelMn({ form }) {
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
-    const [checkVisible, setCheckVisible] = useState(false)
-    const [infoVisible, setInfoVisible] = useState(false)
+    const [checkVisible, setCheckVisible] = useState(false) //审核
+    const [infoVisible, setInfoVisible] = useState(false) //固件信息
+    const [detailVisible,setDetailVisible] = useState(false) //审核信息
     const [loading, setLoading] = useState(false)
     const [actionData, setActionData] = useState({})
     const column = [
@@ -64,8 +66,8 @@ function PanelMn({ form }) {
             key: 'burnFileName',
             width:'180px',
             render: (text, row) => <span >
-                {text && <><span className='firmware-text' title={text}>{text} </span>
-                    <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></>}
+                {text && <div className='firmware-text-wrap'><span className='firmware-text' title={text}>{text} </span>
+                    <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></div>}
             </span>
         },
         {
@@ -100,10 +102,19 @@ function PanelMn({ form }) {
                 if (text == 1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
+                if (text == 2) {
+                    return <a onClick={() => { openDetail(record) }}>查看</a>
+                }
                 return ''
             }
         }
     ]
+    const openDetail=()=>{
+        setDetailVisible(true)
+    }
+    const closeDetail=()=>{
+        setDetailVisible(false)
+    }
     const openInfo = data => {
         setActionData(data)
         setInfoVisible(true)
@@ -225,6 +236,9 @@ function PanelMn({ form }) {
             }
             {
                 infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData} />
+            }
+            {
+                detailVisible && <DetailModal infoVisible={detailVisible} handleCancel={closeDetail}/>
             }
         </div>
     )

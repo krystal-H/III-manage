@@ -15,7 +15,8 @@ import {
   deleteConditionDicRequest,
   getSceneProductDetailRequest,
   getAIbilityDetailRequest,
-  deleteAIbilityRequest
+  deleteAIbilityRequest,
+  deleteSceneProductListRequest
 } from '../../../apis/sceneLibList'
 import './sceneLibList.less'
 import { cloneDeep } from 'lodash'
@@ -127,6 +128,15 @@ function SceneLibList({ form }) {
               size="small"
               icon="info"
               onClick={() => checkSceneProductDetail(record)}>
+            </Button>
+          </Tooltip>
+          <Tooltip placement="top" title="删除">
+            <Button
+            style={{marginLeft:'10px'}}
+              shape="circle"
+              size="small"
+              icon="delete"
+              onClick={() => handleDeleteOpe({type:'delete'}, record)} >
             </Button>
           </Tooltip>
         </div>
@@ -377,6 +387,14 @@ function SceneLibList({ form }) {
             getTableData()
           }
         })
+    }else if (selectVal === '1') {// ai能力
+      deleteSceneProductListRequest({ deviceTypeId: record.deviceTypeId })
+        .then(res => {
+          if (res.data.code === 0) {
+            message.success('删除成功')
+            getTableData()
+          }
+        })
     }
   }
 
@@ -523,7 +541,12 @@ function SceneLibList({ form }) {
                     )}
                   </Form.Item>
                   <Form.Item label="产品ID">
-                    {getFieldDecorator('defaultProductId', {})(
+                    {getFieldDecorator('defaultProductId', {
+                      getValueFromEvent: (e) => {
+                        const val = e.target.value;
+                        return val.replace(/[^\d]/g, '');
+                      }
+                    })(
                       <Input placeholder="请输入产品ID" style={{ width: 240 }}></Input>
                     )}
                   </Form.Item>

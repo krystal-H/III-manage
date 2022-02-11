@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Input, Button, Select, message, Radio, Modal, Form, Tooltip, Popconfirm } from 'antd';
 import TitleTab from '../../../components/TitleTab';
-import {  relData } from '../../../apis/firmwareMagement'
+import { relData } from '../../../apis/firmwareMagement'
 
 const FormItem = Form.Item
 const optionArr = [
@@ -32,14 +32,14 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
                     {getFieldDecorator(`names[${k.unlkey}].firmwareTypeName`, {
                         rules: [{ required: true, message: '请输入名称' }],
                         initialValue: index == 0 ? `${k.type == 1 ? '插件' : '模块'}名称1` : ''
-                    })(<Input />)}
+                    })(<Input maxLength={30}/>)}
                 </Form.Item>
                 <Form.Item
                     label={k.type == 1 ? '插件编号' : '模块编号'}
                     required={true}
                 >
                     {
-                        index == 0 ? <span>0</span> :
+                        index == 0 && k.type == 1 ? <span>0</span> :
                             getFieldDecorator(`names[${k.unlkey}].firmwareTypeNo`,
                                 {
                                     rules: [{
@@ -107,7 +107,7 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
         console.log(getFieldsValue())
         validateFields((err, values) => {
             if (!err) {
-                const { names,  keys } = values;
+                const { names, keys } = values;
                 // if (status === 3) {
                 //     let params1 = {
                 //         status: status,

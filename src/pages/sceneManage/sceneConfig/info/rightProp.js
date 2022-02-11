@@ -823,7 +823,7 @@ function RightCom({ form }) {
             }
             <a onClick={addItem} className='add-btn'>新增</a>
             <Form.Item label='延时设置(秒)'>
-                {getFieldDecorator('delayTime', {})(
+                {getFieldDecorator('delayTime', {initialValue:0})(
                     <InputNumber style={{ width: '100%' }} min={0} />
                 )}
             </Form.Item>
