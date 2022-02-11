@@ -478,7 +478,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               initialValue: aiAbilityDetail.aiName,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入能力名称', whitespace: true }],
-            })(<Input maxLength={20} placeholder="请输入能力名称" />)
+            })(<Input maxLength={50} placeholder="请输入能力名称" />)
           }
         </Form.Item>
         <Form.Item label="接口地址">
@@ -487,7 +487,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               initialValue: aiAbilityDetail.aiUrl,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入接口地址', whitespace: true }],
-            })(<Input maxLength={20} placeholder="请输入接口地址" />)
+            })(<Input maxLength={50} placeholder="请输入接口地址" />)
           }
         </Form.Item>
         <Form.Item label="描述">

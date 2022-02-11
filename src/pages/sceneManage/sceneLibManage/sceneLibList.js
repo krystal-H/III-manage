@@ -74,9 +74,9 @@ function SceneLibList({ form }) {
       key: 'judge',
       render: (item, record) => {
         if (record.level === 2) {
-          return <span>{record.parent.deviceTypeName}</span>
+          return <span>{record.parent ? record.parent.deviceTypeName : ''}</span>
         } else if (record.level === 3) {
-          return <span>{record.grand.deviceTypeName}</span>
+          return <span>{record.grand ? record.grand.deviceTypeName : ''}</span>
         }
       }
     },
@@ -88,7 +88,7 @@ function SceneLibList({ form }) {
         if (record.level === 2) {
           return <span>{record.deviceTypeName}</span>
         } else if (record.level === 3) {
-          return <span>{record.parent.deviceTypeName}</span>
+          return <span>{record.parent ? record.parent.deviceTypeName : ''}</span>
         }
       }
     },
@@ -522,7 +522,13 @@ function SceneLibList({ form }) {
         <TitleTab title="场景库管理" className="title-box">
           <div className="select-box">
             <Select defaultValue="1" style={{ width: 150 }}
-              onChange={(val) => setSelectVal(val)}>
+              onChange={(val) => {
+                setSelectVal(val)
+                setPager(pre => {
+                  let obj = cloneDeep(pre)
+                  return Object.assign(obj, { pageIndex: 1, pageRows: 10 })
+                })
+              }}>
               {
                 optionMap.map((item, index) => (
                   <Option key={item} value={index + 1 + ''}>{item}</Option>
