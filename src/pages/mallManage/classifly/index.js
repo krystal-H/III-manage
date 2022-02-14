@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message } from 'antd';
-import TitleTab from '../../../components/TitleTab';
-import TableCom from '../../../components/Table';
-import { getList } from '../../../apis/mallClassify'
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
+import { getList,delData,addDataApi } from '../../../apis/mallClassify'
 import { DateTool } from '../../../util/utils';
-
+import { editData } from '../../../apis/physical';
+import './index.scss'
 const FormItem = Form.Item
 // const TitleOption = TitleTab.Option
 // const { RangePicker } = DatePicker;
@@ -15,69 +14,38 @@ function FirmwareMagement({ form }) {
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [addVis, setAddVis] = useState(false)
-    const [showImg, setShowImg] = useState(false)
+    const [modelType, setModelType] = useState('add')
     const [actionData, setActionData] = useState({})
     const [loading, setLoading] = useState(false)
+    const formItemLayout = {
+        labelCol: { span: 6 },
+        wrapperCol: { span: 14 },
+    };
     useEffect(() => {
         getTableData()
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        getList().then(res=>{
-                 if (res.data.code == 0) {
-                // setdataSource(res.data.data.list)
-                // setTotalRows(res.data.data.pager.totalRows)
-            }
-        })
-        // let params = {}
-        // if (getFieldsValue().bannerName && getFieldsValue().bannerName.trim()) {
-        //     params.bannerName = getFieldsValue().bannerName.trim()
-        // }
-        // params = { ...params, ...pager }
-        // setLoading(true)
-        // getList(params).then(res => {
-        //     if (res.data.code == 0) {
-        //         setdataSource(res.data.data.list)
-        //         setTotalRows(res.data.data.pager.totalRows)
-        //     }
-        // }).finally(() => { setLoading(false) })
-    }
-    //状态
-    const getStatus = (val = 0) => {
-        let arr = ['待发布', '已上线', '已下线']
-        return arr[val]
-    }
-
-    //上下线
-    const offData = (id, status) => {
-        let tip = status == 1 ? '是否上线' : '是否下线'
-        Modal.confirm({
-            title: '确认',
-            okText: '确定',
-            cancelText: '取消',
-            content: tip,
-            onOk: () => {
-                relData({ id, status }).then(res => {
-                    let text = status == 1 ? '上线成功' : '下线成功'
-                    if (res.data.code == 0) {
-                        message.success(text);
-                        getTableData()
-                    }
-
+        setLoading(true)
+        getList().then(res => {
+            if (res.data.code == 0) {
+                res.data.data.forEach((item,index)=>{
+                    item.key=index+1
                 })
+                setdataSource(res.data.data)
             }
-        })
-
+        }).finally(() => { setLoading(false) })
     }
+
     //删除
-    const delDatafn = (id) => {
+    const delDataFn = (row) => {
         Modal.confirm({
             title: '确认',
             okText: '确定',
             cancelText: '取消',
-            content: '是否删除此banner',
+            content: '是否删除此数据',
             onOk: () => {
-                delData({ id }).then(res => {
+                delData({ classifyId:row.id }).then(res => {
                     if (res.data.code == 0) {
                         message.success('删除成功');
                         getTableData()
@@ -90,111 +58,102 @@ function FirmwareMagement({ form }) {
     const column = [
         {
             title: '编号',
-            dataIndex: 'bannerName',
-            key: 'bannerName',
+            dataIndex: 'key',
+            key: 'key',
         },
         {
             title: '分类名称',
-            dataIndex: 'uploadTime',
-            key: 'uploadTime',
-            render(uploadTime) {
-                return uploadTime && DateTool.utcToDev(uploadTime);
-            }
+            dataIndex: 'classifyName',
+            key: 'classifyName',
         },
         {
             title: '排序值',
-            dataIndex: 'showStartTime',
-            key: 'showStartTime',
-            render(showStartTime) {
-                return showStartTime && DateTool.utcToDev(showStartTime);
-            }
+            dataIndex: 'classifyValue',
+            key: 'classifyValue',
         },
         {
             title: '编辑时间',
-            dataIndex: 'showEndTime',
-            key: 'showEndTime',
-            render(showEndTime) {
-                return showEndTime && DateTool.utcToDev(showEndTime);
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            render(updateTime) {
+                return updateTime && DateTool.utcToDev(updateTime);
             }
         },
         {
             title: '操作',
             key: 'action',
             width: 200,
+            render(_, row) {
+                return <span>
+                    <a style={{ marginRight: '10px' }} onClick={() => { editData(row) }}>编辑</a>
+                    <a onClick={() => { delDataFn(row) }}>删除</a>
+                </span>
+            }
         }
     ]
-    //页码改变
-    const pagerChange = (pageIndex, pageRows) => {
-        if (pageRows === pager.pageRows) {
-            setPager(pre => {
-                let obj = JSON.parse(JSON.stringify(pre))
-                return Object.assign(obj, { pageIndex, pageRows })
-            })
-        } else {
-            setPager(pre => {
-                let obj = JSON.parse(JSON.stringify(pre))
-                return Object.assign(obj, { pageIndex: 1, pageRows })
-            })
-        }
 
+    //编辑
+    const editData = (row) => {
+        setModelType('edit')
+        setActionData(row)
+        setAddVis(true)
     }
-
-    const searchList = () => {
-        if (pager.pageIndex == 1) {
-            getTableData()
-        } else {
-            setPager({ pageIndex: 1, pageRows: 10 })
-        }
+    //新增
+    const addData = () => {
+        setModelType('add')
+        setAddVis(true)
     }
-    //
-    const lookData = (data) => {
-        setActionData(data)
-        setShowImg(true)
-    }
-    const onReset = () => {
-        form.resetFields();
-    }
-    //
+    //提交
     const handleOk = () => {
-        getTableData()
-        setAddVis(false)
+        validateFields().then(val => {
+            let params = { ...val }
+            if(modelType === 'edit'){
+                params.id=actionData.id
+            }
+            addDataApi(params).then(res => {
+                if (res.data.code == 0) {
+                    message.success('新增成功');
+                    getTableData()
+                    setAddVis(false)
+                }
+            })
+        })
+
     }
     const handleCancel = () => {
         setAddVis(false)
     }
     return (
-        <div className="banner-page">
-            {/* <TitleTab title="平台banner管理">
-                <div className='title-space'>
-                    <Form layout="inline">
-                        <FormItem label="">
-                            {getFieldDecorator('bannerName')(
-                                <Input placeholder="输入名称查询" style={{ width: 240 }} ></Input>
+        <div className="classify-page">
+            <Card>
+                <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                <Table rowKey={"id"} columns={column} dataSource={dataSource}
+                    loading={loading}
+                    pagination={false}
+                />
+            </Card>
+            {
+                addVis && <Modal
+                    title={modelType === 'add' ? '新增分类' : '编辑分类'}
+                    visible={addVis}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                >
+                    <Form {...formItemLayout} >
+                        <FormItem label="分类名称">
+                            {getFieldDecorator('classifyName', { initialValue:modelType === 'add' ? '' : actionData.classifyName
+                            ,rules: [{ required: true, message: '请输入分类名称' }] })(
+                                <Input  ></Input>
                             )}
                         </FormItem>
-                        <FormItem  >
-                            <Button type="primary" onClick={() => searchList()} >查询</Button>
-                        </FormItem>
-                        <FormItem >
-                            <Button onClick={() => onReset()}>重置</Button>
+                        <FormItem label="排序值">
+                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue})(
+                                <Input  ></Input>
+                            )}
                         </FormItem>
                     </Form>
-                    <Button type="primary" onClick={() => { setAddVis(true) }}>新建</Button>
-                </div>
-            </TitleTab> */}
-            <Card>
-                <TableCom rowKey={"id"} columns={column} dataSource={dataSource}
-                    loading={loading}
-                    pagination={{
-                        defaultCurrent: 1,
-                        current: pager.pageIndex,
-                        onChange: pagerChange,
-                        pageSize: pager.pageRows,
-                        total: totalRows,
-                        showQuickJumper: true,
-                        showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
-                    }} />
-            </Card>
+                </Modal>
+            }
         </div>
     )
 }

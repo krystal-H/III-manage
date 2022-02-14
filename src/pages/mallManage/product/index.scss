@@ -1,0 +1,17 @@
+.mall-product-page{
+    .mall-product-top{
+        padding: 20px 0;
+        text-align: right;
+    }
+}
+.mall-detail-page{
+    .ant-form-item{
+        display: flex;
+    }
+    .form-wrap{
+        display: flex;
+        .ant-form-item{
+            margin-right: 30px;
+        }
+    }
+}

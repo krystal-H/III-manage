@@ -5,8 +5,6 @@ import MiddleCom from './middle'
 import { cloneDeep } from "lodash"
 import { Spin } from 'antd';
 import { getRuleList } from '../../../../apis/ruleSet'
-
-import { useHistory } from "react-router-dom";
 import './index.less'
 const initState = {
     sentId: 0,

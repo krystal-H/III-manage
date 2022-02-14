@@ -11,26 +11,23 @@ export const getList = (pager) => {
         headers: {}
     })
 };
-// 更改状态
-export const relData = (data) => {
+// 删除
+export const delData = (data) => {
     return axios.request({
-        url: '/manage-open/panel/template/saveStandardPanel',
-        method: 'post',
-        data,
-        headers: {}
-    })
-};
-// 获取物模型列表
-export const getPhyList = (id) => {
-    return axios.request({
-        url: `/manage-open/physicalModel/list/deviceTypeId/${id}`,
+        url: '/manage-open/manage/classify/removeClassify',
         method: 'get',
+        params: data,
+        headers: {}
+        // needFormData: true,
+        // headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded',
+        // },
     })
 };
-//获取物模型下的数据
-export const getPhyData = (data) => {
+// 新增/编辑
+export const addDataApi = (data) => {
     return axios.request({
-        url: '/manage-open/physicalModel/func/list',
+        url: '/manage-open/manage/classify/addClassify',
         method: 'post',
         data,
         headers: {}

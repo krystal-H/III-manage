@@ -24,20 +24,20 @@ function RightComH({ form }) {
         setFileLists(fileList)
     }
     const beforeUpload = (file, type) => {
-        return new Promise((resolve, reject) => {
-            let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
-            if (!isFormal) {
-                message.error(`只能上传${type.join(',')}格式`);
-                return reject(false)
-            }
-            return resolve(true)
-        })
+        // return new Promise((resolve, reject) => {
+        //     let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
+        //     if (!isFormal) {
+        //         message.error(`只能上传${type.join(',')}格式`);
+        //         return reject(false)
+        //     }
+        //     return resolve(true)
+        // })
     }
     const normFile = e => {
-        // if (Array.isArray(e)) {
-        //     return e;
-        // }
-        // return e && e.fileList;
+        if (Array.isArray(e)) {
+            return e;
+        }
+        return e && e.fileList;
     };
     //保存
     const saveData = () => {
