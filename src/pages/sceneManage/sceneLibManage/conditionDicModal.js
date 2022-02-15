@@ -102,6 +102,8 @@ function ConditionDicModal({
     } else {
       newData = cloneDeep(conditionDicDetailData.queryParams)
     }
+  } else {
+    newData = []
   }
   getFieldDecorator('queryParams', { initialValue: newData })
   const keys = getFieldValue('queryParams')
@@ -297,7 +299,7 @@ function ConditionDicModal({
                   initialValue: conditionDicDetailData.queryParams ?
                     Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
-                      conditionDicDetailData.queryParams[0].queryParamName : '',
+                      conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [
                     {
