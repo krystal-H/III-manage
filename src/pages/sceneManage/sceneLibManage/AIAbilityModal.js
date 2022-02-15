@@ -485,7 +485,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
               initialValue: aiAbilityDetail.aiUrl,
               validateTrigger: ['onChange', 'onBlur'],
               rules: [{ required: true, message: '请输入接口地址', whitespace: true }],
-            })(<Input maxLength={50} placeholder="请输入接口地址" />)
+            })(<Input placeholder="请输入接口地址" />)
           }
         </Form.Item>
         <Form.Item label="描述">
