@@ -327,8 +327,8 @@ function ConditionDicModal({
           paramStyle === '2' &&
           <div>
             <Form.Item label="设置参数">
-              <Button type="dashed" onClick={() => addParam()} style={{ width: '100%' }}>
-                <Icon type="plus" /> 新&nbsp;&nbsp;增
+              <Button type="dashed" icon="plus" onClick={() => addParam()} style={{ width: '100%' }}>
+                新&nbsp;&nbsp;增
               </Button>
             </Form.Item>
             {formItems}

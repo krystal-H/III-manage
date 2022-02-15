@@ -267,8 +267,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         getFieldValue(`aiInParamList[${index}].type`) == '1' &&
         <div>
           <Form.Item label="设置参数">
-            <Button type="dashed" onClick={() => addInnerForm(index)} >
-              <Icon type="plus" />
+            <Button type="dashed" icon="plus" onClick={() => addInnerForm(index)} >
             </Button>
           </Form.Item>
           {createInnerHtml(`aiInParamList[${index}].enums`, index, item)}
@@ -451,8 +450,7 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
         getFieldValue(`aiOutParamList[${index}].type`) == '1' &&
         <div>
           <Form.Item label="设置参数">
-            <Button type="dashed" onClick={() => addInnerOutForm(index)} >
-              <Icon type="plus" />
+            <Button type="dashed" icon="plus" onClick={() => addInnerOutForm(index)} >
             </Button>
           </Form.Item>
           {createInnerHtml2(`aiOutParamList[${index}].enums`, index, item)}
@@ -497,16 +495,16 @@ function AIAbilityModal({ form, visible, handleCancel, handleOk, aiAbilityDetail
           })(<TextArea maxLength={100} autoSize={{ minRows: 3, maxRows: 3 }}></TextArea>)}
         </Form.Item>
         <Form.Item label="输入">
-          <Button type="dashed" onClick={() => addParam()}>
-            <Icon type="plus" /> 新&nbsp;&nbsp;增
+          <Button type="dashed" icon="plus" onClick={() => addParam()}>
+            新&nbsp;&nbsp;增
           </Button>
         </Form.Item>
         {formItems}
         <div className='divider'></div>
         {/* 输出 */}
         <Form.Item label="输出" style={{ marginTop: '15px' }}>
-          <Button type="dashed" onClick={() => addOutParam()}>
-            <Icon type="plus" /> 新&nbsp;&nbsp;增
+          <Button type="dashed" icon="plus" onClick={() => addOutParam()}>
+            新&nbsp;&nbsp;增
           </Button>
         </Form.Item>
         {outFormItems}
