@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Modal,message } from 'antd'
+import { Form, Input, Button, Modal,message,notification } from 'antd'
 import { Link } from 'react-router-dom';
 import TitleTab from '../../../components/TitleTab';
 import Table from '../../../components/Table';
@@ -85,12 +85,13 @@ class List extends Component {
 
   }
   enableH = (sceneId, enable) => {
+    const t= enable ? '启用' : '禁用';
     Modal.confirm({
       title: "提示",
-      content: `是否确认${enable ? '启用' : '禁用'}?`,
+      content: `是否确认${t}?`,
       onOk: () => {
-        axios.Post('expert/scene/enable/v2.0', { sceneId, enable }).then(() => {
-          console.log(r)
+        axios.Post('expert/scene/enable/v2.0', { sceneId, enable }).then(r => {
+          notification.success({ description: `${t}成功`});
           this.getList(this.state.pageIndex)
         });
       }

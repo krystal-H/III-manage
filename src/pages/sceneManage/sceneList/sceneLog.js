@@ -8,11 +8,11 @@ import axios from '../../../util/api.request';
 import './style.scss'  
 
 const logcolumn = [
-  { title: '执行设备', dataIndex: 'deviceName' },
-  { title: 'MAC', dataIndex: 'mac'},
-  { title: '执行功能', dataIndex: 'action'},
-  { title: '执行时间', dataIndex: 'executeTime' },
-  { title: '结果', dataIndex: 'resultMsg'}
+  { title: '执行设备', dataIndex: 'deviceName',width:'180px' },
+  { title: 'MAC', dataIndex: 'mac',width:'150px'},
+  { title: '执行功能', dataIndex: 'action',render:a=> <span title={a}>{a}</span> },
+  { title: '执行时间', dataIndex: 'executeTime',width:'180px' },
+  { title: '结果', dataIndex: 'resultStatus', width:'80px',render:r=>r=="0"&&'成功'||'失败' },
 ];
 
 
@@ -42,7 +42,7 @@ class List extends Component {
         { title: '场景ID', dataIndex: 'sceneId'},
         { title: '用户ID', dataIndex: 'userId' },
         { title: '关联设备', dataIndex: 'deviceName'},
-        { title: '执行状态', dataIndex: 'resultMsg'},
+        { title: '执行状态', dataIndex: 'resultStatus', render:r=>r=="0"&&'成功'||'失败' },
         { title: '操作', dataIndex: 'n',width:150,
             render: (n,{id}) => <a onClick={()=>this.getDetail(id)}>详情</a>
         },
@@ -99,6 +99,12 @@ getList=(index)=>{
     if(beginTime=='' || endTime==''){
       notification.warning({
         message:'自定义时间不完整'
+      })
+      return
+    }
+    if(beginTime > endTime ){
+      notification.warning({
+        message:'截至时间不能早于起始时间'
       })
       return
     }
@@ -192,7 +198,7 @@ getList=(index)=>{
 
         <Modal
           visible={!!logDetail}
-          width={600}
+          width={1000}
           title="日志详情"
           onCancel={this.closeDetail}
           onOk={this.closeDetail}
@@ -210,7 +216,7 @@ export default Form.create()(List)
 
 
 function disabledDate(current) {
-  return current && current < moment().startOf("day");
+  return current && current > moment().startOf("day");
 }
 
 function disabledDateTime() {
