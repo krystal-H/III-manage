@@ -30,11 +30,13 @@ function PanelMn({ form }) {
             title: '网关名称',
             dataIndex: 'gatewayName',
             key: 'gatewayName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '网关ID',
             dataIndex: 'gatewayType',
             key: 'gatewayType',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '产品名称',
@@ -46,6 +48,7 @@ function PanelMn({ form }) {
             title: '产品型号',
             dataIndex: 'productCode',
             key: 'productCode',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '品牌',
@@ -57,11 +60,13 @@ function PanelMn({ form }) {
             title: '产品ID',
             dataIndex: 'productId',
             key: 'productId',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '产品标识',
             dataIndex: 'productMark',
-            key: 'productMark'
+            key: 'productMark',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '操作',

@@ -2,11 +2,11 @@ import axios from '../util/api.request'
 
 
 // 获取列表
-export const getListApi = () => {
+export const getListApi = (data={}) => {
     return axios.request({
         url: '/manage-open/manage/commodity/getCommodityList',
-        // params: pager,
-        method: 'get',
+        method: 'post',
+        data,
         headers: {}
     })
 };
@@ -22,36 +22,38 @@ export const publicCommodityApi = (data) => {
 // 下架
 export const offCommodityApi = (data) => {
     return axios.request({
-        url: '/manage-open/manage/commodity/offCommodity',
+        url: '/manage-open/manage/commodity/onOrOffCommodity',
         method: 'post',
         data,
         headers: {}
+        // needFormData: true,
+        // headers: {
+        //     'Content-Type': 'application/x-www-form-urlencoded',
+        // },
     })
 };
-// 获取商品详情
-export const getDetailApi = (data) => {
+// 根据产品id获取详情
+export const getDetailByIdApi = (id) => {
     return axios.request({
-        url: '/manage-open/manage/commodity/getCommodityByCommodityId',
-        params: data,
+        url: '/manage-open/manage/commodity/getPublicProductByProductId/'+id,
         method: 'get',
         headers: {}
     })
 };
-// 删除
-export const delData = (data) => {
+// 获取商品详情
+export const getDetailApi = (id) => {
     return axios.request({
-        url: '/manage-open/manage/classify/removeClassify',
-        method: 'post',
-        data,
+        url: '/manage-open/manage/commodity/getCommodityByCommodityId/'+id,
+        method: 'get',
         headers: {}
     })
 };
-// 新增/编辑
-export const addDataApi = (data) => {
+//修改库存
+export const editStock = (data) => {
     return axios.request({
-        url: '/manage-open/manage/classify/addClassify',
-        method: 'post',
+        url: '/manage-open/manage/commodity/updateCommodityStock',
         data,
+        method: 'post',
         headers: {}
     })
 };

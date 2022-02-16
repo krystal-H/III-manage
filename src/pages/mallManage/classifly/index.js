@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
 import { getList,delData,addDataApi } from '../../../apis/mallClassify'
 import { DateTool } from '../../../util/utils';
-import { editData } from '../../../apis/physical';
 import './index.scss'
 const FormItem = Form.Item
 // const TitleOption = TitleTab.Option
@@ -27,12 +26,13 @@ function FirmwareMagement({ form }) {
     //列表
     const getTableData = () => {
         setLoading(true)
-        getList().then(res => {
+        getList(pager).then(res => {
             if (res.data.code == 0) {
-                res.data.data.forEach((item,index)=>{
+                res.data.data.records.forEach((item,index)=>{
                     item.key=index+1
                 })
-                setdataSource(res.data.data)
+                setdataSource(res.data.data.records)
+                setTotalRows(res.data.data.total)
             }
         }).finally(() => { setLoading(false) })
     }
@@ -123,13 +123,36 @@ function FirmwareMagement({ form }) {
     const handleCancel = () => {
         setAddVis(false)
     }
+    //页码改变
+    const pagerChange = (pageIndex, pageRows) => {
+        if (pageRows === pager.pageRows) {
+            setPager(pre => {
+                let obj = JSON.parse(JSON.stringify(pre))
+                return Object.assign(obj, { pageIndex, pageRows })
+            })
+        } else {
+            setPager(pre => {
+                let obj = JSON.parse(JSON.stringify(pre))
+                return Object.assign(obj, { pageIndex: 1, pageRows })
+            })
+        }
+
+    }
     return (
         <div className="classify-page">
             <Card>
                 <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
-                    pagination={false}
+                    pagination={{
+                        defaultCurrent: 1,
+                        current: pager.pageIndex,
+                        onChange: pagerChange,
+                        pageSize: pager.pageRows,
+                        total: totalRows,
+                        showQuickJumper: true,
+                        showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+                    }}
                 />
             </Card>
             {

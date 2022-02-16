@@ -1,6 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle, memo, useEffect } from 'react';
 import { Upload, Modal, Button,notification } from 'antd';
-import { fileHost } from "../../../util/utils";
+import { fileHost } from "../../util/utils";
+import './style.scss'
 // 上传地址
 const uploadConfigs = {
     action: fileHost,

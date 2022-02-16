@@ -3,11 +3,11 @@ import axios from '../util/api.request'
 const prefix = '/workOrder'
 
 // 获取列表
-export const getList = (pager) => {
+export const getList = (data={}) => {
     return axios.request({
         url: '/manage-open/manage/classify/getClassifyList',
-        // params: pager,
-        method: 'get',
+        data,
+        method: 'post',
         headers: {}
     })
 };

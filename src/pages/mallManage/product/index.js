@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Table, Modal, Form, Tooltip, DatePicker, Upload, message } from 'antd';
-import { getListApi } from '../../../apis/mallProduct'
-import { DateTool } from '../../../util/utils';
+import { getListApi, publicCommodityApi, offCommodityApi, editStock } from '../../../apis/mallProduct'
+// import PreviewModal from './previewInfo'
 import './index.scss'
 const FormItem = Form.Item
 // const TitleOption = TitleTab.Option
 // const { RangePicker } = DatePicker;
 
-function FirmwareMagement({ form,match ,history}) {
+function FirmwareMagement({ form, match, history }) {
     // const history = useHistory();
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const { getFieldDecorator, validateFields, getFieldsValue } = form;
@@ -17,7 +17,7 @@ function FirmwareMagement({ form,match ,history}) {
     const [showImg, setShowImg] = useState(false)
     const [actionData, setActionData] = useState({})
     const [loading, setLoading] = useState(false)
-    const [addinfoVis, setAddinfoVis] = useState(false)
+    const [previewVis, setPreviewVis] = useState(false)
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
@@ -28,15 +28,16 @@ function FirmwareMagement({ form,match ,history}) {
     //列表
     const getTableData = () => {
         setLoading(true)
-        getListApi().then(res => {
+        getListApi(pager).then(res => {
             if (res.data.code == 0) {
-                setdataSource(res.data.data)
+                setdataSource(res.data.data.records)
+                setTotalRows(res.data.data.total)
             }
         }).finally(() => { setLoading(false) })
     }
     //状态
     const getStatus = (val = 0) => {
-        let arr = ['下架', '在售', '售罄']
+        let arr = ['下架', '在售', '售罄', '未上架']
         return arr[val]
     }
 
@@ -49,7 +50,7 @@ function FirmwareMagement({ form,match ,history}) {
             cancelText: '取消',
             content: tip,
             onOk: () => {
-                relData({ id, status }).then(res => {
+                offCommodityApi({ commodityId: id, status }).then(res => {
                     let text = status == 1 ? '上架成功' : '下架成功'
                     if (res.data.code == 0) {
                         message.success(text);
@@ -104,7 +105,7 @@ function FirmwareMagement({ form,match ,history}) {
             key: 'commodityPicture',
             render: (text) => {
                 if (text) {
-                    let url = text.split(',')
+                    let url = text.split(',')[0]
                     return <img src={url} style={{ width: '30px' }} />
                 }
                 return ''
@@ -136,8 +137,8 @@ function FirmwareMagement({ form,match ,history}) {
         },
         {
             title: '已售出',
-            dataIndex: '',
-            key: ''
+            dataIndex: 'selledStock',
+            key: 'selledStock'
         },
         {
             title: '状态',
@@ -150,21 +151,34 @@ function FirmwareMagement({ form,match ,history}) {
             key: 'action',
             width: 300,
             render: (_, row) => <span >
-                <a>查看</a>
-                <a>预览</a>
-                <a onClick={() => { offData(row, 2) }}>下架商品</a>
-                <a onClick={() => { addSupply(row) }}>补充库存</a>
-                <a onClick={() => { offData(row, 1) }}>上架商品</a>
+                <a onClick={() => { goDetail(row) }} style={{marginRight:'10px'}}>查看</a>
+                {/* <a onClick={() => { onPreView(row) }} style={{marginRight:'10px'}}>预览</a> */}
+                {
+                  [0,3].indexOf(row.status) == -1  && <>
+                        <a onClick={() => { offData(row.id, 0) }} style={{marginRight:'10px'}}>下架商品</a>
+                        <a onClick={() => { addSupply(row) }}>补充库存</a>
+                    </>
+                }
+                {
+                    [0,3].indexOf(row.status) != -1 && <a onClick={() => { offData(row.id, 1) }}>上架商品</a>
+                }
+
             </span>
         }
     ]
+    //查看详情
+    const goDetail = (row) => {
+        history.push(`/mall/productInfo/${row.id}`);
+    }
+    //预览
+    const onPreView = (row) => {
+        setActionData(row)
+        setPreviewVis(true)
+    }
     //
     const lookData = (data) => {
         setActionData(data)
         setShowImg(true)
-    }
-    const onReset = () => {
-        form.resetFields();
     }
     //增加补给
     const addSupply = (row) => {
@@ -173,6 +187,21 @@ function FirmwareMagement({ form,match ,history}) {
     }
     //确定补给
     const confirmSupply = () => {
+        validateFields().then(val => {
+            let params = {
+                id: actionData.id,
+                currentStock: Number(actionData.currentStock) + Number(val.classifyValue),
+                maxStock: Number(actionData.currentStock) + Number(val.classifyValue) + Number(actionData.selledStock)
+            }
+            editStock(params).then(res => {
+                if (res.data.code == 0) {
+                    message.success('补给成功')
+                    setSupplyVis(false)
+                    getTableData()
+                }
+            })
+        })
+
     }
     //取消补给
     const cancelSupply = () => {
@@ -182,9 +211,24 @@ function FirmwareMagement({ form,match ,history}) {
     const openAdd = () => {
         history.push(`/mall/productInfo`);
     }
-    //取消新增
-    const cancalAdd = () => {
-        setAddinfoVis(false)
+    //页码改变
+    const pagerChange = (pageIndex, pageRows) => {
+        if (pageRows === pager.pageRows) {
+            setPager(pre => {
+                let obj = JSON.parse(JSON.stringify(pre))
+                return Object.assign(obj, { pageIndex, pageRows })
+            })
+        } else {
+            setPager(pre => {
+                let obj = JSON.parse(JSON.stringify(pre))
+                return Object.assign(obj, { pageIndex: 1, pageRows })
+            })
+        }
+
+    }
+    //取消预览
+    const handleCancel = () => {
+        setPreviewVis(false)
     }
     return (
         <div className="mall-product-page">
@@ -192,7 +236,15 @@ function FirmwareMagement({ form,match ,history}) {
                 <div className='mall-product-top'><Button type='primary' onClick={openAdd}>新增商品</Button></div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
-                    pagination={false} />
+                    pagination={{
+                        defaultCurrent: 1,
+                        current: pager.pageIndex,
+                        onChange: pagerChange,
+                        pageSize: pager.pageRows,
+                        total: totalRows,
+                        showQuickJumper: true,
+                        showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+                    }} />
             </Card>
             {
                 supplyVis && <Modal
@@ -223,6 +275,9 @@ function FirmwareMagement({ form,match ,history}) {
                     </Form>
                 </Modal>
             }
+            {/* {
+                previewVis && <PreviewModal previewVis={previewVis} handleCancel={handleCancel} />
+            } */}
         </div>
     )
 }

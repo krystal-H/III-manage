@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,forwardRef, useImperativeHandle,memo } from 'react';
 import E from 'wangeditor';
 import { fileHost } from "../../util/utils";
 import './index.scss'
@@ -7,7 +7,7 @@ const uploadConfigs = {
     action: fileHost,
     data: file => ({ appId: 31438, domainType: 4 })
 }
-export default function TinymceEditor({ divId }) {
+ function TinymceEditor({ divId },ref) {
     const [content, setContent] = useState('');
     let editor = null;
 
@@ -94,17 +94,29 @@ export default function TinymceEditor({ divId }) {
             editor.destroy();
         };
     }, []);
-    useEffect(() => {
-        getHtml();
-    }, [content]);
+    // useEffect(() => {
+    //     getHtml();
+    // }, [content]);
     // 获取html方法1
     function getHtml() {
         editor.txt.html(content);
     }
-
+    useImperativeHandle(ref, () => {
+        // 这个函数会返回一个对象
+        // 该对象会作为父组件 current 属性的值
+        return {
+            /**
+             * 对外函数，获取腾讯云返回的文件列表链接
+             */
+             getText: () => {
+                return editor.txt.html();
+            },
+        }
+    }, []); // 如果想要useImperativeHandle更新，需要传参数
     return (
         <div className='wang-edit-img'>
             <div id={divId}></div>
         </div>
     );
 }
+export default TinymceEditor = memo(forwardRef(TinymceEditor))
