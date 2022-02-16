@@ -45,7 +45,7 @@ function FirmwareMagement({ form }) {
             cancelText: '取消',
             content: '是否删除此数据',
             onOk: () => {
-                delData({ classifyId:row.id }).then(res => {
+                delData(row.id).then(res => {
                     if (res.data.code == 0) {
                         message.success('删除成功');
                         getTableData()
@@ -65,11 +65,13 @@ function FirmwareMagement({ form }) {
             title: '分类名称',
             dataIndex: 'classifyName',
             key: 'classifyName',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '排序值',
             dataIndex: 'classifyValue',
             key: 'classifyValue',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '编辑时间',

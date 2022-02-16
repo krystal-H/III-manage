@@ -12,11 +12,10 @@ export const getList = (data={}) => {
     })
 };
 // 删除
-export const delData = (data) => {
+export const delData = (id) => {
     return axios.request({
-        url: '/manage-open/manage/classify/removeClassify',
+        url: '/manage-open/manage/classify/removeClassify/'+id,
         method: 'get',
-        params: data,
         headers: {}
         // needFormData: true,
         // headers: {
