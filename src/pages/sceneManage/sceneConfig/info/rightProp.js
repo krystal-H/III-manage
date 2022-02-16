@@ -300,6 +300,9 @@ function RightCom({ form }) {
                     message: '提示',
                     description: '更新设备动作成功',
                 });
+                if (!state.formDom.data.actionsId) {
+                    resetFields()
+                }
                 dispatch({ type: "saveActive" })
             }
         })
