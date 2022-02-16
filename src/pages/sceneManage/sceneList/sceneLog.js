@@ -12,7 +12,7 @@ const logcolumn = [
   { title: 'MAC', dataIndex: 'mac',width:'150px'},
   { title: '执行功能', dataIndex: 'action',render:a=> <span title={a}>{a}</span> },
   { title: '执行时间', dataIndex: 'executeTime',width:'180px' },
-  { title: '结果', dataIndex: 'resultStatus', width:'80px',render:r=>r=="0"&&'成功'||'失败' },
+  { title: '结果', dataIndex: 'resultMsg' },
 ];
 
 
@@ -198,7 +198,7 @@ getList=(index)=>{
 
         <Modal
           visible={!!logDetail}
-          width={1000}
+          width={1100}
           title="日志详情"
           onCancel={this.closeDetail}
           onOk={this.closeDetail}

@@ -91,7 +91,7 @@ class List extends Component {
       content: `是否确认${t}?`,
       onOk: () => {
         axios.Post('expert/scene/enable/v2.0', { sceneId, enable }).then(r => {
-          notification.success({ description: `${t}成功`});
+          notification.success({ message: `${t}成功`});
           this.getList(this.state.pageIndex)
         });
       }
