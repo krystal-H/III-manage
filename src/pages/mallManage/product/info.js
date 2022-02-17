@@ -45,6 +45,10 @@ function Addmodal({ form, history }) {
             val.commodityDetail = $el4.current.getText()
             val.commodityStandard = $el5.current.getText()
             val.salesPolicy = $el6.current.getText()
+            if(!val.salesPolicy || !val.commodityStandard || !val.commodityDetail){
+                message.info('商品详情或规格参数或售后政策未输入内容')
+                return
+            }
             if (val.productId) {
                 val.productId = Number(val.productId)
             }
@@ -79,6 +83,8 @@ function Addmodal({ form, history }) {
                     commodityBrand: res.data.data.commodityBrand,
                 })
 
+            }else{
+                setFieldsValue({productId:''})
             }
         })
     }
@@ -95,7 +101,8 @@ function Addmodal({ form, history }) {
                             getValueFromEvent: (e) => {
                                 const val = e.target.value;
                                 return val.replace(/[^\d]/g, '');
-                            }
+                            },
+                            rules: [{ required: true, message: '请输入' }] 
                         })(
                             <Input style={{ width: '200px' }}></Input>
                         )}
@@ -103,22 +110,22 @@ function Addmodal({ form, history }) {
                     </FormItem>
                     <div className='form-wrap'>
                         <FormItem label="商品名称">
-                            {getFieldDecorator('commodityName', {})(
+                            {getFieldDecorator('commodityName', {rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem><FormItem label="商品型号">
-                            {getFieldDecorator('commodityModel', {})(
+                            {getFieldDecorator('commodityModel', {rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem><FormItem label="品牌">
-                            {getFieldDecorator('commodityBrand', {})(
+                            {getFieldDecorator('commodityBrand', {rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem>
                     </div>
                     <div className='form-wrap'>
                         <FormItem label="商品分类">
-                            {getFieldDecorator('commodityClassifyId', {})(
+                            {getFieldDecorator('commodityClassifyId', {rules: [{ required: true, message: '请输入' }] })(
                                 <Select style={{ width: '200px' }}>
                                     {
                                         optionList.map((item, index) => (
@@ -130,13 +137,13 @@ function Addmodal({ form, history }) {
                                 </Select>
                             )}
                         </FormItem><FormItem label="商品价格">
-                            {getFieldDecorator('commodityPrice', {
+                            {getFieldDecorator('commodityPrice', {rules: [{ required: true, message: '请输入' }] 
                             })(
                                 <InputNumber min={0}  style={{ width: '200px' }}></InputNumber >
                             )}
                         </FormItem>
                         <FormItem label="实时价格">
-                            {getFieldDecorator('commodityRealPrice', {
+                            {getFieldDecorator('commodityRealPrice', {rules: [{ required: true, message: '请输入' }] 
                             })(
                                 <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
                             )}
@@ -144,7 +151,7 @@ function Addmodal({ form, history }) {
                     </div>
                     <div className='form-wrap'>
                         <FormItem label="排序值">
-                            {getFieldDecorator('commodityOrderValue', {
+                            {getFieldDecorator('commodityOrderValue', {rules: [{ required: true, message: '请输入' }] ,
                                 getValueFromEvent: (e) => {
                                     const val = e.target.value;
                                     return val.replace(/[^\d]/g, '');
@@ -154,7 +161,7 @@ function Addmodal({ form, history }) {
                             )}
                         </FormItem>
                         <FormItem label="负责人">
-                            {getFieldDecorator('directorName', {})(
+                            {getFieldDecorator('directorName', {rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem>
@@ -165,7 +172,7 @@ function Addmodal({ form, history }) {
                         )}
                     </FormItem>
                     <FormItem label="商品照片">
-                        {getFieldDecorator('commodityPicture', {})(
+                        {getFieldDecorator('commodityPicture', {rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el1}
                                 listType="picture-card"
@@ -184,7 +191,7 @@ function Addmodal({ form, history }) {
                         <Wangeditor divId={'wangedit-product-rule'} ref={$el6} />
                     </FormItem>
                     <FormItem label="说明书">
-                        {getFieldDecorator('commodityInstructions', {})(
+                        {getFieldDecorator('commodityInstructions', {rules: [{ required: true, message: '请上传文件' }]})(
                             <UploadCom
                                 ref={$el2}
                                 maxCount={1}
@@ -194,7 +201,7 @@ function Addmodal({ form, history }) {
                         )}
                     </FormItem>
                     <FormItem label="测试报告">
-                        {getFieldDecorator('testReport', {})(
+                        {getFieldDecorator('testReport', {rules: [{ required: true, message: '请上传文件' }]})(
                             <UploadCom
                                 ref={$el3}
                                 maxCount={1}
