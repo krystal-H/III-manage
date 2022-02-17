@@ -172,7 +172,10 @@ function FirmwareMagement({ form }) {
                             )}
                         </FormItem>
                         <FormItem label="排序值">
-                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue})(
+                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue,getValueFromEvent: (e) => {
+                                    const val = e.target.value;
+                                    return val.replace(/[^\d]/g, '');
+                                }})(
                                 <Input  ></Input>
                             )}
                         </FormItem>

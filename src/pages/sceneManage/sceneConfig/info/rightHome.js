@@ -81,6 +81,7 @@ function RightComH({ form }) {
         let pamams = { paged: false }
         getAppList(pamams).then(res => {
             if (res.data.code == 0) {
+                console.log(res.data.data,9999)
                 let data = res.data.data.map(item => {
                     return { label: item.appName, value: item.appId }
                 })

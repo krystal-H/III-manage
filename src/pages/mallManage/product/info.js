@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Input, message, Select, Form, Button } from 'antd';
+import { Input, message, Select, Form, Button,InputNumber  } from 'antd';
 import Wangeditor from '../../../components/WangEdit';
 import { getDetailByIdApi, publicCommodityApi, getDetailApi } from '../../../apis/mallProduct'
 import { getList } from '../../../apis/mallClassify'
@@ -52,6 +52,12 @@ function Addmodal({ form, history }) {
                 val.commodityOrderValue = Number(val.commodityOrderValue)
             }
             val.status = 3
+            if(val.commodityClassifyId){
+                let objGroup=optionList.find(item=>{
+                    return item.id=val.commodityClassifyId
+                })
+                val.commodityClassifyName= objGroup.classifyName
+            }
             publicCommodityApi(val).then(res => {
                 if (res.data.code == 0) {
                     message.success('上传商品成功')
@@ -62,8 +68,10 @@ function Addmodal({ form, history }) {
         })
     }
     //搜索
-    const goSearch = ({ urlInfo }) => {
-        getDetailByIdApi(getFieldValue('productId')).then(res => {
+    const goSearch = () => {
+        let id=getFieldValue('productId')
+        if(!id) return
+        getDetailByIdApi(id).then(res => {
             if (res.data.code == 0) {
                 setFieldsValue({
                     commodityName: res.data.data.commodityName,
@@ -110,7 +118,7 @@ function Addmodal({ form, history }) {
                     </div>
                     <div className='form-wrap'>
                         <FormItem label="商品分类">
-                            {getFieldDecorator('commodityClassifyName', {})(
+                            {getFieldDecorator('commodityClassifyId', {})(
                                 <Select style={{ width: '200px' }}>
                                     {
                                         optionList.map((item, index) => (
@@ -123,22 +131,14 @@ function Addmodal({ form, history }) {
                             )}
                         </FormItem><FormItem label="商品价格">
                             {getFieldDecorator('commodityPrice', {
-                                getValueFromEvent: (e) => {
-                                    const val = e.target.value;
-                                    return val.replace(/[^\d]/g, '');
-                                }
                             })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <InputNumber min={0}  style={{ width: '200px' }}></InputNumber >
                             )}
                         </FormItem>
                         <FormItem label="实时价格">
                             {getFieldDecorator('commodityRealPrice', {
-                                getValueFromEvent: (e) => {
-                                    const val = e.target.value;
-                                    return val.replace(/[^\d]/g, '');
-                                }
                             })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
                             )}
                         </FormItem>
                     </div>
