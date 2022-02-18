@@ -1,4 +1,4 @@
-import React, { useState, useEffect,forwardRef, useImperativeHandle,memo } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, memo } from 'react';
 import E from 'wangeditor';
 import { fileHost } from "../../util/utils";
 import './index.scss'
@@ -7,7 +7,7 @@ const uploadConfigs = {
     action: fileHost,
     data: file => ({ appId: 31438, domainType: 4 })
 }
- function TinymceEditor({ divId },ref) {
+function TinymceEditor({ divId }, ref) {
     const [content, setContent] = useState('');
     let editor = null;
 
@@ -34,7 +34,7 @@ const uploadConfigs = {
                         return res.json();
                     })
                     .then((res) => {
-                        if(res.code==0){
+                        if (res.code == 0) {
                             insert(res.data.url);
                         }
                     });
@@ -108,8 +108,11 @@ const uploadConfigs = {
             /**
              * 对外函数，获取腾讯云返回的文件列表链接
              */
-             getText: () => {
+            getText: () => {
                 return editor.txt.html();
+            },
+            renderText: (text) => {
+                return editor.txt.html(text);
             },
         }
     }, []); // 如果想要useImperativeHandle更新，需要传参数

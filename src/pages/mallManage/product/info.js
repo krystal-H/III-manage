@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Input, message, Select, Form, Button,InputNumber  } from 'antd';
+import { Input, message, Select, Form, Button, InputNumber } from 'antd';
 import Wangeditor from '../../../components/WangEdit';
 import { getDetailByIdApi, publicCommodityApi, getDetailApi } from '../../../apis/mallProduct'
 import { getList } from '../../../apis/mallClassify'
@@ -8,15 +8,23 @@ import './index.scss'
 const FormItem = Form.Item
 
 function Addmodal({ form, history }) {
-    let id = useMemo(() => {
-        let infoId = history.location.pathname.split('/').slice(-1)
-        return parseInt(infoId)
+    let pageInfo = useMemo(() => {
+        let obj = {}
+        let urlinfo = history.location.search
+        if (urlinfo) {
+            urlinfo.slice(1).split('&&').forEach(item => {
+                let arr = item.split('=')
+                obj[arr[0]] = arr[1]
+            })
+        }
+        return obj
     }, [])
-    if (!isNaN(id)) {
-        return <ProductInfo id={id} />
+    if (pageInfo.id && pageInfo.isEdit === 'false') {
+        return <ProductInfo id={pageInfo.id} />
     }
-    const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
+    const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, getFieldsValue } = form;
     const [optionList, setOptionList] = useState([])
+    const [originData,setOriginData]= useState({})
     const $el1 = useRef(null)
     const $el2 = useRef(null)
     const $el3 = useRef(null)
@@ -29,15 +37,57 @@ function Addmodal({ form, history }) {
                 setOptionList(res.data.data.records)
             }
         })
+        if (pageInfo.id) {
+            renderDom()
+        }
+
     }, [])
+    const renderDom = () => {
+        getDetailApi(pageInfo.id).then(res => {
+            if (res.data.code == 0) {
+                setOriginData(res.data.data)
+                let obj = {}
+                let arr = ['salesPolicy', 'commodityStandard', 'commodityDetail']
+                let fileArr = ['testReport', 'commodityInstructions', 'commodityPicture']
+                Object.keys(getFieldsValue()).map(item => {
+                    if (arr.indexOf(item) > -1) {
+
+                    } else if (fileArr.indexOf(item) > -1) {
+                        if (res.data.data[item]) {
+                            obj[item] = res.data.data[item].split(',').map((url,index) => {
+                                return { url,uid:index+1 ,name:url}
+                            })
+                        }
+
+                    } else {
+                        obj[item] = res.data.data[item]
+                    }
+                })
+                setFieldsValue(obj)
+                if(obj.commodityPicture){
+                    $el1.current.setFileList(obj.commodityPicture)
+                }
+                if(obj.commodityInstructions){
+                    $el2.current.setFileList(obj.commodityInstructions)
+                }
+                if(obj.testReport){
+                    $el3.current.setFileList(obj.testReport)
+                }
+                $el4.current.renderText(res.data.data.commodityDetail || '')
+                $el5.current.renderText(res.data.data.commodityStandard || '')
+                $el6.current.renderText(res.data.data.salesPolicy || '')
+            }
+        })
+    }
     const sundata = () => {
         validateFields().then(val => {
             let fileArr = ['testReport', 'commodityInstructions', 'commodityPicture']
             fileArr.forEach(item => {
                 if (val[item] && val[item].length) {
                     val[item] = val[item].reduce((total, currentValue) => {
-                        return total += currentValue.url+','
+                        return total += currentValue.url + ','
                     }, '')
+                    val[item] = val[item].slice(0, -1)
                 } else {
                     val[item] = ''
                 }
@@ -45,7 +95,7 @@ function Addmodal({ form, history }) {
             val.commodityDetail = $el4.current.getText()
             val.commodityStandard = $el5.current.getText()
             val.salesPolicy = $el6.current.getText()
-            if(!val.salesPolicy || !val.commodityStandard || !val.commodityDetail){
+            if (!val.salesPolicy || !val.commodityStandard || !val.commodityDetail) {
                 message.info('商品详情或规格参数或售后政策未输入内容')
                 return
             }
@@ -56,11 +106,15 @@ function Addmodal({ form, history }) {
                 val.commodityOrderValue = Number(val.commodityOrderValue)
             }
             val.status = 3
-            if(val.commodityClassifyId){
-                let objGroup=optionList.find(item=>{
-                    return item.id=val.commodityClassifyId
+            if(Object.keys(originData).length){
+                val.status = originData.status
+                val.id=originData.id
+            }
+            if (val.commodityClassifyId) {
+                let objGroup = optionList.find(item => {
+                    return item.id = val.commodityClassifyId
                 })
-                val.commodityClassifyName= objGroup.classifyName
+                val.commodityClassifyName = objGroup.classifyName
             }
             publicCommodityApi(val).then(res => {
                 if (res.data.code == 0) {
@@ -73,8 +127,8 @@ function Addmodal({ form, history }) {
     }
     //搜索
     const goSearch = () => {
-        let id=getFieldValue('productId')
-        if(!id) return
+        let id = getFieldValue('productId')
+        if (!id) return
         getDetailByIdApi(id).then(res => {
             if (res.data.code == 0) {
                 setFieldsValue({
@@ -83,8 +137,8 @@ function Addmodal({ form, history }) {
                     commodityBrand: res.data.data.commodityBrand,
                 })
 
-            }else{
-                setFieldsValue({productId:''})
+            } else {
+                setFieldsValue({ productId: '' })
             }
         })
     }
@@ -102,7 +156,7 @@ function Addmodal({ form, history }) {
                                 const val = e.target.value;
                                 return val.replace(/[^\d]/g, '');
                             },
-                            rules: [{ required: true, message: '请输入' }] 
+                            rules: [{ required: true, message: '请输入' }]
                         })(
                             <Input style={{ width: '200px' }}></Input>
                         )}
@@ -110,22 +164,22 @@ function Addmodal({ form, history }) {
                     </FormItem>
                     <div className='form-wrap'>
                         <FormItem label="商品名称">
-                            {getFieldDecorator('commodityName', {rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('commodityName', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem><FormItem label="商品型号">
-                            {getFieldDecorator('commodityModel', {rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('commodityModel', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem><FormItem label="品牌">
-                            {getFieldDecorator('commodityBrand', {rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('commodityBrand', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem>
                     </div>
                     <div className='form-wrap'>
                         <FormItem label="商品分类">
-                            {getFieldDecorator('commodityClassifyId', {rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('commodityClassifyId', { rules: [{ required: true, message: '请输入' }] })(
                                 <Select style={{ width: '200px' }}>
                                     {
                                         optionList.map((item, index) => (
@@ -137,13 +191,15 @@ function Addmodal({ form, history }) {
                                 </Select>
                             )}
                         </FormItem><FormItem label="商品价格">
-                            {getFieldDecorator('commodityPrice', {rules: [{ required: true, message: '请输入' }] 
+                            {getFieldDecorator('commodityPrice', {
+                                rules: [{ required: true, message: '请输入' }]
                             })(
-                                <InputNumber min={0}  style={{ width: '200px' }}></InputNumber >
+                                <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
                             )}
                         </FormItem>
                         <FormItem label="实时价格">
-                            {getFieldDecorator('commodityRealPrice', {rules: [{ required: true, message: '请输入' }] 
+                            {getFieldDecorator('commodityRealPrice', {
+                                rules: [{ required: true, message: '请输入' }]
                             })(
                                 <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
                             )}
@@ -151,7 +207,8 @@ function Addmodal({ form, history }) {
                     </div>
                     <div className='form-wrap'>
                         <FormItem label="排序值">
-                            {getFieldDecorator('commodityOrderValue', {rules: [{ required: true, message: '请输入' }] ,
+                            {getFieldDecorator('commodityOrderValue', {
+                                rules: [{ required: true, message: '请输入' }],
                                 getValueFromEvent: (e) => {
                                     const val = e.target.value;
                                     return val.replace(/[^\d]/g, '');
@@ -161,7 +218,7 @@ function Addmodal({ form, history }) {
                             )}
                         </FormItem>
                         <FormItem label="负责人">
-                            {getFieldDecorator('directorName', {rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('directorName', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }}></Input>
                             )}
                         </FormItem>
@@ -172,7 +229,7 @@ function Addmodal({ form, history }) {
                         )}
                     </FormItem>
                     <FormItem label="商品照片">
-                        {getFieldDecorator('commodityPicture', {rules: [{ required: true, message: '请上传文件' }] })(
+                        {getFieldDecorator('commodityPicture', { rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el1}
                                 listType="picture-card"
@@ -191,7 +248,7 @@ function Addmodal({ form, history }) {
                         <Wangeditor divId={'wangedit-product-rule'} ref={$el6} />
                     </FormItem>
                     <FormItem label="说明书">
-                        {getFieldDecorator('commodityInstructions', {rules: [{ required: true, message: '请上传文件' }]})(
+                        {getFieldDecorator('commodityInstructions', { rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el2}
                                 maxCount={1}
@@ -201,7 +258,7 @@ function Addmodal({ form, history }) {
                         )}
                     </FormItem>
                     <FormItem label="测试报告">
-                        {getFieldDecorator('testReport', {rules: [{ required: true, message: '请上传文件' }]})(
+                        {getFieldDecorator('testReport', { rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el3}
                                 maxCount={1}
@@ -250,9 +307,9 @@ function ProductInfo({ id }) {
         }
         return ''
     }
-    function showhtml(htmlString){
-        var html = {__html:htmlString};
-        return   <div dangerouslySetInnerHTML={html}></div> ;
+    function showhtml(htmlString) {
+        var html = { __html: htmlString };
+        return <div dangerouslySetInnerHTML={html}></div>;
     }
     return <div className='productInfo-content-page'>
         <div className='item-wrap'>
@@ -326,7 +383,7 @@ function ProductInfo({ id }) {
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>售后政策：</div>
-                <div className='item-text item-wang-text'>{ showhtml(dataInfo.salesPolicy)}</div>
+                <div className='item-text item-wang-text'>{showhtml(dataInfo.salesPolicy)}</div>
             </div>
         </div>
         <div className='item-wrap'>

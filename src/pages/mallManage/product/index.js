@@ -151,24 +151,28 @@ function FirmwareMagement({ form, match, history }) {
             key: 'action',
             width: 300,
             render: (_, row) => <span >
-                <a onClick={() => { goDetail(row) }} style={{marginRight:'10px'}}>查看</a>
+
                 {/* <a onClick={() => { onPreView(row) }} style={{marginRight:'10px'}}>预览</a> */}
                 {
-                  [0,3].indexOf(row.status) == -1  && <>
-                        <a onClick={() => { offData(row.id, 0) }} style={{marginRight:'10px'}}>下架商品</a>
+                    [0, 3].indexOf(row.status) == -1 && <>
+                        <a onClick={() => { goDetail(row,false) }} style={{ marginRight: '10px' }}>查看</a>
+                        <a onClick={() => { offData(row.id, 0) }} style={{ marginRight: '10px' }}>下架商品</a>
                         <a onClick={() => { addSupply(row) }}>补充库存</a>
                     </>
                 }
                 {
-                    [0,3].indexOf(row.status) != -1 && <a onClick={() => { offData(row.id, 1) }}>上架商品</a>
+                    [0, 3].indexOf(row.status) != -1 && <>
+                        <a onClick={() => { goDetail(row,true) }} style={{ marginRight: '10px' }}>编辑</a>
+                        <a onClick={() => { offData(row.id, 1) }}>上架商品</a>
+                    </>
                 }
 
             </span>
         }
     ]
     //查看详情
-    const goDetail = (row) => {
-        history.push(`/mall/productInfo/${row.id}`);
+    const goDetail = (row,isEdit) => {
+        history.push(`/mall/productInfo?id=${row.id}&&isEdit=${isEdit}`);
     }
     //预览
     const onPreView = (row) => {

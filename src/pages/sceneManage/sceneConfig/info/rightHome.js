@@ -19,28 +19,7 @@ function RightComH({ form }) {
     const [aiList, setAiList] = useState([])
     const [appList, setAppList] = useState([])
     const [originData, setOriginData] = useState({})
-    const [initImg, setInitImg] = useState('')
-    const [fileLists, setFileLists] = useState([])
     const $el1 = useRef(null)
-    const onChangeFile = ({ file, fileList }) => {
-        setFileLists(fileList)
-    }
-    const beforeUpload = (file, type) => {
-        // return new Promise((resolve, reject) => {
-        //     let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
-        //     if (!isFormal) {
-        //         message.error(`只能上传${type.join(',')}格式`);
-        //         return reject(false)
-        //     }
-        //     return resolve(true)
-        // })
-    }
-    const normFile = e => {
-        if (Array.isArray(e)) {
-            return e;
-        }
-        return e && e.fileList;
-    };
     //保存
     const saveData = () => {
 
