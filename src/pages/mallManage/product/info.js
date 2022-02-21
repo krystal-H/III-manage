@@ -5,6 +5,7 @@ import { getDetailByIdApi, publicCommodityApi, getDetailApi } from '../../../api
 import { getList } from '../../../apis/mallClassify'
 import UploadCom from '../../../components/uploadCom/index'
 import './index.scss'
+import axios from '../../../util/api.request';
 const FormItem = Form.Item
 
 function Addmodal({ form, history }) {
@@ -24,7 +25,7 @@ function Addmodal({ form, history }) {
     }
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, getFieldsValue } = form;
     const [optionList, setOptionList] = useState([])
-    const [originData,setOriginData]= useState({})
+    const [originData, setOriginData] = useState({})
     const $el1 = useRef(null)
     const $el2 = useRef(null)
     const $el3 = useRef(null)
@@ -54,8 +55,8 @@ function Addmodal({ form, history }) {
 
                     } else if (fileArr.indexOf(item) > -1) {
                         if (res.data.data[item]) {
-                            obj[item] = res.data.data[item].split(',').map((url,index) => {
-                                return { url,uid:index+1 ,name:url}
+                            obj[item] = res.data.data[item].split(',').map((url, index) => {
+                                return { url, uid: index + 1, name: url }
                             })
                         }
 
@@ -64,13 +65,13 @@ function Addmodal({ form, history }) {
                     }
                 })
                 setFieldsValue(obj)
-                if(obj.commodityPicture){
+                if (obj.commodityPicture) {
                     $el1.current.setFileList(obj.commodityPicture)
                 }
-                if(obj.commodityInstructions){
+                if (obj.commodityInstructions) {
                     $el2.current.setFileList(obj.commodityInstructions)
                 }
-                if(obj.testReport){
+                if (obj.testReport) {
                     $el3.current.setFileList(obj.testReport)
                 }
                 $el4.current.renderText(res.data.data.commodityDetail || '')
@@ -106,9 +107,9 @@ function Addmodal({ form, history }) {
                 val.commodityOrderValue = Number(val.commodityOrderValue)
             }
             val.status = 3
-            if(Object.keys(originData).length){
+            if (Object.keys(originData).length) {
                 val.status = originData.status
-                val.id=originData.id
+                val.id = originData.id
             }
             if (val.commodityClassifyId) {
                 let objGroup = optionList.find(item => {
@@ -123,6 +124,18 @@ function Addmodal({ form, history }) {
                 }
             })
 
+        })
+    }
+    const goSubdata = () => {
+        let id = getFieldValue('productId')
+        if (!id) {
+            message.info('输入产品id')
+            return
+        }
+        getDetailByIdApi(id).then(res => {
+            if (res.data.code == 0) {
+                sundata()
+            }
         })
     }
     //搜索
@@ -146,6 +159,24 @@ function Addmodal({ form, history }) {
     const goList = () => {
         history.push(`/mall/productMn`);
     }
+    // 大于0，且最多2个小数
+    // 处理输入框小数点两位问题
+    const clearNoNumTwo = (obj) => {
+        obj = obj.replace(/[^\d.]/g, ''); //清除“数字”和“.”以外的字符
+        obj = obj.replace(/\.{2,}/g, '.'); //只保留第一个. 清除多余的
+        obj = obj.replace('.', '$#$').replace(/\./g, '').replace('$#$', '.');
+        obj = obj.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3'); //只能输入两个小数
+        if (obj.indexOf('.') < 0 && obj != '') {
+            //以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额
+            obj = parseFloat(obj);
+        }
+        let strObj = obj.toString();
+        if (strObj.indexOf('.') > -1 && strObj === '0.00') {
+            obj = parseFloat(obj).toFixed(1);
+        }
+        return obj;
+    }
+
     return (
         <div>
             <div className='mall-detail-page'>
@@ -192,16 +223,24 @@ function Addmodal({ form, history }) {
                             )}
                         </FormItem><FormItem label="商品价格">
                             {getFieldDecorator('commodityPrice', {
-                                rules: [{ required: true, message: '请输入' }]
+                                rules: [{ required: true, message: '请输入' }],
+                                getValueFromEvent: (e) => {
+                                    let obj = e.target.value;
+                                    return clearNoNumTwo(obj)
+                                }
                             })(
-                                <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
+                                <Input style={{ width: '200px' }}></Input >
                             )}
                         </FormItem>
                         <FormItem label="实时价格">
                             {getFieldDecorator('commodityRealPrice', {
-                                rules: [{ required: true, message: '请输入' }]
+                                rules: [{ required: true, message: '请输入' }],
+                                getValueFromEvent: (e) => {
+                                    let obj = e.target.value;
+                                    return clearNoNumTwo(obj)
+                                }
                             })(
-                                <InputNumber min={0} style={{ width: '200px' }}></InputNumber >
+                                <Input style={{ width: '200px' }} ></Input >
                             )}
                         </FormItem>
                     </div>
@@ -233,7 +272,7 @@ function Addmodal({ form, history }) {
                             <UploadCom
                                 ref={$el1}
                                 listType="picture-card"
-                                maxCount={6}
+                                maxCount={5}
                                 isNotImg={false}
                                 maxSize={10} />
                         )}
@@ -269,7 +308,7 @@ function Addmodal({ form, history }) {
                     </FormItem>
                 </Form>
                 <div className='mall-info-footer'>
-                    <Button type='primary' onClick={sundata}>保存</Button>
+                    <Button type='primary' onClick={goSubdata}>保存</Button>
                     <Button onClick={goList}>取消</Button>
                 </div>
 
@@ -297,7 +336,22 @@ function ProductInfo({ id }) {
         return ''
     }
     const downFile = (item) => {
-        window.open(item)
+        const a = document.createElement('a')
+        const url = item // 完整的url则直接使用
+        // 这里是将url转成blob地址，
+        fetch(url).then(res => res.blob()).then(blob => { // 将链接地址字符内容转变成blob地址
+            a.href = URL.createObjectURL(blob)
+            console.log(a.href)
+            a.download = '文件' // 下载文件的名字
+            // a.download = url.split('/')[url.split('/').length -1] //  // 下载文件的名字
+            document.body.appendChild(a)
+            a.click()
+
+            //在资源下载完成后 清除 占用的缓存资源
+            window.URL.revokeObjectURL(a.href);
+            document.body.removeChild(a);
+        })
+        // window.open(item)
     }
     const getFile = data => {
         if (data) {
