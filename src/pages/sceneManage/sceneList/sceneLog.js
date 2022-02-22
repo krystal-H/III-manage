@@ -8,10 +8,10 @@ import axios from '../../../util/api.request';
 import './style.scss'  
 
 const logcolumn = [
-  { title: '执行设备', dataIndex: 'deviceName',width:'180px' },
-  { title: 'MAC', dataIndex: 'mac',width:'150px'},
+  { title: '执行设备', dataIndex: 'deviceName',width:180,render:a=> <span title={a}>{a}</span>  },
+  { title: 'MAC', dataIndex: 'mac',width:150},
   { title: '执行功能', dataIndex: 'action',render:a=> <span title={a}>{a}</span> },
-  { title: '执行时间', dataIndex: 'executeTime',width:'180px' },
+  { title: '执行时间', dataIndex: 'executeTime',width:200,render:a=> <span title={a}>{a}</span> },
   { title: '结果', dataIndex: 'resultMsg' },
 ];
 
@@ -39,11 +39,11 @@ class List extends Component {
     this.column = [
         { title: '规则名称', dataIndex: 'ruleName' },
         { title: '执行时间', dataIndex: 'executeTime'},
-        { title: '场景ID', dataIndex: 'sceneId'},
+        { title: '场景ID', dataIndex: 'sceneId',width:110,},
         { title: '用户ID', dataIndex: 'userId' },
         { title: '关联设备', dataIndex: 'deviceName'},
-        { title: '执行状态', dataIndex: 'resultStatus', render:r=>r=="0"&&'成功'||'失败' },
-        { title: '操作', dataIndex: 'n',width:150,
+        { title: '执行状态', dataIndex: 'resultStatus', render:r=>r=="0"&&'成功'||'失败',width:90 },
+        { title: '操作', dataIndex: 'n',width:90,
             render: (n,{id}) => <a onClick={()=>this.getDetail(id)}>详情</a>
         },
     ];
@@ -198,12 +198,13 @@ getList=(index)=>{
 
         <Modal
           visible={!!logDetail}
-          width={1100}
+          width={1130}
           title="日志详情"
           onCancel={this.closeDetail}
           onOk={this.closeDetail}
+          className={'noborder'}
         >
-          <Table rowKey={({mac,executeTime}) => mac+"_"+executeTime} columns={logcolumn} dataSource={logDetail} pager={{}} />
+          <Table rowKey={({mac,executeTime}) => mac+"_"+executeTime} columns={logcolumn} dataSource={logDetail} pager={{}} bordered={false}/>
         
         </Modal>
 
