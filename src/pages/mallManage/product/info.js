@@ -113,7 +113,7 @@ function Addmodal({ form, history }) {
             }
             if (val.commodityClassifyId) {
                 let objGroup = optionList.find(item => {
-                    return item.id = val.commodityClassifyId
+                    return item.id == val.commodityClassifyId
                 })
                 val.commodityClassifyName = objGroup.classifyName
             }
