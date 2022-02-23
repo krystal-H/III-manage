@@ -196,15 +196,15 @@ function Addmodal({ form, history }) {
                     <div className='form-wrap'>
                         <FormItem label="商品名称">
                             {getFieldDecorator('commodityName', { rules: [{ required: true, message: '请输入' }] })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem><FormItem label="商品型号">
                             {getFieldDecorator('commodityModel', { rules: [{ required: true, message: '请输入' }] })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem><FormItem label="品牌">
                             {getFieldDecorator('commodityBrand', { rules: [{ required: true, message: '请输入' }] })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem>
                     </div>
@@ -258,7 +258,7 @@ function Addmodal({ form, history }) {
                         </FormItem>
                         <FormItem label="负责人">
                             {getFieldDecorator('directorName', { rules: [{ required: true, message: '请输入' }] })(
-                                <Input style={{ width: '200px' }}></Input>
+                                <Input style={{ width: '200px' }} maxLength={20}></Input>
                             )}
                         </FormItem>
                     </div>
@@ -272,18 +272,18 @@ function Addmodal({ form, history }) {
                             <UploadCom
                                 ref={$el1}
                                 listType="picture-card"
-                                maxCount={5}
+                                maxCount={6}
                                 isNotImg={false}
                                 maxSize={10} />
                         )}
                     </FormItem>
-                    <FormItem label="商品详情">
+                    <FormItem label="商品详情" className='need-warn-wrap'>
                         <Wangeditor divId={'wangedit-product-detail'} ref={$el4} />
                     </FormItem>
-                    <FormItem label="规格参数">
+                    <FormItem label="规格参数" className='need-warn-wrap'>
                         <Wangeditor divId={'wangedit-product-config'} ref={$el5} />
                     </FormItem>
-                    <FormItem label="售后政策">
+                    <FormItem label="售后政策" className='need-warn-wrap'>
                         <Wangeditor divId={'wangedit-product-rule'} ref={$el6} />
                     </FormItem>
                     <FormItem label="说明书">
@@ -337,7 +337,7 @@ function ProductInfo({ id }) {
     }
     const downFile = (item) => {
         const a = document.createElement('a')
-        const url = item // 完整的url则直接使用
+        const url = item.replace('http','https') // 完整的url则直接使用
         // 这里是将url转成blob地址，
         fetch(url).then(res => res.blob()).then(blob => { // 将链接地址字符内容转变成blob地址
             a.href = URL.createObjectURL(blob)

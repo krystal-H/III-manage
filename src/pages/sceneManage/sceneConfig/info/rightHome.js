@@ -121,23 +121,6 @@ function RightComH({ form }) {
                                     maxCount={1}
                                     isNotImg={false}
                                     maxSize={10} />
-                                // <div>
-                                //     <Upload
-                                //         className="avatar-uploader"
-                                //         {...uploadConfigs}
-                                //         accept=".png,.jpg"
-                                //         onChange={onChangeFile}
-                                //         listType="picture-card"
-                                //         style={{ width: '100px' }}
-                                //         fileList={fileLists}
-                                //         beforeUpload={(file) => { return beforeUpload(file, ['png', 'jpg']) }}
-                                //     >
-                                //         {fileLists.length ? null : <span>
-                                //             <Icon type="upload" /> 选择背景图
-                                //         </span>}
-                                //     </Upload>
-                                //     {/* {!initImg ? null : <img src={initImg} />} */}
-                                // </div>
 
                             )}
                         </FormItem>

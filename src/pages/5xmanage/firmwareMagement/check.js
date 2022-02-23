@@ -20,7 +20,7 @@ function PanelMn({ form, handleOk, handleCancel, checkVisible, actionData }) {
         unlkey = 0
     }, [])
     const getDom = () => {
-        getFieldDecorator('keys', { initialValue: [] });
+        getFieldDecorator('keys', { initialValue: [{unlkey:0,type:1}] });
         const keys = getFieldValue('keys');
         const formItems = keys.map((k, index) => (
             <div key={k.unlkey} className='firm-item'>

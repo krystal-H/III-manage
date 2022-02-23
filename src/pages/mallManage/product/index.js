@@ -125,8 +125,8 @@ function FirmwareMagement({ form, match, history }) {
         },
         {
             title: '产品价格',
-            dataIndex: 'commodityPrice',
-            key: 'commodityPrice',
+            dataIndex: 'commodityRealPrice',
+            key: 'commodityRealPrice',
             render: (text) => <span title={text}>{text}</span>
         },
         {
@@ -144,7 +144,7 @@ function FirmwareMagement({ form, match, history }) {
             title: '状态',
             dataIndex: 'status',
             key: 'status',
-            render: (text) => <span>{getStatus(text)}</span>
+            render: (text) => <span title={getStatus(text)}>{getStatus(text)}</span>
         },
         {
             title: '操作',
