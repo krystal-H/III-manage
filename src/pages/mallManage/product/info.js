@@ -111,12 +111,15 @@ function Addmodal({ form, history }) {
                 val.status = originData.status
                 val.id = originData.id
             }
-            if (val.commodityClassifyId) {
-                let objGroup = optionList.find(item => {
-                    return item.id == val.commodityClassifyId
-                })
-                val.commodityClassifyName = objGroup.classifyName
+            let objGroup = optionList.find(item => {
+                return item.id == val.commodityClassifyId
+            })
+            if (!objGroup) {
+                setFieldsValue({ commodityClassifyId: '' })
+                message.info('商城分类未选择')
+                return
             }
+            val.commodityClassifyName = objGroup.classifyName
             publicCommodityApi(val).then(res => {
                 if (res.data.code == 0) {
                     message.success('上传商品成功')
@@ -337,7 +340,7 @@ function ProductInfo({ id }) {
     }
     const downFile = (item) => {
         const a = document.createElement('a')
-        const url = item.replace('http','https') // 完整的url则直接使用
+        const url = item.replace('http', 'https') // 完整的url则直接使用
         // 这里是将url转成blob地址，
         fetch(url).then(res => res.blob()).then(blob => { // 将链接地址字符内容转变成blob地址
             a.href = URL.createObjectURL(blob)
