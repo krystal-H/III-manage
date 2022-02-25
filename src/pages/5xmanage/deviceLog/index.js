@@ -103,6 +103,9 @@ function DeviceLog({ form }) {
       if (res.data.code === 0 && res.data.data) {
         setDataSource(addKeyToTableData(res.data.data.list))
         setTotalRows(res.data.data.pager.totalRows)
+      } else {
+        setDataSource([])
+        setTotalRows(0)
       }
     }).finally(() => { setLoading(false) })
   }
