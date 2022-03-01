@@ -21,6 +21,16 @@ const route = {
             component: ClassifyMn,
         },
         {
+            name: '订单管理',
+            path: '/mall/orderMn',
+            component: ClassifyMn,
+        },
+        {
+            name: '用户管理',
+            path: '/mall/userMn',
+            component: ClassifyMn,
+        },
+        {
             name: '商品信息',
             path: '/mall/productInfo',
             component: ProductMnInfo,
