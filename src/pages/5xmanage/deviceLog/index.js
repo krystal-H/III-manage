@@ -82,8 +82,8 @@ function DeviceLog({ form }) {
 
   const onChange = (date, dateString) => {
     if (dateString && dateString.length) {
-      setStartTime((new Date(dateString[0])).getTime()) // 开始时间  选择时间的0点
-      setEndTime((new Date(dateString[1])).getTime() + 24 * 60 * 60 * 1000) // 结束时间为选择时间次日0点
+      setStartTime((new Date(dateString[0])).getTime()) // 开始时间
+      setEndTime((new Date(dateString[1])).getTime()) // 结束时间
     }
   }
 
@@ -191,7 +191,7 @@ function DeviceLog({ form }) {
             <Form.Item label="时间">
               {
                 getFieldDecorator('time')(
-                  <RangePicker onChange={onChange} format={dateFormat} disabledDate={disabledDate} />
+                  <RangePicker onChange={onChange} showTime disabledDate={disabledDate} />
                 )
               }
             </Form.Item>
