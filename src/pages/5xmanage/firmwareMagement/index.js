@@ -109,7 +109,9 @@ function PanelMn({ form }) {
             }
         }
     ]
-    const openDetail=()=>{
+    //查看审核详情
+    const openDetail=(data)=>{
+        setActionData(data)
         setDetailVisible(true)
     }
     const closeDetail=()=>{
@@ -238,7 +240,7 @@ function PanelMn({ form }) {
                 infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData} />
             }
             {
-                detailVisible && <DetailModal infoVisible={detailVisible} handleCancel={closeDetail}/>
+                detailVisible && <DetailModal infoVisible={detailVisible} handleCancel={closeDetail} actionData={actionData}/>
             }
         </div>
     )

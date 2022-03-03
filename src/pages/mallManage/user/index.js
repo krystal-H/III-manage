@@ -25,6 +25,7 @@ function FirmwareMagement({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
+        return
         setLoading(true)
         getList(pager).then(res => {
             if (res.data.code == 0) {
@@ -62,19 +63,19 @@ function FirmwareMagement({ form }) {
             key: 'key',
         },
         {
-            title: '分类名称',
+            title: '账户名',
             dataIndex: 'classifyName',
             key: 'classifyName',
             render: (text) => <span title={text}>{text}</span>
         },
         {
-            title: '排序值',
+            title: '身份状态',
             dataIndex: 'classifyValue',
             key: 'classifyValue',
             render: (text) => <span title={text}>{text}</span>
         },
         {
-            title: '编辑时间',
+            title: '注册时间',
             dataIndex: 'updateTime',
             key: 'updateTime',
             render(updateTime) {
@@ -87,8 +88,8 @@ function FirmwareMagement({ form }) {
             width: 200,
             render(_, row) {
                 return <span>
-                    <a style={{ marginRight: '10px' }} onClick={() => { editData(row) }}>编辑</a>
-                    <a onClick={() => { delDataFn(row) }}>删除</a>
+                    <a style={{ marginRight: '10px' }} onClick={() => { editData(row) }}>解除锁定解除锁定</a>
+                    <a onClick={() => { delDataFn(row) }}>禁用账户</a>
                 </span>
             }
         }

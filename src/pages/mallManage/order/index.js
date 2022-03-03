@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
-import { getList,delData,addDataApi } from '../../../apis/mallClassify'
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message, Table } from 'antd';
+import { getList, delData, addDataApi } from '../../../apis/mallClassify'
 import { DateTool } from '../../../util/utils';
 import './index.scss'
 const FormItem = Form.Item
+const { Search } = Input;
 // const TitleOption = TitleTab.Option
 // const { RangePicker } = DatePicker;
 
@@ -11,6 +12,7 @@ function FirmwareMagement({ form }) {
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const { getFieldDecorator, validateFields, getFieldsValue } = form;
     const [totalRows, setTotalRows] = useState(0)
+    const [searchData, setsearchData] = useState('')  //搜索
     const [dataSource, setdataSource] = useState([])
     const [addVis, setAddVis] = useState(false)
     const [modelType, setModelType] = useState('add')
@@ -25,11 +27,12 @@ function FirmwareMagement({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
+        return
         setLoading(true)
         getList(pager).then(res => {
             if (res.data.code == 0) {
-                res.data.data.records.forEach((item,index)=>{
-                    item.key=index+1
+                res.data.data.records.forEach((item, index) => {
+                    item.key = index + 1
                 })
                 setdataSource(res.data.data.records)
                 setTotalRows(res.data.data.total)
@@ -62,24 +65,45 @@ function FirmwareMagement({ form }) {
             key: 'key',
         },
         {
-            title: '分类名称',
+            title: '订单号',
             dataIndex: 'classifyName',
             key: 'classifyName',
             render: (text) => <span title={text}>{text}</span>
         },
         {
-            title: '排序值',
+            title: '用户',
             dataIndex: 'classifyValue',
             key: 'classifyValue',
             render: (text) => <span title={text}>{text}</span>
         },
         {
-            title: '编辑时间',
+            title: '订单金额',
             dataIndex: 'updateTime',
             key: 'updateTime',
-            render(updateTime) {
-                return updateTime && DateTool.utcToDev(updateTime);
-            }
+        },
+        {
+            title: '实付金额',
+            dataIndex: 'classifyValue',
+            key: 'classifyValue',
+            render: (text) => <span title={text}>{text}</span>
+        },
+        {
+            title: '支付方式',
+            dataIndex: 'classifyValue',
+            key: 'classifyValue',
+            render: (text) => <span title={text}>{text}</span>
+        },
+        {
+            title: '订单状态',
+            dataIndex: 'classifyValue',
+            key: 'classifyValue',
+            render: (text) => <span title={text}>{text}</span>
+        },
+        {
+            title: '创建时间',
+            dataIndex: 'classifyValue',
+            key: 'classifyValue',
+            render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '操作',
@@ -109,8 +133,8 @@ function FirmwareMagement({ form }) {
     const handleOk = () => {
         validateFields().then(val => {
             let params = { ...val }
-            if(modelType === 'edit'){
-                params.id=actionData.id
+            if (modelType === 'edit') {
+                params.id = actionData.id
             }
             addDataApi(params).then(res => {
                 if (res.data.code == 0) {
@@ -141,9 +165,17 @@ function FirmwareMagement({ form }) {
 
     }
     return (
-        <div className="classify-page">
+        <div className="mall-order-page">
             <Card>
-                <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                <div className='order-top'>
+                    <Search
+                        enterButton="搜索"
+                        value={searchData}
+                        onChange={(e) => { setsearchData(e.target.value) }}
+                        onSearch={getTableData}
+                        allowClear
+                    />
+                </div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
                     pagination={{
@@ -166,16 +198,20 @@ function FirmwareMagement({ form }) {
                 >
                     <Form {...formItemLayout} >
                         <FormItem label="分类名称">
-                            {getFieldDecorator('classifyName', { initialValue:modelType === 'add' ? '' : actionData.classifyName
-                            ,rules: [{ required: true, message: '请输入分类名称' }] })(
+                            {getFieldDecorator('classifyName', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyName
+                                , rules: [{ required: true, message: '请输入分类名称' }]
+                            })(
                                 <Input  ></Input>
                             )}
                         </FormItem>
                         <FormItem label="排序值">
-                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue,getValueFromEvent: (e) => {
+                            {getFieldDecorator('classifyValue', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyValue, getValueFromEvent: (e) => {
                                     const val = e.target.value;
                                     return val.replace(/[^\d]/g, '');
-                                }})(
+                                }
+                            })(
                                 <Input  ></Input>
                             )}
                         </FormItem>

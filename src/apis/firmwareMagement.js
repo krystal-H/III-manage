@@ -27,3 +27,12 @@ export const lookData = (data) => {
         headers: {}
     })
 };
+//查看已审核的信息
+export const lookCheckData = (data) => {
+    return axios.request({
+        url: '/manage-open/firmware/check/details',
+        method: 'post',
+        data,
+        headers: {}
+    })
+};
