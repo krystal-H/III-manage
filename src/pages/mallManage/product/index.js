@@ -127,7 +127,7 @@ function FirmwareMagement({ form, match, history }) {
             title: '产品价格',
             dataIndex: 'commodityRealPrice',
             key: 'commodityRealPrice',
-            render: (text) => <span title={text}>{text}</span>
+            render: (text) => <span title={text / 100}>{text / 100}</span>
         },
         {
             title: '库存',
@@ -155,14 +155,14 @@ function FirmwareMagement({ form, match, history }) {
                 {/* <a onClick={() => { onPreView(row) }} style={{marginRight:'10px'}}>预览</a> */}
                 {
                     [0, 3].indexOf(row.status) == -1 && <>
-                        <a onClick={() => { goDetail(row,false) }} style={{ marginRight: '10px' }}>查看</a>
+                        <a onClick={() => { goDetail(row, false) }} style={{ marginRight: '10px' }}>查看</a>
                         <a onClick={() => { offData(row.id, 0) }} style={{ marginRight: '10px' }}>下架商品</a>
                         <a onClick={() => { addSupply(row) }}>补充库存</a>
                     </>
                 }
                 {
                     [0, 3].indexOf(row.status) != -1 && <>
-                        <a onClick={() => { goDetail(row,true) }} style={{ marginRight: '10px' }}>编辑</a>
+                        <a onClick={() => { goDetail(row, true) }} style={{ marginRight: '10px' }}>编辑</a>
                         <a onClick={() => { offData(row.id, 1) }}>上架商品</a>
                     </>
                 }
@@ -171,7 +171,7 @@ function FirmwareMagement({ form, match, history }) {
         }
     ]
     //查看详情
-    const goDetail = (row,isEdit) => {
+    const goDetail = (row, isEdit) => {
         history.push(`/mall/productInfo?id=${row.id}&&isEdit=${isEdit}`);
     }
     //预览

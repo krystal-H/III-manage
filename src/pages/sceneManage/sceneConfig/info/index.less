@@ -72,11 +72,13 @@
           border-top: none;
           border-left: none;
           cursor: pointer;
-
+          // overflow: hidden;
           .del-title-btn {
             position: absolute;
-            top: 0;
-            right: 0;
+            top: -1px;
+            right: -1px;
+            width: 18px;
+            height: 18px;
           }
 
           span {
@@ -140,8 +142,15 @@
         border: 1px solid #999;
         margin-bottom: 20px;
         display: flex;
+        overflow: hidden;
 
-        .del-btn {}
+        .del-btn {
+          width: 18px;
+          height: 18px;
+          position: relative;
+          top: -1px;
+            right: -1px;
+        }
 
         .left {
           width: 80px;
@@ -152,7 +161,7 @@
 
           img {
             // border-radius: 50%;
-            border: 1px solid #333;
+            // border: 1px solid #333;
             height: 40px;
             width: 40px;
             object-fit: cover;
@@ -239,8 +248,8 @@
         padding: 10px 0;
 
         img {
-          border-radius: 50%;
-          border: 1px solid #333;
+          // border-radius: 50%;
+          // border: 1px solid #333;
           height: 40px;
           width: 40px;
           margin-right: 4px;

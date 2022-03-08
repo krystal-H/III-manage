@@ -14,6 +14,7 @@ import orImg from '../../../../assets/images/ruleImage/or.png';
 import andImg from '../../../../assets/images/ruleImage/and.png';
 import pmImg from '../../../../assets/images/ruleImage/pm.png';
 import defaultImg from '../../../../assets/images/ruleImage/default.png';
+import closeImg from '../../../../assets/images/ruleImage/close.png';
 const { TabPane } = Tabs;
 import { Context } from "./index";
 export default function MiddleCom() {
@@ -113,7 +114,8 @@ export default function MiddleCom() {
                         {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
                 </div>
-                <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} />
+                {/* <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} /> */}
+                <img src={closeImg} className='del-btn' onClick={(e) => { delFactor(index, e) }}/>
             </div>
         })
 
@@ -138,7 +140,8 @@ export default function MiddleCom() {
                     <div>逻辑符：</div>
                     <div>{item.title}</div>
                 </div>
-                <Icon type="close" className='del-btn' onClick={(e) => { delLogic(e) }} />
+                {/* <Icon type="close" className='del-btn' onClick={(e) => { delLogic(e) }} /> */}
+                <img src={closeImg} className='del-btn' onClick={(e) => { delLogic(e) }} />
             </div>
         })
     }
@@ -178,7 +181,8 @@ export default function MiddleCom() {
                         {text}
                     </div>
                 </div>
-                <Icon type="close" className='del-btn' onClick={(e) => { delAction(item, index, e) }} />
+                {/* <Icon type="close" className='del-btn' onClick={(e) => { delAction(item, index, e) }} /> */}
+                <img src={closeImg} className='del-btn' onClick={(e) => { delAction(item, index, e) }} />
             </div>
         })
     }
@@ -439,7 +443,8 @@ export default function MiddleCom() {
                                 return <div className={[state.currentRule === item.ruleId ? 'tab-item-active' : '', 'tab-item'].join(' ')}
                                     key={item.ruleId} onClick={(e) => { changeCurrent(item.ruleId, e) }}>
                                     <span title={item.ruleName}>{item.ruleName}</span>
-                                    <Icon type="close" className='del-title-btn' onClick={(e) => { delTab(item.ruleId, e) }} />
+                                    {/* <Icon type="close" className='del-title-btn' onClick={(e) => { delTab(item.ruleId, e) }} /> */}
+                                    <img src={closeImg} className='del-title-btn' onClick={(e) => { delTab(item.ruleId, e) }} />
                                 </div>
                             })
                         }

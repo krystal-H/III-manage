@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
-import { getList,delData,addDataApi } from '../../../apis/mallClassify'
+import { getList,changeStatus } from '../../../apis/mallUser'
 import { DateTool } from '../../../util/utils';
 import './index.scss'
 const FormItem = Form.Item
@@ -25,9 +25,9 @@ function FirmwareMagement({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        return
+        // return
         setLoading(true)
-        getList(pager).then(res => {
+        getList({pager}).then(res => {
             if (res.data.code == 0) {
                 res.data.data.records.forEach((item,index)=>{
                     item.key=index+1
@@ -144,7 +144,7 @@ function FirmwareMagement({ form }) {
     return (
         <div className="classify-page">
             <Card>
-                <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                {/* <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div> */}
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
                     pagination={{

@@ -64,6 +64,8 @@ function Addmodal({ form, history }) {
                         obj[item] = res.data.data[item]
                     }
                 })
+                obj.commodityPrice = obj.commodityPrice / 100
+                obj.commodityRealPrice = obj.commodityRealPrice / 100
                 setFieldsValue(obj)
                 if (obj.commodityPicture) {
                     $el1.current.setFileList(obj.commodityPicture)
@@ -106,6 +108,8 @@ function Addmodal({ form, history }) {
             if (val.commodityOrderValue) {
                 val.commodityOrderValue = Number(val.commodityOrderValue)
             }
+            val.commodityPrice = val.commodityPrice * 100
+            val.commodityRealPrice = val.commodityRealPrice * 100
             val.status = 3
             if (Object.keys(originData).length) {
                 val.status = originData.status
@@ -396,11 +400,11 @@ function ProductInfo({ id }) {
             </div>
             <div className='item'>
                 <div className='item-label'>商品价格：</div>
-                <div className='item-text'>{dataInfo.commodityPrice}</div>
+                <div className='item-text'>{dataInfo.commodityPrice/100}</div>
             </div>
             <div className='item'>
                 <div className='item-label'>实时价格：</div>
-                <div className='item-text'>{dataInfo.commodityRealPrice}</div>
+                <div className='item-text'>{dataInfo.commodityRealPrice/100}</div>
             </div>
         </div>
         <div className='item-wrap'>
