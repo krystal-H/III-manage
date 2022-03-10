@@ -240,6 +240,7 @@ function FirmwareMagement({ form, match, history }) {
                 <div className='mall-product-top'><Button type='primary' onClick={openAdd}>新增商品</Button></div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
+                    bordered
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,

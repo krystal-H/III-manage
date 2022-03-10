@@ -3,4 +3,76 @@
         margin-bottom: 20px;
         width: 500px;
     }
+    .mall-order-table-action{
+        color: #1890ff;
+        font-size: 12px;
+        div{
+            cursor: pointer;
+        }
+    }
+    .mall-order-table{
+        text-align: left;
+    }
+}
+.full-express-modal{
+    padding: 0 50px;
+    .content-item{
+        display: flex;
+        >div{
+            display: flex;
+            
+        }
+        .ant-form-item{
+            display: flex;
+        }
+    }
+}
+.mall-order-moadl{
+    .content{
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        margin-bottom: 20px;
+        img{
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .name{
+            font-size: 20px;
+            font-weight: 600;
+            color: #333333;
+            margin-right: 30px;
+        }
+        .code{
+            margin-right: 30px;
+        }
+        .price{
+            font-weight: 400;
+            font-style: normal;
+            font-size: 16px;
+        }
+    }
+}
+.mall-user-moadl{
+    height: 100px;
+    line-height: 100px;
+    color: #333;
+    font-size: 16px;
+    padding-left: 20px;
+    margin-bottom: 20px;
+   
+}
+.mall-order-modal{
+    .ant-modal-header{
+        border: none;
+    }
+    .ant-modal-body{
+        min-height: 100px;
+    }
+    .ant-modal-title{
+        font-size: 20px;
+        padding-top: 20px;
+    }
 }

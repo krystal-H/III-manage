@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
-import { getList,changeStatus } from '../../../apis/mallUser'
+import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message, Table } from 'antd';
+import { getList, changeStatus } from '../../../apis/mallUser'
 import { DateTool } from '../../../util/utils';
 import './index.scss'
 const FormItem = Form.Item
@@ -27,10 +27,10 @@ function FirmwareMagement({ form }) {
     const getTableData = () => {
         // return
         setLoading(true)
-        getList({pager}).then(res => {
+        getList({ pager }).then(res => {
             if (res.data.code == 0) {
-                res.data.data.records.forEach((item,index)=>{
-                    item.key=index+1
+                res.data.data.records.forEach((item, index) => {
+                    item.key = index + 1
                 })
                 setdataSource(res.data.data.records)
                 setTotalRows(res.data.data.total)
@@ -39,16 +39,20 @@ function FirmwareMagement({ form }) {
     }
 
     //删除
-    const delDataFn = (row) => {
+    const changeUser = (row) => {
+        let params = {
+            status: row.status ? 0 : 1,
+            userId: row.userId
+        }
         Modal.confirm({
             title: '确认',
             okText: '确定',
             cancelText: '取消',
-            content: '是否删除此数据',
+            content: `是否${row.status ? '禁用账户' : '解除锁定'}`,
             onOk: () => {
-                delData(row.id).then(res => {
+                changeStatus(params).then(res => {
                     if (res.data.code == 0) {
-                        message.success('删除成功');
+                        message.success(`${row.status ? '禁用账户' : '解除锁定'}成功`);
                         getTableData()
                     }
                 })
@@ -64,22 +68,22 @@ function FirmwareMagement({ form }) {
         },
         {
             title: '账户名',
-            dataIndex: 'classifyName',
-            key: 'classifyName',
+            dataIndex: 'userName',
+            key: 'userName',
             render: (text) => <span title={text}>{text}</span>
         },
         {
             title: '身份状态',
-            dataIndex: 'classifyValue',
-            key: 'classifyValue',
-            render: (text) => <span title={text}>{text}</span>
+            dataIndex: 'status',
+            key: 'status',
+            render: (text) => <span title={text ? '正常' : '禁用'}>{text ? '正常' : '禁用'}</span>
         },
         {
             title: '注册时间',
-            dataIndex: 'updateTime',
-            key: 'updateTime',
-            render(updateTime) {
-                return updateTime && DateTool.utcToDev(updateTime);
+            dataIndex: 'createTime',
+            key: 'createTime',
+            render(createTime) {
+                return createTime && DateTool.utcToDev(createTime);
             }
         },
         {
@@ -87,45 +91,11 @@ function FirmwareMagement({ form }) {
             key: 'action',
             width: 200,
             render(_, row) {
-                return <span>
-                    <a style={{ marginRight: '10px' }} onClick={() => { editData(row) }}>解除锁定解除锁定</a>
-                    <a onClick={() => { delDataFn(row) }}>禁用账户</a>
-                </span>
+                return <a onClick={() => { changeUser(row) }}>{row.status ? '禁用账户' : '解除锁定'}</a>
             }
         }
     ]
 
-    //编辑
-    const editData = (row) => {
-        setModelType('edit')
-        setActionData(row)
-        setAddVis(true)
-    }
-    //新增
-    const addData = () => {
-        setModelType('add')
-        setAddVis(true)
-    }
-    //提交
-    const handleOk = () => {
-        validateFields().then(val => {
-            let params = { ...val }
-            if(modelType === 'edit'){
-                params.id=actionData.id
-            }
-            addDataApi(params).then(res => {
-                if (res.data.code == 0) {
-                    message.success('新增成功');
-                    getTableData()
-                    setAddVis(false)
-                }
-            })
-        })
-
-    }
-    const handleCancel = () => {
-        setAddVis(false)
-    }
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
         if (pageRows === pager.pageRows) {
@@ -145,8 +115,9 @@ function FirmwareMagement({ form }) {
         <div className="classify-page">
             <Card>
                 {/* <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div> */}
-                <Table rowKey={"id"} columns={column} dataSource={dataSource}
+                <Table rowKey={"userId"} columns={column} dataSource={dataSource}
                     loading={loading}
+                    bordered
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,
@@ -158,31 +129,6 @@ function FirmwareMagement({ form }) {
                     }}
                 />
             </Card>
-            {
-                addVis && <Modal
-                    title={modelType === 'add' ? '新增分类' : '编辑分类'}
-                    visible={addVis}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
-                >
-                    <Form {...formItemLayout} >
-                        <FormItem label="分类名称">
-                            {getFieldDecorator('classifyName', { initialValue:modelType === 'add' ? '' : actionData.classifyName
-                            ,rules: [{ required: true, message: '请输入分类名称' }] })(
-                                <Input  ></Input>
-                            )}
-                        </FormItem>
-                        <FormItem label="排序值">
-                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue,getValueFromEvent: (e) => {
-                                    const val = e.target.value;
-                                    return val.replace(/[^\d]/g, '');
-                                }})(
-                                <Input  ></Input>
-                            )}
-                        </FormItem>
-                    </Form>
-                </Modal>
-            }
         </div>
     )
 }

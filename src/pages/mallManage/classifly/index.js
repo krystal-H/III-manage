@@ -146,6 +146,7 @@ function FirmwareMagement({ form }) {
                 <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
+                    bordered
                     pagination={{
                         defaultCurrent: 1,
                         current: pager.pageIndex,
