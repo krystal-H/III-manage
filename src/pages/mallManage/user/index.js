@@ -65,6 +65,7 @@ function FirmwareMagement({ form }) {
             title: '编号',
             dataIndex: 'key',
             key: 'key',
+            width: 70,
         },
         {
             title: '账户名',

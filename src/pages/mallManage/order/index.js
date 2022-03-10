@@ -47,6 +47,7 @@ function FirmwareMagement({ form }) {
             title: '编号',
             dataIndex: 'key',
             key: 'key',
+            width: 70,
         },
         {
             title: '订单号',
