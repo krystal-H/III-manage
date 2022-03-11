@@ -40,6 +40,7 @@ function Expressmodal({ form, infoVis, handleCancel, handleOk,actionData }) {
                 onOk={sundata}
                 onCancel={handleCancel}
                 width={'700px'}
+                wrapClassName='mall-order-modal'
             >
                 <div className='full-express-modal'>
                     <Form >

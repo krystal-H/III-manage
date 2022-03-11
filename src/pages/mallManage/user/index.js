@@ -69,8 +69,8 @@ function FirmwareMagement({ form }) {
         },
         {
             title: '账户名',
-            dataIndex: 'userName',
-            key: 'userName',
+            dataIndex: 'phone',
+            key: 'phone',
             render: (text) => <span title={text}>{text}</span>
         },
         {
