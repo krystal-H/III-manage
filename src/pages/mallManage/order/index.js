@@ -61,10 +61,10 @@ function FirmwareMagement({ form }) {
             key: 'a',
             render: (_, row) => {
                 let phone=row.phone 
-                if(phone){
-                    phone=phone.split('')
-                    phone.splice(3,4,'****').join('')
-                }
+                // if(phone){
+                //     phone=phone.split('')
+                //     phone.splice(3,4,'****').join('')
+                // }
                 return <div >
                     <div>{row.receiverName}</div>
                     <div title={row.phone}>{phone}</div>
@@ -75,20 +75,20 @@ function FirmwareMagement({ form }) {
             title: '订单金额',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
-            render: (text) => <span title={text}>{text}</span>
+            render: (text) => <span title={text/100}>{text/100}</span>
         },
         {
             title: '实付金额',
             dataIndex: 'finalPrice',
             key: 'finalPrice',
-            render: (text) => <span title={text}>{text}</span>
+            render: (text) => <span title={text/100}>{text/100}</span>
         },
         {
             title: '支付方式',
             dataIndex: 'payMode',
             key: 'payMode',
             render: (text) => {
-                let arr = ['离线', '微信', '支付宝']
+                let arr = ['线下支付', '微信', '支付宝']
                 return <span title={arr[text]}>{arr[text]}</span>
             }
         },
@@ -114,10 +114,11 @@ function FirmwareMagement({ form }) {
             key: 'action',
             width: 150,
             render(_, row) {
+                let arr=[1,2]
                 return <div className='mall-order-table-action'>
                     <div style={{ marginRight: '10px' }} onClick={() => { openOrder(row) }}>查看订单信息</div>
                     <div style={{ marginRight: '10px' }} onClick={() => { openReceive(row) }}>查看收件人信息</div>
-                    <div onClick={() => { openExpress(row) }}>填写快递信息</div>
+                    {arr.includes(row.status) ? <div onClick={() => { openExpress(row) }}>填写快递信息</div> : ''}
                 </div>
             }
         }
@@ -216,7 +217,7 @@ function OrderInfo({ actionData }) {
                     <img src={item.commodityPicture.split(',')[0]} />
                     <div className='name'>{item.name}</div>
                     <div className='code'>{item.commodityModel}</div>
-                    <div className='price'>￥{item.quantity}*{item.unitPrice}</div>
+                    <div className='price'>￥{item.quantity}*{item.unitPrice/100}</div>
                 </div>
             })
         }
