@@ -84,7 +84,7 @@ function FirmwareMagement({ form }) {
             dataIndex: 'createTime',
             key: 'createTime',
             render(createTime) {
-                return createTime 
+                return createTime && DateTool.utcToDev(createTime);
             }
         },
         {
