@@ -41,18 +41,18 @@ function FirmwareMagement({ form }) {
     //删除
     const changeUser = (row) => {
         let params = {
-            status: row.status ? 0 : 1,
+            status: row.status == 1 ? 2 : 1,
             userId: row.userId
         }
         Modal.confirm({
             title: '确认',
             okText: '确定',
             cancelText: '取消',
-            content: `是否${row.status ? '禁用账户' : '解除锁定'}`,
+            content: `是否${row.status == 1 ? '禁用账户' : '解除锁定'}`,
             onOk: () => {
                 changeStatus(params).then(res => {
                     if (res.data.code == 0) {
-                        message.success(`${row.status ? '禁用账户' : '解除锁定'}成功`);
+                        message.success(`${row.status == 1 ? '禁用账户' : '解除锁定'}成功`);
                         getTableData()
                     }
                 })
@@ -77,7 +77,7 @@ function FirmwareMagement({ form }) {
             title: '身份状态',
             dataIndex: 'status',
             key: 'status',
-            render: (text) => <span title={text ? '正常' : '禁用'}>{text ? '正常' : '禁用'}</span>
+            render: (text) => <span title={text == 1 ? '正常' : '禁用'}>{text == 1 ? '正常' : '禁用'}</span>
         },
         {
             title: '注册时间',
@@ -92,7 +92,7 @@ function FirmwareMagement({ form }) {
             key: 'action',
             width: 200,
             render(_, row) {
-                return <a onClick={() => { changeUser(row) }}>{row.status ? '禁用账户' : '解除锁定'}</a>
+                return <a onClick={() => { changeUser(row) }}>{row.status == 1 ? '禁用账户' : '解除锁定'}</a>
             }
         }
     ]

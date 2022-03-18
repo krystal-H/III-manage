@@ -195,7 +195,8 @@ function FirmwareMagement({ form, match, history }) {
             let params = {
                 id: actionData.id,
                 currentStock: Number(actionData.currentStock) + Number(val.classifyValue),
-                maxStock: Number(actionData.currentStock) + Number(val.classifyValue) + Number(actionData.selledStock)
+                maxStock: Number(actionData.currentStock) + Number(val.classifyValue) + Number(actionData.selledStock),
+                // increaseVal:Number(val.classifyValue)
             }
             editStock(params).then(res => {
                 if (res.data.code == 0) {
