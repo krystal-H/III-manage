@@ -16,6 +16,7 @@ class List extends Component {
     this.state = {
       userSceneId: undefined,
       userId:undefined,
+      sceneName:undefined,
       pageIndex:1,
       list:[],
       pager:{},
@@ -43,7 +44,8 @@ class List extends Component {
   onReset = ()=>{
     this.setState({
       userSceneId:undefined,
-      userId:undefined
+      userId:undefined,
+      sceneName:undefined,
     }, () => {
       this.getList();
     })
@@ -56,13 +58,14 @@ getList=(index)=>{
   if(index){
     this.setState({pageIndex:index})
   }
-  let {pageIndex,userSceneId,userId} = this.state;
+  let {pageIndex,userSceneId,userId,sceneName} = this.state;
   let param = {
       paged:true,
       pageIndex:index||pageIndex,
       pageRows:10,
       userSceneId,
       userId,
+      sceneName,
   }
   axios.Post('expert/combine/userScene/list/v2.0',param).then( ({data={}}) => {
     let res = data.data || {};
@@ -94,7 +97,7 @@ alarmOk=()=>{
 
 
   render() {
-    const { userId, userSceneId, list, pager, pageIndex, alarmId,dingToken } = this.state;
+    const { userId, userSceneId,sceneName, list, pager, pageIndex, alarmId,dingToken } = this.state;
     
     return (
       <div>
@@ -107,6 +110,9 @@ alarmOk=()=>{
             <span className="labeknam">场景ID：</span>
             <Input value={userSceneId} placeholder="请输入场景ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("userSceneId",e.target.value || undefined)}}/>
             
+            <span className="labeknam">场景名称：</span>
+            <Input value={sceneName} placeholder="请输入场景名称" maxLength={20} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("sceneName",e.target.value || undefined)}}/>
+
             <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
 
