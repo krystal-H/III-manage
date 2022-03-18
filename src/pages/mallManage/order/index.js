@@ -59,16 +59,17 @@ function FirmwareMagement({ form }) {
             title: '用户',
             dataIndex: 'a',
             key: 'a',
+            width:'200px',
             render: (_, row) => {
                 let phone=row.phone 
                 // if(phone){
                 //     phone=phone.split('')
                 //     phone.splice(3,4,'****').join('')
                 // }
-                return <div >
-                    <div>{row.receiverName}</div>
-                    <div title={row.phone}>{phone}</div>
-                </div>
+                return <span >
+                   <span title={row.receiverName}>{row.receiverName}</span><br/>
+                   <span title={row.phone}> {phone}</span>
+                </span>
             }
         },
         {
