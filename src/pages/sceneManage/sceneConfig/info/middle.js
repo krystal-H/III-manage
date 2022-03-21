@@ -20,7 +20,10 @@ import { Context } from "./index";
 export default function MiddleCom() {
     const { state, dispatch, wholeScenceId } = useContext(Context);
     const [rightData, setRightData] = useState([])
-    const [middleData, setMiddleData] = useState([])
+    const [middleData, setMiddleData] = useState([{
+        title: 'AND',
+        key: '2-and',
+    }])
     const [leftData, setLeftData] = useState([])
     const [subSceneIndex, setSubSceneIndex] = useState(0)
     const [loadingPage, setLoadingPage] = useState(false)
@@ -141,15 +144,15 @@ export default function MiddleCom() {
                     <div>{item.title}</div>
                 </div>
                 {/* <Icon type="close" className='del-btn' onClick={(e) => { delLogic(e) }} /> */}
-                <img src={closeImg} className='del-btn' onClick={(e) => { delLogic(e) }} />
+                {/* <img src={closeImg} className='del-btn' onClick={(e) => { delLogic(e) }} /> */}
             </div>
         })
     }
-    //删除逻辑
-    const delLogic = e => {
-        e.stopPropagation()
-        setMiddleData([])
-    }
+    // //删除逻辑
+    // const delLogic = e => {
+    //     e.stopPropagation()
+    //     setMiddleData([])
+    // }
     //渲染右边
     const renderDomR = () => {
         return rightData.map((item, index) => {
@@ -215,7 +218,7 @@ export default function MiddleCom() {
     }
     useEffect(() => {
         setRightData([])
-        setMiddleData([])
+        // setMiddleData([])
         setLeftData([])
         if (state.currentRule > 0) {
             let value
@@ -343,6 +346,15 @@ export default function MiddleCom() {
                     notification.info({
                         message: '提示',
                         description: '请选择逻辑符',
+                    });
+                    return
+                }
+            }
+            if(leftData.length ===1){
+                if (middleData[0].title == 'OR') {
+                    notification.info({
+                        message: '提示',
+                        description: '触发条件只有一个时，逻辑符只能是且',
                     });
                     return
                 }

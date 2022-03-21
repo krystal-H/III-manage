@@ -64,7 +64,6 @@ const myDemo = (props) => {
             }
         })
         setTreeData(arr)
-        console.log(arr, '过滤数据===')
     }
     const getMenu = () => {
         getMenuList2().then(res => {

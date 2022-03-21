@@ -8,7 +8,7 @@ const OrderMn = asyncComponent(() => import('../pages/mallManage/order'))
 const ProductMnInfo = asyncComponent(() => import('../pages/mallManage/product/info'))
 const route = {
     icon: "apartment",
-    name: '商城管理',
+    name: '产品中心',
     path: '/mall',
     redirect: '/mall/productMn',
     routes: [

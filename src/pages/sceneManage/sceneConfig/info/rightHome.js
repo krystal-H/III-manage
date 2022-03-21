@@ -105,7 +105,7 @@ function RightComH({ form }) {
                     <Form colon={false}>
                         <FormItem label="场景名称">
                             {getFieldDecorator('sceneName', { rules: [{ required: true, message: '请输入场景名称' }] })(
-                                <Input style={{ width: '100%' }} ></Input>
+                                <Input style={{ width: '100%' }} placeholder='未命名规则'></Input>
                             )}
                         </FormItem>
                         <FormItem label="场景描述">
