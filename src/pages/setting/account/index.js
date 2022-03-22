@@ -27,7 +27,7 @@ function FirmwareMagement({ form }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        let params = {}
+        let params = {accountName:''}
         if (getFieldsValue().accountName && getFieldsValue().accountName.trim()) {
             params.accountName = getFieldsValue().accountName.trim()
         }
