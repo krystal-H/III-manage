@@ -12,7 +12,7 @@ export const getList = (data = {}) => {
     })
 };
 // 新增
-export const addAccount = (id) => {
+export const addAccount = (data) => {
     return axios.request({
         url: '/manage-open/manufacturer/createManufacturerAccount',
         method: 'post',

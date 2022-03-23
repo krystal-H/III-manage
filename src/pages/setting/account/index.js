@@ -40,51 +40,6 @@ function FirmwareMagement({ form }) {
             }
         }).finally(() => { setLoading(false) })
     }
-    //状态
-    const getStatus = (val = 0) => {
-        let arr = ['待发布', '已上线', '已下线']
-        return arr[val]
-    }
-
-    //上下线
-    const offData = (id, status) => {
-        let tip = status == 1 ? '是否上线' : '是否下线'
-        Modal.confirm({
-            title: '确认',
-            okText: '确定',
-            cancelText: '取消',
-            content: tip,
-            onOk: () => {
-                relData({ id, status }).then(res => {
-                    let text = status == 1 ? '上线成功' : '下线成功'
-                    if (res.data.code == 0) {
-                        message.success(text);
-                        getTableData()
-                    }
-
-                })
-            }
-        })
-
-    }
-    //删除
-    const delDatafn = (id) => {
-        Modal.confirm({
-            title: '确认',
-            okText: '确定',
-            cancelText: '取消',
-            content: '是否删除此banner',
-            onOk: () => {
-                delData({ id }).then(res => {
-                    if (res.data.code == 0) {
-                        message.success('删除成功');
-                        getTableData()
-                    }
-                })
-            }
-        })
-
-    }
     const column = [
         {
             title: '账户名',
@@ -93,34 +48,28 @@ function FirmwareMagement({ form }) {
         },
         {
             title: '厂商名称',
-            dataIndex: 'uploadTime',
-            key: 'uploadTime',
-            render(uploadTime) {
-                return uploadTime && DateTool.utcToDev(uploadTime);
-            }
+            dataIndex: 'manufacturerName',
+            key: 'manufacturerName'
         },
         {
             title: '账号类型',
-            dataIndex: 'showStartTime',
-            key: 'showStartTime',
-            render(showStartTime) {
-                return showStartTime && DateTool.utcToDev(showStartTime);
-            }
+            dataIndex: 'accountType',
+            key: 'accountType'
         },
         {
             title: '创建时间',
-            dataIndex: 'showEndTime',
-            key: 'showEndTime',
-            render(showEndTime) {
-                return showEndTime && DateTool.utcToDev(showEndTime);
+            dataIndex: 'createTime',
+            key: 'createTime',
+            render(createTime) {
+                return createTime && DateTool.utcToDev(createTime);
             }
         },
         {
             title: '更新时间',
-            dataIndex: 'status',
-            key: 'status',
-            render(status) {
-                return getStatus(status);
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            render(updateTime) {
+                return updateTime && DateTool.utcToDev(updateTime);
             }
         },
         {
@@ -212,8 +161,8 @@ function FirmwareMagement({ form }) {
                         showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
                     }} />
             </Card>
-            {addVis && <AddModal addVis={addVis} handleOk={handleOk} handleCancel={handleCancel}></AddModal>}
-            {editVis && <EditModal editVis={editVis} handleOk={handleOk} handleCancel={closeInfo} type={modalType}></EditModal>}
+            {addVis && <AddModal addVis={addVis} handleOk={handleOk} handleCancel={handleCancel} ></AddModal>}
+            {editVis && <EditModal editVis={editVis} handleOk={handleOk} handleCancel={closeInfo} type={modalType} actionData={actionData}></EditModal>}
         </div>
     )
 }

@@ -61,15 +61,22 @@ class RoleEdit extends React.Component<IProps, any> {
                     roleName: value.roleName,
                     remark: value.roleDesc,
                     roleId: value.roleId,
-                    dataJson: JSON.stringify({ appInfoList: checkedList.map((item: number) => ({ appId: item })) }) 
+                    dataJson: JSON.stringify({ appInfoList: checkedList.map((item: number) => ({ appId: item })) })
                 }
                 subAppAuth(params).then(res => { })
             }
-            this.props.saveRole({ ...value, roleAccess: target.reduce((x, y) => x.concat(y.map((item: any) => item.split('-').pop())), []).join(',') });
+            let paramsData = {
+                ...value,
+                roleAccess: target.reduce((x, y) => x.concat(y.map((item: any) => item.split('-').pop())), []).join(','),
+                detailListStr: JSON.stringify([{ "columna": "app_id", "columnb": checkedList.join(',') }])
+            }
+            this.props.saveRole(paramsData);
             this.props.closeModal();
         });
     }
-
+    componentDidMount() {
+        this.getApplist()
+    }
     // 勾选权限
     handleChange = (index: number, value: string[]) => {
         const { target } = this.props;
@@ -78,11 +85,14 @@ class RoleEdit extends React.Component<IProps, any> {
 
     componentWillReceiveProps(nextProps: IProps) {
         const { visible, roleItem } = nextProps;
+        if (!visible) {
+            this.setState({ checkedList: [] })
+        }
+
         // 打开弹窗
         if (visible && visible !== this.props.visible) {
             this.props.getRoleAuth(roleItem.roleId);
             if (roleItem.roleId) {
-                this.getApplist()
                 this.getAppInfo(roleItem.roleId)
             }
 
@@ -103,15 +113,15 @@ class RoleEdit extends React.Component<IProps, any> {
         })
     }
     //==获取app详情
-    getAppInfo=(id:number)=>{
-        getAppAuthOwn({id}).then(res=>{
-            if(res.data.code===0){
-                let data=res.data.data.formDataString
-                data=data || JSON.stringify({appInfoList:[]}) 
-                
-                let arr=JSON.parse(data).appInfoList.map((item:any)=>{
+    getAppInfo = (id: number) => {
+        getAppAuthOwn({ id }).then(res => {
+            if (res.data.code === 0) {
+                let data = res.data.data.formDataString
+                data = data || JSON.stringify({ appInfoList: [] })
+
+                let arr = JSON.parse(data).appInfoList.map((item: any) => {
                     return item.appId
-                }) 
+                })
                 this.setState({ checkedList: arr })
             }
         })
@@ -175,7 +185,7 @@ class RoleEdit extends React.Component<IProps, any> {
                         </div>
                     </div>
                     {
-                        roleItem.roleId && <div className="account-auth" style={{ marginTop: '10px' }}>
+                        <div className="account-auth" style={{ marginTop: '10px' }}>
                             <h3>适配平台：</h3>
                             <div className="account-auth-tab app-list-tab">
                                 <Checkbox.Group options={applist} value={checkedList} onChange={this.oncheckChange.bind(this)} />
