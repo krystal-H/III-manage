@@ -20,26 +20,19 @@ export const addAccount = (data) => {
         headers: {}
     })
 };
-// 查看账号信息
-export const getAccountInfo = (id) => {
+// 重置
+export const resetAccount = (data) => {
     return axios.request({
-        url: '/manage-open/manufacturer/getManufacturerDetail/'+id,
-        method: 'get',
+        url: '/manage-open/manufacturer/resetPassword',
+        method: 'post',
+        data,
         headers: {}
     })
 };
-// 获取快递信息
-export const getExpressInfo = (id) => {
+// 发送重置
+export const sentREset = (data) => {
     return axios.request({
-        url: '/manage-open/manage/order/getExpressDetail/'+id,
-        method: 'get',
-        headers: {}
-    })
-};
-// 填写快递信息
-export const fillExpressInfo = (data) => {
-    return axios.request({
-        url: '/manage-open/manage/order/addExpress',
+        url: '/manage-open/manufacturer/sendPassword',
         method: 'post',
         data,
         headers: {}
