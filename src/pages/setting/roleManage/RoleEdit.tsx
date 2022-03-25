@@ -114,14 +114,15 @@ class RoleEdit extends React.Component<IProps, any> {
     }
     //==获取app详情
     getAppInfo = (id: number) => {
-        getAppAuthOwn({ id }).then(res => {
+        getAppAuthOwn({roleId: id }).then(res => {
             if (res.data.code === 0) {
-                let data = res.data.data.formDataString
-                data = data || JSON.stringify({ appInfoList: [] })
+                // let data = res.data.data.formDataString
+                // data = data || JSON.stringify({ appInfoList: [] })
 
-                let arr = JSON.parse(data).appInfoList.map((item: any) => {
-                    return item.appId
-                })
+                // let arr = JSON.parse(data).appInfoList.map((item: any) => {
+                //     return item.appId
+                // })
+                let arr=res.data.data.appIds.split(',').map((item:any)=>Number(item))
                 this.setState({ checkedList: arr })
             }
         })

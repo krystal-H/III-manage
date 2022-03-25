@@ -33,7 +33,7 @@ export const getAppAuth = (params) => {
 //获取app权限
 export const getAppAuthOwn = (params) => {
   return axios.request({
-    url: prefix + '/auth/role/getRoleById',
+    url: '/manage-open' + '/role/getRoleInfo',
     params,
     method: 'get'
   })
