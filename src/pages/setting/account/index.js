@@ -128,6 +128,11 @@ function FirmwareMagement({ form }) {
     const handleCancel = () => {
         setAddVis(false)
     }
+    //
+    const handleResetOk=()=>{
+        setEditVis(false)
+        getTableData()
+    }
     return (
         <div className="account-page">
             <TitleTab title="厂商账号管理">
@@ -162,7 +167,7 @@ function FirmwareMagement({ form }) {
                     }} />
             </Card>
             {addVis && <AddModal addVis={addVis} handleOk={handleOk} handleCancel={handleCancel} ></AddModal>}
-            {editVis && <EditModal editVis={editVis} handleOk={handleOk} handleCancel={closeInfo} type={modalType} actionData={actionData}></EditModal>}
+            {editVis && <EditModal editVis={editVis} handleOk={handleResetOk} handleCancel={closeInfo} type={modalType} actionData={actionData}></EditModal>}
         </div>
     )
 }
