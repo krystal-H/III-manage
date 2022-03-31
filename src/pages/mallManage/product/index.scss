@@ -1,7 +1,9 @@
 .mall-product-page {
   .mall-product-top {
     padding: 20px 0;
-    text-align: right;
+    display: flex;
+    justify-content: space-between;
+
   }
 }
 
@@ -31,7 +33,7 @@
   }
 
   .need-warn-wrap {
-    label::before{
+    label::before {
       display: inline-block;
       margin-right: 4px;
       color: #f5222d;
