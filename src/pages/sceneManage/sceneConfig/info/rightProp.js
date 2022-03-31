@@ -48,6 +48,18 @@ function RightCom({ form }) {
     // if (state.currentRule === 0) {
     //     return <div></div>
     // }
+    useEffect(() => {
+        //获取ai字段
+        if (state.wholeInfo.aiId) {
+            getAIPropsList(state.wholeInfo.aiId).then(res => {
+                if (res.data.code === 0) {
+                    let arr = res.data.data.aiOutParamList || []
+                    arr.unshift({ key: '无' })
+                    setAiPropsList(arr)
+                }
+            })
+        }
+    }, [state.wholeInfo.aiId])
     const getImg = info => {
         if (info.conditionTypeId == 1) {
             return touchImg
@@ -88,32 +100,7 @@ function RightCom({ form }) {
                 setProductList2(res.data.data)
             }
         })
-        //获取ai字段
-        if (state.wholeInfo.aiId) {
-            getAIPropsList(state.wholeInfo.aiId).then(res => {
-                if (res.data.code === 0) {
-                    let arr = res.data.data.aiOutParamList || []
-                    arr.unshift({ key: '无' })
-                    setAiPropsList(arr)
-                }
-            })
-        }
-        //规则标签
-        // let params = {
-        //     attributeTagType: 2,
-        //     paged: false
-        // }
-        // getRuleLabelList(params).then(res => {
-        //     if (res.data.code === 0) {
-        //         let data = res.data.data.map(item => {
-        //             return {
-        //                 label: item.attributeTagName,
-        //                 value: item.attributeTagId
-        //             }
-        //         })
-        //         setRuleLabel(data)
-        //     }
-        // })
+
     }, [])
     // useEffect(() => {
     //     dispatch({ type: "saveCheck", payload: getFieldsValue })
@@ -826,8 +813,8 @@ function RightCom({ form }) {
             }
             <a onClick={addItem} className='add-btn'>新增</a>
             <Form.Item label='延时设置(秒)'>
-                {getFieldDecorator('delayTime', {initialValue:0})(
-                    <InputNumber style={{ width: '100%' }} min={0} max={86400}/>
+                {getFieldDecorator('delayTime', { initialValue: 0 })(
+                    <InputNumber style={{ width: '100%' }} min={0} max={86400} />
                 )}
             </Form.Item>
         </>

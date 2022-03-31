@@ -13,7 +13,6 @@ function FirmwareMagement({ form, match, history }) {
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [supplyVis, setSupplyVis] = useState(false)
-    const [showImg, setShowImg] = useState(false)
     const [actionData, setActionData] = useState({})
     const [loading, setLoading] = useState(false)
     useEffect(() => {
@@ -21,7 +20,7 @@ function FirmwareMagement({ form, match, history }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        let data=getFieldsValue()
+        let data={}
         let params = { ...data, ...pager }
         setLoading(true)
         getListApi(params).then(res => {

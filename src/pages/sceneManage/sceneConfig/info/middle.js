@@ -135,6 +135,9 @@ export default function MiddleCom() {
     }
     //渲染中间
     const renderDomM = () => {
+        if(!state.currentRule){
+            return
+        }
         return middleData.map((item, index) => {
             return <div className={['item', state.activePropsId == item.title ? 'current-node-light' : ''].join(' ')}
                 key={index} onClick={(e) => { clickNode(item, 2, index, e) }}>

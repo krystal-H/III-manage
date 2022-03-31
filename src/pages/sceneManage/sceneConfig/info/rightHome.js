@@ -76,7 +76,7 @@ function RightComH({ form }) {
                 let data = res.data.data.scene
                 // setOriginData(res.data.data.scene)
                 let relSceneApps = data.relSceneApps.map(item => {
-                    return item.sceneId
+                    return item.appId
                 })
                 
                 let imgArr=[]
@@ -126,7 +126,7 @@ function RightComH({ form }) {
                         </FormItem>
                         <FormItem label="关联AI能力">
                             {getFieldDecorator('aiId')(
-                                <Select allowClear>
+                                <Select>
                                     {
                                         aiList.map((item, index) => (
                                             <Select.Option key={item.aiId} value={item.aiId} label={item.aiName}>
