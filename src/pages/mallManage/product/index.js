@@ -20,7 +20,10 @@ function FirmwareMagement({ form, match, history }) {
     }, [pager.pageRows, pager.pageIndex])
     //列表
     const getTableData = () => {
-        let data={}
+        let data=getFieldsValue()
+        if(data.productId){
+            data.productId=Number(data.productId)
+        }
         let params = { ...data, ...pager }
         setLoading(true)
         getListApi(params).then(res => {
@@ -201,7 +204,10 @@ function FirmwareMagement({ form, match, history }) {
                     <Form layout="inline" >
 
                         <FormItem label="产品ID">
-                            {getFieldDecorator('productId')(
+                            {getFieldDecorator('productId',{getValueFromEvent: (e) => {
+                                const val = e.target.value;
+                                return val.replace(/[^\d]/g, '');
+                            }})(
                                 <Input/>
                             )}
                         </FormItem>
