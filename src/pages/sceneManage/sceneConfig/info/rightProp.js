@@ -91,13 +91,13 @@ function RightCom({ form }) {
         //设备触发-产品列表
         getProductList(1).then(res => {
             if (res.data.code === 0) {
-                setProductList(res.data.data)
+                setProductList2(res.data.data)
             }
         })
         //设备动作-产品列表
         getActiveProductList({ inoutTypeId: 2 }).then(res => {
             if (res.data.code === 0) {
-                setProductList2(res.data.data)
+                setProductList1(res.data.data)
             }
         })
 
