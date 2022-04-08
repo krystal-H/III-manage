@@ -166,13 +166,14 @@ function RightCom({ form }) {
 
         if (state.formDom.data.conditionTypeId == 1) {
             let productItem = productList.find(item => {
-                return item.conditionOptionId = data.conditionOptionId
+                return item.conditionOptionId === data.conditionOptionId
             })
+            console.log(productItem,'=======productItem')
             data.conditionOptionName = productItem.deviceTypeName
 
             data.conditionExpression = ''
             let factorSource = productDom.find(item => {
-                return item.conditionId == data.conditionId
+                return item.conditionId === data.conditionId
             })
             data.conditionExpression = factorSource.conditionName
             factorSource.operators.forEach(item => {
@@ -219,6 +220,7 @@ function RightCom({ form }) {
                 })
             }
         }
+        console.log(data,'======55')
         dispatch({ type: "saveItem", payload: data })
     }
     //提交设备动作数据
@@ -381,15 +383,7 @@ function RightCom({ form }) {
                                 unlkey
                             })
                         }
-                        // arr2.push({
-                        //     deviceFunctionId: item.deviceFunctionId,
-                        //     actionParamValue: item.actionParamValue,
-                        //     unlkey
-                        // })
                     })
-                    // form.setFieldsValue({
-
-                    // });
                     productActiveChange(state.formDom.data.deviceTypeId)
                     setFieldsValue({
                         deviceTypeId: state.formDom.data.deviceTypeId,

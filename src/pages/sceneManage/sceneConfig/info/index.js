@@ -165,7 +165,7 @@ function loginReducer(state2, action) {
             }
         //新增规则tab=====
         case 'newTab':
-            state.pannelTab.push({ ruleName: '规则名称', ruleId: -1 })
+            state.pannelTab.push({ ruleName: '未命名规则', ruleId: -1 })
             return {
                 ...state,
                 showTab: '2',

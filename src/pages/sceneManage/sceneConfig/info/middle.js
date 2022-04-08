@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Tabs, Button, notification, Spin, Icon, Menu, Dropdown, } from 'antd';
-import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList } from '../../../../apis/ruleSet'
+import { getActiveInfo, getFatcorInfo, saveFactor, delActiveItem, delRule, getRuleList, clearRule } from '../../../../apis/ruleSet'
 import { cloneDeep } from "lodash"
 import actionImg from '../../../../assets/images/ruleImage/action.png';
 import touchImg from '../../../../assets/images/ruleImage/touch.png';
@@ -118,7 +118,7 @@ export default function MiddleCom() {
                     </div>
                 </div>
                 {/* <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} /> */}
-                <img src={closeImg} className='del-btn' onClick={(e) => { delFactor(index, e) }}/>
+                <img src={closeImg} className='del-btn' onClick={(e) => { delFactor(index, e) }} />
             </div>
         })
 
@@ -135,7 +135,7 @@ export default function MiddleCom() {
     }
     //渲染中间
     const renderDomM = () => {
-        if(!state.currentRule){
+        if (!state.currentRule) {
             return
         }
         return middleData.map((item, index) => {
@@ -165,12 +165,12 @@ export default function MiddleCom() {
                     if (item.actionParamValue.indexOf('clifeai,') > -1) {
                         text += item.deviceFunctionName + ':' + '关联AI' + ';'
                     } else {
-                        if(item.paramStyleId ==1){
-                            text += item.deviceFunctionName + ':' + item.actionParamValue + item.unitCode+';'
-                        }else{
+                        if (item.paramStyleId == 1) {
+                            text += item.deviceFunctionName + ':' + item.actionParamValue + item.unitCode + ';'
+                        } else {
                             text += item.deviceFunctionName + ':' + item.functionParamName + ';'
                         }
-                        
+
                     }
 
                 })
@@ -335,12 +335,17 @@ export default function MiddleCom() {
                     } else {
                         setMiddleData([{ title: 'OR', key: '2-or' }])
                     }
-                } 
+                }
             }
         })
     }
     //提交提交数据
     const saveData = (e) => {
+        // alert(wholeScenceId)
+        // if(wholeScenceId){
+        //     return
+        // }
+        // return
         e.stopPropagation()
         if (leftData.length) {
             let arr = []
@@ -353,7 +358,7 @@ export default function MiddleCom() {
                     return
                 }
             }
-            if(leftData.length ===1){
+            if (leftData.length === 1) {
                 if (middleData[0].title == 'OR') {
                     notification.info({
                         message: '提示',
@@ -393,13 +398,24 @@ export default function MiddleCom() {
                 }
             })
         } else {
-            if (middleData.length === 0) {
-                notification.info({
-                    message: '提示',
-                    description: '没有需要保存的数据',
-                });
-                return
-            }
+            clearRule({
+                sceneId: wholeScenceId,
+                subSceneIndex: subSceneIndex
+            }).then(res => {
+                if (res.data.code === 0) {
+                    notification.success({
+                        message: '提示',
+                        description: '保存成功',
+                    });
+                }
+            })
+            // if (middleData.length === 0) {
+            //     notification.info({
+            //         message: '提示',
+            //         description: '没有需要保存的数据',
+            //     });
+            //     return
+            // }
         }
     }
     //删除设备动作
