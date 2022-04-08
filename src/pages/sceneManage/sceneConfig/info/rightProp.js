@@ -168,9 +168,8 @@ function RightCom({ form }) {
             let productItem = productList.find(item => {
                 return item.conditionOptionId === data.conditionOptionId
             })
-            console.log(productItem,'=======productItem')
             data.conditionOptionName = productItem.deviceTypeName
-
+            data.deviceTypeId = productItem.deviceTypeId
             data.conditionExpression = ''
             let factorSource = productDom.find(item => {
                 return item.conditionId === data.conditionId
@@ -220,7 +219,6 @@ function RightCom({ form }) {
                 })
             }
         }
-        console.log(data,'======55')
         dispatch({ type: "saveItem", payload: data })
     }
     //提交设备动作数据
