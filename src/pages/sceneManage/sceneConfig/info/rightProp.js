@@ -89,15 +89,15 @@ function RightCom({ form }) {
     }
     useEffect(() => {
         //设备触发-产品列表
-        getProductList(1).then(res => {
+        getProductList(2).then(res => {
             if (res.data.code === 0) {
-                setProductList2(res.data.data)
+                setProductList(res.data.data)
             }
         })
         //设备动作-产品列表
-        getActiveProductList({ inoutTypeId: 2 }).then(res => {
+        getActiveProductList({ inoutTypeId: 1 }).then(res => {
             if (res.data.code === 0) {
-                setProductList1(res.data.data)
+                setProductList2(res.data.data)
             }
         })
 
@@ -756,7 +756,7 @@ function RightCom({ form }) {
     const ruleDom = () => {
         return <>
             <FormItem label="规则名称">
-                {getFieldDecorator('ruleName', { rules: [{ required: true, message: '场景名称' }] })(
+                {getFieldDecorator('ruleName', { rules: [{ required: true, message: '场景名称' }],initialValue:'未命名规则' })(
                     <Input style={{ width: '100%' }} ></Input>
                 )}
             </FormItem>
