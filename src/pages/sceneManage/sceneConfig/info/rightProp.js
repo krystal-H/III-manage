@@ -58,6 +58,8 @@ function RightCom({ form }) {
                     setAiPropsList(arr)
                 }
             })
+        }else{
+            setAiPropsList([])
         }
     }, [state.wholeInfo.aiId])
     const getImg = info => {

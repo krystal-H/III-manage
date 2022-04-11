@@ -8,14 +8,14 @@ import './index.less'
 import ActionDia from './actionModel'
 const FormItem = Form.Item
 
-const gateArr = [{ value: 11133, label: 'IOT路由器' }, { value: 7710, label: 'ZigBee3.0网关' }]
+const gateArr = [{ value: 11133, label: 'IOT路由器' }, { value: 7710, label: 'ZigBee3.0网关' }, { value: 12306, label: '网关物模型测试' }]
 function PanelMn({ form }) {
     const { getFieldDecorator, validateFields, getFieldsValue } = form;
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [optionList, setOptionList] = useState(gateArr)
-    const [addVis, setAddVis] = useState(false)
+    const [addVis, setAddVis] = useState(true)
     const [actionData, setActionData] = useState({})
     const [modelType, setModelType] = useState('')
     const [loading, setLoading] = useState(false)

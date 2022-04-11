@@ -32,8 +32,8 @@ function RightComH({ form }) {
                     val.appIds = val.appIds.join(',')
                 }
             }
-            if(val.pictureUrl && val.pictureUrl.length){
-                val.pictureUrl=val.pictureUrl[0].url
+            if (val.pictureUrl && val.pictureUrl.length) {
+                val.pictureUrl = val.pictureUrl[0].url
             }
             val.sceneId = wholeScenceId
             saveGloalInfo(val).then(res => {
@@ -60,7 +60,7 @@ function RightComH({ form }) {
         let pamams = { paged: false }
         getAppList(pamams).then(res => {
             if (res.data.code == 0) {
-                console.log(res.data.data,9999)
+                console.log(res.data.data, 9999)
                 let data = res.data.data.map(item => {
                     return { label: item.appName, value: item.appId }
                 })
@@ -78,17 +78,17 @@ function RightComH({ form }) {
                 let relSceneApps = data.relSceneApps.map(item => {
                     return item.appId
                 })
-                
-                let imgArr=[]
+
+                let imgArr = []
                 if (data.pictureUrl) {
-                    imgArr=[{ url: data.pictureUrl, uid: 1 }]
+                    imgArr = [{ url: data.pictureUrl, uid: 1 }]
                     $el1.current.setFileList(imgArr)
                 }
                 let obj = {
                     sceneName: data.sceneName,
                     summary: data.summary,
                     appIds: relSceneApps,
-                    pictureUrl:imgArr
+                    pictureUrl: imgArr
                 }
                 if (data.aiId) {
                     obj.aiId = data.aiId
@@ -126,7 +126,7 @@ function RightComH({ form }) {
                         </FormItem>
                         <FormItem label="关联AI能力">
                             {getFieldDecorator('aiId')(
-                                <Select>
+                                <Select allowClear>
                                     {
                                         aiList.map((item, index) => (
                                             <Select.Option key={item.aiId} value={item.aiId} label={item.aiName}>

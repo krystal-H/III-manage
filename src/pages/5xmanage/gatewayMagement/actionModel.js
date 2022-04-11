@@ -6,9 +6,6 @@ import './index.less'
 const FormItem = Form.Item
 const { Option } = Select;
 const { Search } = Input;
-function fetchData(val) {
-    console.log(val, 9999)
-}
 // fetchUser = debounce(fetchUser, 800);
 function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData, optionList }) {
     const { getFieldDecorator, validateFields, setFieldsValue, getFieldValue } = form;
@@ -19,7 +16,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
         validateFields().then(val => {
             let params = {}
             params.gatewayType = val.gatewayType
-            params.gatewayName = val.gatewayType === 11133 ? 'IOT路由器' : 'ZigBee3.0网关'
+            let middleName=optionList.find(item=>{
+                return item.value===val.gatewayType
+            })
+            params.gatewayName = middleName.label
             params.productName = productInfo.productName
             params.productCode = productInfo.productCode
             params.brandName = productInfo.brandName
@@ -84,23 +84,6 @@ function Addmodal({ form, addVis, handleCancel, handleOk, modelType, actionData,
                 setProductList(res.data.data.list || [])
             }
         })
-        // console.log('fetching user', value);
-        // this.lastFetchId += 1;
-        // const fetchId = this.lastFetchId;
-        // this.setState({ data: [], fetching: true });
-        // fetch('https://randomuser.me/api/?results=5')
-        //     .then(response => response.json())
-        //     .then(body => {
-        //         if (fetchId !== this.lastFetchId) {
-        //             // for fetch callback order
-        //             return;
-        //         }
-        //         const data = body.results.map(user => ({
-        //             text: `${user.name.first} ${user.name.last}`,
-        //             value: user.login.username,
-        //         }));
-        //         this.setState({ data, fetching: false });
-        //     });
     };
     fetchUser = debounce(fetchUser, 800);
     const handleChange = value => {
