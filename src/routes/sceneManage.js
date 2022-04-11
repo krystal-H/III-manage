@@ -21,19 +21,21 @@ const route = {
     {
       name: '场景配置',
       path: '/sceneMgt/sceneConfig',
-      redirect: '/sceneMgt/sceneConfig/list',
-      routes: [{
-        name: '场景配置',
-        path: '/sceneMgt/sceneConfig/list',
-        component: SceneConfig,
-        meta: {
-          hideInMenu: true,
-        }
-      },
+      // redirect: '/sceneMgt/sceneConfig/list',
+      component: SceneConfig,
+      routes: [
+      //   {
+      //   name: '场景配置', 
+      //   path: '/sceneMgt/sceneConfig/list',
+      //   component: SceneConfig,
+      //   meta: {
+      //     hideInMenu: true,
+      //   }
+      // },
       {
-        name: '场景详情',
+        name: '场景详情',  //此处路由只做面包导航层级使用
         path: '/sceneMgt/sceneConfig/detail',
-        component: SceneConfigInfo,
+        // component: SceneConfigInfo,
         meta: {
           hideInMenu: true,
         }
@@ -43,26 +45,27 @@ const route = {
     {
       name: '场景列表',
       path: '/sceneMgt/sceneList',
-      redirect: '/sceneMgt/sceneList/list',
-      routes: [{
-        name: '场景列表',
-        path: '/sceneMgt/sceneList/list',
-        component: SceneList,
-        meta: {
-          hideInMenu: true,
-        }
-      },
-      {
-        name: '场景日志',
-        path: '/sceneMgt/sceneList/log',
-        component: SceneLog,
-        meta: {
-          hideInMenu: true,
-        }
-      },
+      component: SceneList,
+      // redirect: '/sceneMgt/sceneList/list',
+      routes: [
+        // {
+        //   name: '场景列表',
+        //   path: '/sceneMgt/sceneList/list',
+        //   component: SceneList,
+        //   meta: {
+        //     hideInMenu: true,
+        //   }
+        // },
+        {
+          name: '场景日志',//此处路由只做面包导航层级使用
+          path: '/sceneMgt/sceneList/log',
+          // component: SceneLog,
+          meta: {
+            hideInMenu: true,
+          }
+        },
       ]
     },
-
 
   ]
 }
