@@ -17,15 +17,7 @@ const myDemo = ({ treeData = [], tabType }) => {
             });
             return
         }
-        // let arr = dataSource.key.split('-')
         dispatch({ type: "addNode", payload: { nodeType: tabType, nodeInfo: dataSource } })
-        // if (tabType === 1) {
-        //     dispatch({ type: "addNode", payload: { nodeType: tabType, nodeInfo: dataSource } })
-        // } else if (tabType === 3) {
-        //     dispatch({ type: "addNode", payload: { nodeType: tabType, nodeInfo: dataSource } })
-        // } else if (tabType === 2) {
-        //     dispatch({ type: "addNode", payload: { nodeType: tabType, nodeInfo: dataSource } })
-        // }
     }
     const onExpand = expandedKeys => {  //展开/收起节点时触发
         setExpandedKeys(expandedKeys)

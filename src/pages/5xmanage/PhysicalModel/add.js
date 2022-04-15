@@ -47,7 +47,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk, optionList, editId }) 
 
             }
         })
-        getDetailTable({ id: editId }).then(res => {
+        getDetailTable({ productId: editId }).then(res => {
             if (res.data.code == 0) {
                 let data = delaData(res.data.data.standard || [])
                 setTableData(data)

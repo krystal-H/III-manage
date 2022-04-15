@@ -6,6 +6,7 @@ import TableCom from '../../../components/Table';
 import { DateTool } from '../../../util/utils';
 import CheckModal from './check'
 import InfoModal from './info'
+import DetailModal from './detail';
 import './index.less'
 const FormItem = Form.Item
 const optionArr = [{ value: 1, label: '待审核' }, { value: 2, label: '已通过' }]
@@ -15,8 +16,9 @@ function PanelMn({ form }) {
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
-    const [checkVisible, setCheckVisible] = useState(false)
-    const [infoVisible, setInfoVisible] = useState(false)
+    const [checkVisible, setCheckVisible] = useState(false) //审核
+    const [infoVisible, setInfoVisible] = useState(false) //固件信息
+    const [detailVisible,setDetailVisible] = useState(false) //审核信息
     const [loading, setLoading] = useState(false)
     const [actionData, setActionData] = useState({})
     const column = [
@@ -62,9 +64,10 @@ function PanelMn({ form }) {
             title: '上传的固件名称',
             dataIndex: 'burnFileName',
             key: 'burnFileName',
+            width:'180px',
             render: (text, row) => <span >
-                {text && <>{text}
-                    <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></>}
+                {text && <div className='firmware-text-wrap'><span className='firmware-text' title={text}>{text} </span>
+                    <a style={{ marginLeft: '3px' }} onClick={() => { openInfo(row) }}>查看</a></div>}
             </span>
         },
         {
@@ -92,17 +95,28 @@ function PanelMn({ form }) {
         },
         {
             title: '操作',
-            width: 200,
+            width: 100,
             key: '',
             render: (val, record) => {
                 let text = record.status
                 if (text == 1) {
                     return <a onClick={() => { openEdit(record) }}>审核</a>
                 }
+                if (text == 2) {
+                    return <a onClick={() => { openDetail(record) }}>查看</a>
+                }
                 return ''
             }
         }
     ]
+    //查看审核详情
+    const openDetail=(data)=>{
+        setActionData(data)
+        setDetailVisible(true)
+    }
+    const closeDetail=()=>{
+        setDetailVisible(false)
+    }
     const openInfo = data => {
         setActionData(data)
         setInfoVisible(true)
@@ -141,8 +155,8 @@ function PanelMn({ form }) {
         setLoading(true)
         getList(params).then(res => {
             if (res.data.code == 0) {
-                setdataSource(res.data.data.records)
-                setTotalRows(res.data.data.total)
+                setdataSource(res.data.data.list)
+                setTotalRows(res.data.data.pager.totalRows)
             }
         }).finally(() => { setLoading(false) })
     }
@@ -224,6 +238,9 @@ function PanelMn({ form }) {
             }
             {
                 infoVisible && <InfoModal infoVisible={infoVisible} handleCancel={closeInfo} actionData={actionData} />
+            }
+            {
+                detailVisible && <DetailModal infoVisible={detailVisible} handleCancel={closeDetail} actionData={actionData}/>
             }
         </div>
     )

@@ -244,3 +244,14 @@ export const delRule = (data) => {
         data
     })
 }
+//清空触发条件
+export const clearRule = (params) => {
+    return axios.request({
+        url: prefix + '/scene/condition/instance/delete/v2.0',
+        method: 'get',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        params
+    })
+}

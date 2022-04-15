@@ -42,7 +42,7 @@ function ConditionTypeModal({ form, visible, handleOk, handleCancel, conditionTy
           {getFieldDecorator('conditionOptionName', {
             initialValue: conditionTypeDetailData.conditionOptionName,
             rules: [{ required: true, message: '请输入条件类型名称', whitespace: true }],
-          })(<Input maxLength={20} placeholder="请输入条件类型名称" />)}
+          })(<Input maxLength={50} placeholder="请输入条件类型名称" />)}
         </Form.Item>
         <Form.Item label="备注">
           {getFieldDecorator('comments', {

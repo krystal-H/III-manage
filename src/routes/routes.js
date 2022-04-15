@@ -5,7 +5,7 @@ import businessop from './businessop'
 import setting from './setting'
 import manage5x from './manage5x'
 import sceneManage from './sceneManage'
-
+import mallManage from './mallManage'
 import Home from '../pages/home/Home'
 import Exception403 from '../pages/exception/403'
 import Exception404 from '../pages/exception/404'
@@ -33,6 +33,7 @@ const routes =[
   manage5x,
   // 场景管理
   sceneManage,
+  mallManage,
   /* 其他 */
   {
     name: '消息管理',

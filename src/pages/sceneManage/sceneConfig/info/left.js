@@ -64,7 +64,6 @@ const myDemo = (props) => {
             }
         })
         setTreeData(arr)
-        console.log(arr, '过滤数据===')
     }
     const getMenu = () => {
         getMenuList2().then(res => {
@@ -129,7 +128,7 @@ const myDemo = (props) => {
                     <TreeCom treeData={treeData1} tabType={2} />
                 </div>
                 <div>
-                    <h1>动作动作</h1>
+                    <h1>执行动作</h1>
                     <TreeCom treeData={treeData2} tabType={3} />
                 </div>
             </div>

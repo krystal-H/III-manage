@@ -62,11 +62,17 @@ function AuthManage({ form }) {
   const changeOpetype = (val) => {
     setOpeType(val)
   }
-
+  const clearAll = () => {
+    setOpeType('')
+    form.setFieldsValue({
+      type: ''
+    })
+  }
   useEffect(() => {
+    let clientId = form.getFieldValue('clientId')
     if (opeType === 'default-menu') {
       setJsonString([])
-      getDefaultMenuRequest({ clientId: initClient_id, type: 'default-menu' }).then(res => {
+      getDefaultMenuRequest({ clientId, type: 'default-menu' }).then(res => {
         setJsonString(res.data.data.resource ? JSON.stringify(JSON.parse(res.data.data.resource), null, 2) : [])
         // setJsonString(res.data.data.resource)
       })
@@ -96,8 +102,9 @@ function AuthManage({ form }) {
             initialValue: initClient_id,
             rules: [{ required: true, message: '请输入平台编码', whitespace: true }],
           })(
-            <Select placeholder="请选择操作类型">
+            <Select placeholder="请选择操作类型" onChange={clearAll}>
               <Option value="open">open</Option>
+              <Option value="dmp">dmp</Option>
             </Select>
           )}
         </Form.Item>
@@ -119,7 +126,7 @@ function AuthManage({ form }) {
                 initialValue: jsonString,
                 rules: [{ required: true, message: '请输入当前菜单json', whitespace: true }]
               })(
-                <TextArea autoSize={{ minRows: 20, maxRows: 20 }}></TextArea>
+                <TextArea autosize></TextArea>
               )}
             </Form.Item>
           </>

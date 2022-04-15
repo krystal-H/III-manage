@@ -11,7 +11,7 @@ import './index.less'
 const { Option } = Select
 const { RangePicker } = DatePicker
 const dateFormat = 'YYYY/MM/DD'
-const deviceEvents = ['上线', '离线', '设备控制', '设备配网', '设备上报', '设备绑定', '设备解绑', '场景执行', '设备重启', '固件升级']
+const deviceEvents = ['上线', '离线', '设备控制', '数据上报', '设备绑定', '设备解绑', '场景执行', '固件升级']
 
 function disabledDate(current) {
   // Can not select days before today and today
@@ -39,7 +39,7 @@ function DeviceLog({ form }) {
       key: "executeTime",
       dataIndex: "executeTime",
       render: (text) => {
-        return <span>{DateTool.formateDate(text + '', 'yyyy-MM-dd hh:mm:ss', 8)}</span>
+        return <span title={DateTool.formateDate(text + '', 'yyyy-MM-dd hh:mm:ss', 8)}>{DateTool.formateDate(text + '', 'yyyy-MM-dd hh:mm:ss', 8)}</span>
       }
     },
     {
@@ -82,8 +82,8 @@ function DeviceLog({ form }) {
 
   const onChange = (date, dateString) => {
     if (dateString && dateString.length) {
-      setStartTime((new Date(dateString[0])).getTime()) // 开始时间  选择时间的0点
-      setEndTime((new Date(dateString[1])).getTime() + 24 * 60 * 60 * 1000) // 结束时间为选择时间次日0点
+      setStartTime((new Date(dateString[0])).getTime()) // 开始时间
+      setEndTime((new Date(dateString[1])).getTime()) // 结束时间
     }
   }
 
@@ -103,6 +103,9 @@ function DeviceLog({ form }) {
       if (res.data.code === 0 && res.data.data) {
         setDataSource(addKeyToTableData(res.data.data.list))
         setTotalRows(res.data.data.pager.totalRows)
+      } else {
+        setDataSource([])
+        setTotalRows(0)
       }
     }).finally(() => { setLoading(false) })
   }
@@ -188,7 +191,7 @@ function DeviceLog({ form }) {
             <Form.Item label="时间">
               {
                 getFieldDecorator('time')(
-                  <RangePicker onChange={onChange} format={dateFormat} disabledDate={disabledDate} />
+                  <RangePicker onChange={onChange} showTime disabledDate={disabledDate} />
                 )
               }
             </Form.Item>

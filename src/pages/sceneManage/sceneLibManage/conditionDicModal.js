@@ -102,6 +102,8 @@ function ConditionDicModal({
     } else {
       newData = cloneDeep(conditionDicDetailData.queryParams)
     }
+  } else {
+    newData = []
   }
   getFieldDecorator('queryParams', { initialValue: newData })
   const keys = getFieldValue('queryParams')
@@ -297,7 +299,7 @@ function ConditionDicModal({
                   initialValue: conditionDicDetailData.queryParams ?
                     Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
-                      conditionDicDetailData.queryParams[0].queryParamName : '',
+                      conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [
                     {
@@ -327,8 +329,8 @@ function ConditionDicModal({
           paramStyle === '2' &&
           <div>
             <Form.Item label="设置参数">
-              <Button type="dashed" onClick={() => addParam()} style={{ width: '100%' }}>
-                <Icon type="plus" /> 新&nbsp;&nbsp;增
+              <Button type="dashed" icon="plus" onClick={() => addParam()} style={{ width: '100%' }}>
+                新&nbsp;&nbsp;增
               </Button>
             </Form.Item>
             {formItems}

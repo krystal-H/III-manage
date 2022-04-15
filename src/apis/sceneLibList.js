@@ -111,7 +111,14 @@ export const sceneProductListRequest = (params) => {
     method: 'get'
   })
 }
-
+// 场景产品列表-删除
+export const deleteSceneProductListRequest = (params) => {
+  return axios.request({
+    url: '/expert/deviceType/delete',
+    params,
+    method: 'get'
+  })
+}
 // 场景产品列表-详情
 export const getSceneProductDetailRequest = (params) => {
   return axios.request({

@@ -5,8 +5,6 @@ import MiddleCom from './middle'
 import { cloneDeep } from "lodash"
 import { Spin } from 'antd';
 import { getRuleList } from '../../../../apis/ruleSet'
-
-import { useHistory } from "react-router-dom";
 import './index.less'
 const initState = {
     sentId: 0,
@@ -86,6 +84,7 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: action.payload,
                 showTab: '2',
+                activePropsId:0
             }
         //更换节点
         case 'changeNode':
@@ -166,7 +165,7 @@ function loginReducer(state2, action) {
             }
         //新增规则tab=====
         case 'newTab':
-            state.pannelTab.push({ ruleName: '规则名称', ruleId: -1 })
+            state.pannelTab.push({ ruleName: '未命名规则', ruleId: -1 })
             return {
                 ...state,
                 showTab: '2',
@@ -208,7 +207,6 @@ export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
     const wholeScenceId=useMemo(()=>{
-        console.log(math,'啧啧啧',math.location.pathname.split('/').slice(-1)[0])
         return math.location.pathname.split('/').slice(-1)[0]
     },[])
     if(!wholeScenceId){
@@ -221,6 +219,9 @@ export default function FirmwareMagement(math) {
         getRuleList(wholeScenceId).then(res => {
             if (res.data.code == 0) {
                 dispatch({ type: "reRule", payload: res.data.data })
+                if(res.data.data.length){
+                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+                }
             }
         })
     }, [])

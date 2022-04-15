@@ -7,6 +7,14 @@ import Table from '../../../components/Table';
 import axios from '../../../util/api.request';
 import './style.scss'  
 
+const logcolumn = [
+  { title: '执行设备', dataIndex: 'deviceName',width:180,render:a=> <span title={a}>{a}</span>  },
+  { title: 'MAC', dataIndex: 'mac',width:150},
+  { title: '执行功能', dataIndex: 'action',render:a=> <span title={a}>{a}</span> },
+  { title: '执行时间', dataIndex: 'executeTime',width:200,render:a=> <span title={a}>{a}</span> },
+  { title: '结果', dataIndex: 'resultMsg' },
+];
+
 
 const {Option} = Select
 class List extends Component {
@@ -14,8 +22,6 @@ class List extends Component {
   constructor(props){
     super(props);
     this.state = {
-      a:undefined,
-      b:undefined,
       pageIndex:1,
       list:[],
       pager:{},
@@ -31,14 +37,13 @@ class List extends Component {
     };
     this.userSceneId = JSTool.getHrefParams(this.props.location.search).userSceneId || undefined
     this.column = [
-        { title: '规则名称', dataIndex: 'sceneName' },
-        { title: '执行时间', dataIndex: 'createTime'},
-        { title: '场景ID', dataIndex: 'sceneId'},
+        { title: '规则名称', dataIndex: 'ruleName' },
+        { title: '执行时间', dataIndex: 'executeTime'},
+        { title: '场景ID', dataIndex: 'sceneId',width:110,},
         { title: '用户ID', dataIndex: 'userId' },
-        { title: '场景规则', dataIndex: 'deviceTypeNames'},
-        { title: '关联设备', dataIndex: 'devicesss'},
-        { title: '执行状态', dataIndex: 'enable', render:e=><span>{ {'1':'成功','0':'失败'}[e]}</span> },
-        { title: '操作', dataIndex: 'n',width:150,
+        { title: '关联设备', dataIndex: 'deviceName'},
+        { title: '执行状态', dataIndex: 'resultStatus', render:r=>r=="0"&&'成功'||'失败',width:90 },
+        { title: '操作', dataIndex: 'n',width:90,
             render: (n,{id}) => <a onClick={()=>this.getDetail(id)}>详情</a>
         },
     ];
@@ -46,16 +51,16 @@ class List extends Component {
   }
   componentDidMount=()=>{
     this.getList();
-    axios.Post('combine/userRule/list/v2.0',{userSceneId:this.userSceneId}).then( ({data={}}) => {
-      let res = data.data || {};
-      let { list=[] } = res
-      this.setState({ruleList:list})
+    axios.Post('expert/combine/userRule/list/v2.0',{userSceneId:this.userSceneId}).then( ({data={}}) => {
+      let ruleList = data.data || [];
+      this.setState({ruleList})
     });
   }
   getDetail=id=>{
-    axios.Get('scene/trigger/log/detail/v2.0 ',{id}).then( ({data={}}) => {
+    axios.Get('expert/scene/trigger/log/detail/v2.0',{id}).then( ({data={}}) => {
+      let d = data.data || {}
       this.setState({
-        logDetail:data
+        logDetail:[d]
       })
     });
   
@@ -97,6 +102,12 @@ getList=(index)=>{
       })
       return
     }
+    if(beginTime > endTime ){
+      notification.warning({
+        message:'截至时间不能早于起始时间'
+      })
+      return
+    }
     
   }else{
     endTime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -115,10 +126,10 @@ getList=(index)=>{
       sceneId:this.userSceneId,
       resultStatus,
       ruleId,
-      beginTime,
-      endTime
+      beginTimeStr:beginTime,
+      endTimeStr:endTime
   }
-  axios.Post('scene/trigger/log/list/v2.0',param).then( ({data={}}) => {
+  axios.Post('expert/scene/trigger/log/list/v2.0',param).then( ({data={}}) => {
     let res = data.data || {};
     let { list=[] , pager={} } = res
     this.setState({list,pager})
@@ -128,7 +139,7 @@ getList=(index)=>{
 
 
   render() {
-    const { a, b, time, list, pager, pageIndex, ruleList,resultStatus,ruleId , logDetail   } = this.state;
+    const { time, list, pager, pageIndex, ruleList,resultStatus,ruleId , logDetail   } = this.state;
     
     return (
       <div className='page-scene-log'>
@@ -143,10 +154,10 @@ getList=(index)=>{
             </Select>
             <span className="labeknam">规则：</span>
             <Select className="select" value={ruleId} onChange={v=>{this.changeSearch("ruleId",v)}} >
-              <Option value={-9}> 全部 </Option>
+              <Option value={-9}>全部</Option>
               {
-                ruleList.map((id,name)=>{
-                  <Option value={id}> {name} </Option>
+                ruleList.map(({userRuleId,userRuleName})=>{
+                  return <Option key={userRuleId} value={userRuleId}> {userRuleName} </Option>
                 })
               }
             </Select>
@@ -176,30 +187,26 @@ getList=(index)=>{
                 />
               </>
             }
-            
-
-
-          
-                                                        
-            
             <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
           </div>
         </TitleTab>
         <div className="comm-contont-card">
-            <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
+            <Table rowKey="id" columns={this.column} dataSource={list} pager={{...pager,pageIndex}} onPageChange={this.getList} />
         </div>
 
 
         <Modal
           visible={!!logDetail}
-          width={600}
+          width={1130}
           title="日志详情"
           onCancel={this.closeDetail}
           onOk={this.closeDetail}
+          className={'noborder'}
         >
+          <Table rowKey={({mac,executeTime}) => mac+"_"+executeTime} columns={logcolumn} dataSource={logDetail} pager={{}} bordered={false}/>
         
-      </Modal>
+        </Modal>
 
 
       </div>
@@ -210,7 +217,7 @@ export default Form.create()(List)
 
 
 function disabledDate(current) {
-  return current && current < moment().startOf("day");
+  return current && current > moment().startOf("day");
 }
 
 function disabledDateTime() {

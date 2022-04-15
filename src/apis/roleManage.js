@@ -5,11 +5,11 @@ const prefix = '/manage'
 
 // 获取角色列表
 export const getList = (pager) => {
-    return axios.request({
-      url: prefix+'/auth/role/getList',
-      params: pager,
-      method: 'get'
-    })
+  return axios.request({
+    url: prefix + '/auth/role/getList',
+    params: pager,
+    method: 'get'
+  })
 };
 
 // 获取角色权限
@@ -22,5 +22,31 @@ export const getRoleAuth = (params) => {
 }
 
 
-
-
+//获取app
+export const getAppAuth = (params) => {
+  return axios.request({
+    url: prefix + '/auth/data/role/getAppInfo',
+    params,
+    method: 'get'
+  })
+}
+//获取app权限
+export const getAppAuthOwn = (params) => {
+  return axios.request({
+    url: '/manage-open' + '/role/getRoleInfo',
+    params,
+    method: 'get'
+  })
+}
+//提交app
+export const subAppAuth = (data) => {
+  return axios.request({
+    url: prefix + '/auth/role/updateRole',
+    method: 'post',
+    needFormData: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    data
+  })
+}

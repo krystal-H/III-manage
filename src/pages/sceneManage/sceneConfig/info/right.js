@@ -10,14 +10,6 @@ export default function RightCom() {
         if (state.showTab === val) {
             return
         }
-        // if (!Object.keys(state.wholeInfo).length) {
-        //     notification.info({
-        //         message: '提示',
-        //         description:
-        //             '先完善全局信息',
-        //     });
-        //     return
-        // }
         if (!state.pannelTab.length) {
             notification.info({
                 message: '提示',

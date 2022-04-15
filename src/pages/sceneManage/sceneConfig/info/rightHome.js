@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Tabs, Form, Input, Upload, Icon, Select, Checkbox, Button,notification  } from 'antd';
+import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Tabs, Form, Input, Upload, Icon, Select, Checkbox, Button, notification } from 'antd';
 import { fileHost } from "../../../../util/utils";
 import { getAIList, getAppList, saveGloalInfo, getsceneDetail } from '../../../../apis/ruleSet'
 import { Context } from "./index";
+import UploadCom from '../../../../components/uploadCom/index'
 const { TabPane } = Tabs;
 const { TextArea } = Input;
 const FormItem = Form.Item
@@ -14,34 +15,14 @@ const uploadConfigs = {
 }
 function RightComH({ form }) {
     const { getFieldDecorator, validateFields, getFieldValue, getFieldsValue, setFieldsValue } = form;
-    const { state, dispatch,wholeScenceId } = useContext(Context);
+    const { state, dispatch, wholeScenceId } = useContext(Context);
     const [aiList, setAiList] = useState([])
     const [appList, setAppList] = useState([])
     const [originData, setOriginData] = useState({})
-    const [initImg, setInitImg] = useState('')
-    const [fileLists, setFileLists] = useState([])
-    const onChangeFile = ({ file, fileList }) => {
-        setFileLists(fileList)
-    }
-    const beforeUpload = (file, type) => {
-        return new Promise((resolve, reject) => {
-            let isFormal = type.indexOf(file.name.split('.').slice(-1)[0]) > -1
-            if (!isFormal) {
-                message.error(`只能上传${type.join(',')}格式`);
-                return reject(false)
-            }
-            return resolve(true)
-        })
-    }
-    const normFile = e => {
-        // if (Array.isArray(e)) {
-        //     return e;
-        // }
-        // return e && e.fileList;
-    };
+    const $el1 = useRef(null)
     //保存
     const saveData = () => {
-        
+
         validateFields().then(val => {
             for (let key in val) {
                 if (typeof val[key] === 'undefined') {
@@ -51,10 +32,8 @@ function RightComH({ form }) {
                     val.appIds = val.appIds.join(',')
                 }
             }
-            if (fileLists.length) {
-                val.pictureUrl = fileLists[0].url || fileLists[0].response.data.url
-            } else {
-                val.pictureUrl = ''
+            if (val.pictureUrl && val.pictureUrl.length) {
+                val.pictureUrl = val.pictureUrl[0].url
             }
             val.sceneId = wholeScenceId
             saveGloalInfo(val).then(res => {
@@ -81,6 +60,7 @@ function RightComH({ form }) {
         let pamams = { paged: false }
         getAppList(pamams).then(res => {
             if (res.data.code == 0) {
+                console.log(res.data.data, 9999)
                 let data = res.data.data.map(item => {
                     return { label: item.appName, value: item.appId }
                 })
@@ -96,15 +76,19 @@ function RightComH({ form }) {
                 let data = res.data.data.scene
                 // setOriginData(res.data.data.scene)
                 let relSceneApps = data.relSceneApps.map(item => {
-                    return item.sceneId
+                    return item.appId
                 })
+
+                let imgArr = []
                 if (data.pictureUrl) {
-                    setFileLists([{ url: data.pictureUrl, uid: 1 }])
+                    imgArr = [{ url: data.pictureUrl, uid: 1 }]
+                    $el1.current.setFileList(imgArr)
                 }
                 let obj = {
                     sceneName: data.sceneName,
                     summary: data.summary,
-                    appIds: relSceneApps
+                    appIds: relSceneApps,
+                    pictureUrl: imgArr
                 }
                 if (data.aiId) {
                     obj.aiId = data.aiId
@@ -121,7 +105,7 @@ function RightComH({ form }) {
                     <Form colon={false}>
                         <FormItem label="场景名称">
                             {getFieldDecorator('sceneName', { rules: [{ required: true, message: '请输入场景名称' }] })(
-                                <Input style={{ width: '100%' }} ></Input>
+                                <Input style={{ width: '100%' }} placeholder='未命名规则'></Input>
                             )}
                         </FormItem>
                         <FormItem label="场景描述">
@@ -130,24 +114,13 @@ function RightComH({ form }) {
                             )}
                         </FormItem>
                         <FormItem label="场景图片" >
-                            {getFieldDecorator('pictureUrl', { getValueFromEvent: normFile })(
-                                <div>
-                                    <Upload
-                                        className="avatar-uploader"
-                                        {...uploadConfigs}
-                                        accept=".png,.jpg"
-                                        onChange={onChangeFile}
-                                        listType="picture-card"
-                                        style={{ width: '100px' }}
-                                        fileList={fileLists}
-                                        beforeUpload={(file) => { return beforeUpload(file, ['png', 'jpg']) }}
-                                    >
-                                        {fileLists.length ? null : <span>
-                                            <Icon type="upload" /> 选择背景图
-                                        </span>}
-                                    </Upload>
-                                    {/* {!initImg ? null : <img src={initImg} />} */}
-                                </div>
+                            {getFieldDecorator('pictureUrl', {})(
+                                <UploadCom
+                                    ref={$el1}
+                                    listType="picture-card"
+                                    maxCount={1}
+                                    isNotImg={false}
+                                    maxSize={10} />
 
                             )}
                         </FormItem>
