@@ -65,7 +65,7 @@ export default function MiddleCom() {
         if (index > -1) {
             notification.info({
                 message: '提示',
-                description: '先完成当前新增规则',
+                description: '请先配置规则基本信息',
             });
             return
         }
@@ -285,6 +285,13 @@ export default function MiddleCom() {
 
         } else if (state.currentEvent === 'saveNode') {
             if (state.formDom.nodeType == 1) {
+                // console.log(leftData,'===')
+                // leftData.find((item,index)=>{
+                //     if(index===state.formDom.index) return false
+                //     if(item.conditionOptionId === state.formDom.conditionOptionId ){
+                //         return true
+                //     }
+                // })
                 setLeftData(pre => {
                     let arr = cloneDeep(pre)
                     arr.splice(state.formDom.index, 1, state.formDom.data)

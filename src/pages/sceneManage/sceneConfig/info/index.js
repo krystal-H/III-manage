@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useLayoutEffect,useMemo } from 'react';
+import React, { useState, useEffect, useReducer, useLayoutEffect, useMemo } from 'react';
 import RightCom from './right'
 import LeftCom from './left'
 import MiddleCom from './middle'
@@ -84,7 +84,7 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: action.payload,
                 showTab: '2',
-                activePropsId:0
+                activePropsId: 0
             }
         //更换节点
         case 'changeNode':
@@ -172,14 +172,6 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: -1
             }
-        // state.pannelTab.push({ content: [[], [], []], tabIndex: action.payload, info: {} })
-        // return {
-        //     ...state,
-        //     theme: 'Tab',
-        //     currentRule: action.payload,
-        //     showTab: 2,
-        //     propsId: 0
-        // }
         //编辑规则tab
         case 'saveTab':
             let index = state.pannelTab.findIndex(item => {
@@ -189,7 +181,6 @@ function loginReducer(state2, action) {
             return {
                 ...state,
             }
-
         //获取最新form数据
         case 'saveCheck':
             return {
@@ -206,10 +197,10 @@ export const Context = React.createContext();
 export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
-    const wholeScenceId=useMemo(()=>{
+    const wholeScenceId = useMemo(() => {
         return math.location.pathname.split('/').slice(-1)[0]
-    },[])
-    if(!wholeScenceId){
+    }, [])
+    if (!wholeScenceId) {
         return '无内容'
     }
     // useLayoutEffect(()=>{
@@ -219,7 +210,7 @@ export default function FirmwareMagement(math) {
         getRuleList(wholeScenceId).then(res => {
             if (res.data.code == 0) {
                 dispatch({ type: "reRule", payload: res.data.data })
-                if(res.data.data.length){
+                if (res.data.data.length) {
                     dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
                 }
             }
@@ -237,7 +228,7 @@ export default function FirmwareMagement(math) {
         <div>
             <Spin spinning={loadingPage}>
                 <div className='rule-configuration'>
-                    <Context.Provider value={{ state, dispatch,wholeScenceId }}>
+                    <Context.Provider value={{ state, dispatch, wholeScenceId }}>
                         <LeftCom />
                         <MiddleCom />
                         <RightCom />

@@ -268,6 +268,11 @@ function Addmodal({ form, history }) {
                                 <Input style={{ width: '200px' }} maxLength={20}></Input>
                             )}
                         </FormItem>
+                        {/* <FormItem label="物料编号">
+                            {getFieldDecorator('materialNo', {})(
+                                <Input style={{ width: '200px' }} maxLength={20}></Input>
+                            )}
+                        </FormItem> */}
                     </div>
                     <FormItem label="商品简述">
                         {getFieldDecorator('commodityDescription', {})(
@@ -350,7 +355,6 @@ function ProductInfo({ id }) {
             a.href = URL.createObjectURL(blob)
             console.log(a.href)
             a.download = '文件' // 下载文件的名字
-            // a.download = url.split('/')[url.split('/').length -1] //  // 下载文件的名字
             document.body.appendChild(a)
             a.click()
 
@@ -400,11 +404,11 @@ function ProductInfo({ id }) {
             </div>
             <div className='item'>
                 <div className='item-label'>商品价格：</div>
-                <div className='item-text'>{dataInfo.commodityPrice/100}</div>
+                <div className='item-text'>{dataInfo.commodityPrice / 100}</div>
             </div>
             <div className='item'>
                 <div className='item-label'>实时价格：</div>
-                <div className='item-text'>{dataInfo.commodityRealPrice/100}</div>
+                <div className='item-text'>{dataInfo.commodityRealPrice / 100}</div>
             </div>
         </div>
         <div className='item-wrap'>
