@@ -32,14 +32,14 @@ const route = {
       //     hideInMenu: true,
       //   }
       // },
-      {
-        name: '场景详情',  //此处路由只做面包导航层级使用
-        path: '/sceneMgt/sceneConfig/detail',
-        // component: SceneConfigInfo,
-        meta: {
-          hideInMenu: true,
-        }
-      },
+      // {
+      //   name: '场景详情',  //此处路由只做面包导航层级使用
+      //   path: '/sceneMgt/sceneConfig/detail',
+      //   // component: SceneConfigInfo,
+      //   meta: {
+      //     hideInMenu: true,
+      //   }
+      // },
       ]
     },
     {

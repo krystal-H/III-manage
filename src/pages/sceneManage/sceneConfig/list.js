@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Modal,message,notification } from 'antd'
+import { Form, Input, Button, Modal, message, notification } from 'antd'
 import { Link } from 'react-router-dom';
 import TitleTab from '../../../components/TitleTab';
 import Table from '../../../components/Table';
@@ -52,7 +52,9 @@ class List extends Component {
     this.setState({ [t]: v })
   }
   goDetail = (id) => {
-    this.props.history.push(`/sceneMgt/sceneConfig/detail/${id}`)
+    // this.props.history.push(`/sceneMgt/sceneConfig/detail/${id}`)
+    // window.open
+    window.open(window.location.origin + window.location.pathname + '#/sceneMgt/sceneConfig/detail/' + id) ;
   }
   getList = (index) => {
     if (index) {
@@ -85,13 +87,13 @@ class List extends Component {
 
   }
   enableH = (sceneId, enable) => {
-    const t= enable ? '启用' : '禁用';
+    const t = enable ? '启用' : '禁用';
     Modal.confirm({
       title: "提示",
       content: `是否确认${t}?`,
       onOk: () => {
         axios.Post('expert/scene/enable/v2.0', { sceneId, enable }).then(r => {
-          notification.success({ message: `${t}成功`});
+          notification.success({ message: `${t}成功` });
           this.getList(this.state.pageIndex)
         });
       }
@@ -108,7 +110,7 @@ class List extends Component {
           this.setState({ addVisable: false })
           this.getList(this.state.pageIndex)
         }
-    })
+      })
     })
   }
   handleCancel = () => {

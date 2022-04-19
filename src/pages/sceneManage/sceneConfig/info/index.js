@@ -225,7 +225,7 @@ export default function FirmwareMagement(math) {
         }
     }, [state.activePropsId, state.currentRule])
     return (
-        <div>
+        <div className='scence-wrapS'>
             <Spin spinning={loadingPage}>
                 <div className='rule-configuration'>
                     <Context.Provider value={{ state, dispatch, wholeScenceId }}>
