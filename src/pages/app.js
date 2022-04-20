@@ -15,7 +15,7 @@ export default class App extends Component {
           <Loading />
           <Switch>
             <Route path='/login' exact component={Login}></Route>
-            <Route path="/sceneMgt/sceneConfig/detail"   component={InfoDetail}></Route>
+            <Route path="/sceneMgt/sceneConfig/detail/:id"   component={InfoDetail}></Route>
             <Route path='/' component={BaseLayout}></Route>
           </Switch>
         </Router>

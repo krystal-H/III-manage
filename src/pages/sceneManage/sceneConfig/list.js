@@ -30,8 +30,8 @@ class List extends Component {
       {
         title: '操作', dataIndex: 'sceneId', width: 200,
         render: (sceneId, { enable }) => <span className='comman-table-margin'>
-          {/* <Link  target="_black" to={{ pathname: "/sceneMgt/sceneConfig/detail", search: `?sceneId=${sceneId}` }}>详情</Link> */}
-          <a onClick={() => this.goDetail(sceneId)} >详情</a>
+          <Link  target="_black" to={{ pathname: "/sceneMgt/sceneConfig/detail/"+sceneId }}>详情</Link>
+          {/* <a onClick={() => this.goDetail(sceneId)} >详情</a> */}
           <a onClick={() => this.enableH(sceneId, enable ? 0 : 1)} >{enable == 1 ? '禁用' : '启用'}</a>
           <a onClick={() => this.deleteH(sceneId)} >删除</a>
         </span>
