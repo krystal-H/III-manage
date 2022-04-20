@@ -95,10 +95,12 @@ function DeviceLog({ form }) {
     let params = {
       startTime,
       endTime,
-      [`${opeType}`]: msg,
       productName: productName || '',
       eventType: eventType || '',
       ...pager
+    }
+    if (opeType) {
+      params[`${opeType}`] =  msg
     }
     getDeviceLogRequest(params).then(res => {
       if (res.data.code === 0 && res.data.data) {
