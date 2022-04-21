@@ -122,10 +122,9 @@ function DeviceLog({ form }) {
   // 搜索按钮触发,默认请求第一页的数据
   const searchClick = () => {
     if (pager.pageIndex === 1) {
-      if (!form.getFieldValue('productName') && !form.getFieldValue('opeType')) {
-        message.warning('产品名称、设备条件必选其一')
-      } else if (!form.getFieldValue('time')) {
-        message.warning('请选择时间')
+      // !form.getFieldValue('productName') && !form.getFieldValue('opeType')
+      if (!form.getFieldValue('time') || !form.getFieldValue('opeType') || !form.getFieldValue('msg')) {
+        message.warning('设备条件和时间为必选条件！')
       } else {
         getTableData()
       }
