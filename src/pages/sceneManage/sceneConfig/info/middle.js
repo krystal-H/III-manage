@@ -54,6 +54,20 @@ export default function MiddleCom() {
         }
         return defaultImg
     }
+    useEffect(() => {
+        getRuleList(wholeScenceId).then(res => {
+            if (res.data.code === 0) {
+                dispatch({ type: "reRule", payload: res.data.data })
+                if (res.data.data.length) {
+                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+                }else{
+                    setRightData([]) 
+                    setLeftData([])
+                }
+            }
+        })
+        dispatch({ type: "callBackEvent" })
+    }, [wholeScenceId])
     //改变tab
     const changeCurrent = (val, e) => {
         e.stopPropagation()
@@ -69,7 +83,7 @@ export default function MiddleCom() {
             });
             return
         }
-        if (val == state.currentRule) {
+        if (val === state.currentRule) {
             return
         }
         dispatch({ type: "translateTab", payload: val })
@@ -114,6 +128,9 @@ export default function MiddleCom() {
                     </div>
                     <div>
                         {item.conditionExpression}
+                        {/* {
+                            item.conditionName+item.operatorName+item.conditionValue
+                        } */}
                         {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
                 </div>
@@ -126,12 +143,10 @@ export default function MiddleCom() {
     //删除条件
     const delFactor = (index, e) => {
         e.stopPropagation()
-        setLeftData(pre => {
-            let arr = cloneDeep(pre)
-            arr.splice(index, 1)
-            return arr
-        })
-        dispatch({ type: "overViewRule" })
+        let arr = cloneDeep(leftData)
+        arr.splice(index, 1)
+        saveData(arr)
+        // dispatch({ type: "overViewRule" })
     }
     //渲染中间
     const renderDomM = () => {
@@ -292,23 +307,24 @@ export default function MiddleCom() {
                 //         return true
                 //     }
                 // })
-                setLeftData(pre => {
-                    let arr = cloneDeep(pre)
-                    arr.splice(state.formDom.index, 1, state.formDom.data)
-                    return arr
-                })
+                subFactorData()
+                // setLeftData(pre => {
+                //     let arr = cloneDeep(pre)
+                //     arr.splice(state.formDom.index, 1, state.formDom.data)
+                //     return arr
+                // })
             }
         } else if (state.currentEvent === 'reFreshNode') {
             getActive()
         }
         dispatch({ type: "callBackEvent" })
     }, [state.currentEvent])
-    // useEffect(() => {
-    //     setLoadingPage(true)
-    //     setTimeout(() => {
-    //         setLoadingPage(false)
-    //     }, 2000)
-    // }, [state.activePropsId])
+    //提交触发条件
+    const subFactorData = () => {
+        let arr = cloneDeep(leftData)
+        arr.splice(state.formDom.index, 1, state.formDom.data)
+        saveData(arr)
+    }
     //刷新动作卡片
     const getActive = (index) => {
         if (typeof index != 'number') {
@@ -326,7 +342,7 @@ export default function MiddleCom() {
     }
     //获取条件卡片
     const getFactor = (index) => {
-        if (typeof index != 'number') {
+        if (typeof index !== 'number') {
             index = subSceneIndex
         }
         let params = {
@@ -334,7 +350,7 @@ export default function MiddleCom() {
             subSceneIndex: index
         }
         getFatcorInfo(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setLeftData(res.data.data)
                 if (res.data.data.length && res.data.data.length > 1) {
                     if (res.data.data[0].suffix === "&&") {
@@ -347,13 +363,7 @@ export default function MiddleCom() {
         })
     }
     //提交提交数据
-    const saveData = (e) => {
-        // alert(wholeScenceId)
-        // if(wholeScenceId){
-        //     return
-        // }
-        // return
-        e.stopPropagation()
+    const saveData = (leftData) => {
         if (leftData.length) {
             let arr = []
             if (leftData.length > 1 && middleData.length === 0) {
@@ -397,32 +407,28 @@ export default function MiddleCom() {
                 arr.push(obj)
             })
             saveFactor(arr).then(res => {
-                if (res.data.code == 0) {
-                    notification.success({
-                        message: '提示',
-                        description: '保存成功',
-                    });
+                if (res.data.code === 0) {
+                    callBackFn()
                 }
+            }).finally(r => {
             })
         } else {
             clearRule({
                 sceneId: wholeScenceId,
-                subSceneIndex: subSceneIndex
+                subSceneIndex
             }).then(res => {
                 if (res.data.code === 0) {
-                    notification.success({
-                        message: '提示',
-                        description: '保存成功',
-                    });
+                    callBackFn()
                 }
             })
-            // if (middleData.length === 0) {
-            //     notification.info({
-            //         message: '提示',
-            //         description: '没有需要保存的数据',
-            //     });
-            //     return
-            // }
+        }
+        function callBackFn() {
+            notification.success({
+                message: '提示',
+                description: '提交成功',
+            });
+            getFactor()
+            dispatch({ type: "overViewRule" })
         }
     }
     //删除设备动作
@@ -489,7 +495,7 @@ export default function MiddleCom() {
                     </div>
                     <div className='rule-btn-wrap'>
                         <div className='btn-add' onClick={(e) => { newTab(e) }}></div>
-                        <div className='btn-save' onClick={e => { saveData(e) }}></div>
+                        {/* <div className='btn-save' onClick={e => { saveData(e) }}></div> */}
                         {/* <div className='btn-menu'></div> */}
                         <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
                             <div className='btn-menu'></div>

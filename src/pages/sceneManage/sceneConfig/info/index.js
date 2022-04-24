@@ -197,25 +197,29 @@ export const Context = React.createContext();
 export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
-    const wholeScenceId = useMemo(() => {
-        return math.location.pathname.split('/').slice(-1)[0]
-    }, [])
+    const [isShowDom, setIsShowDom] = useState(false)
+    const wholeScenceId = math.location.pathname.split('/').slice(-1)[0]
     if (!wholeScenceId) {
         return '无内容'
     }
     // useLayoutEffect(()=>{
     //     dispatch({ type: "getSceneID", payload: 931 })
     //   },[])
-    useEffect(() => {
-        getRuleList(wholeScenceId).then(res => {
-            if (res.data.code == 0) {
-                dispatch({ type: "reRule", payload: res.data.data })
-                if (res.data.data.length) {
-                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
-                }
-            }
-        })
-    }, [])
+    // useEffect(() => {
+    //     getRuleList(wholeScenceId).then(res => {
+    //         if (res.data.code == 0) {
+    //             dispatch({ type: "reRule", payload: res.data.data })
+    //             if (res.data.data.length) {
+    //                 dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+    //             }
+    //         }
+    //     })
+    //     dispatch({ type: "callBackEvent" })
+    //     // setIsShowDom(false)
+    //     // setTimeout(() => {
+    //     //     setIsShowDom(true)
+    //     // }, 1000)
+    // }, [wholeScenceId])
     useEffect(() => {
         if (state.activePropsId || state.currentRule) {
             setLoadingPage(true)
@@ -227,13 +231,21 @@ export default function FirmwareMagement(math) {
     return (
         <div className='scence-wrapS'>
             <Spin spinning={loadingPage}>
-                <div className='rule-configuration'>
-                    <Context.Provider value={{ state, dispatch, wholeScenceId }}>
-                        <LeftCom />
-                        <MiddleCom />
-                        <RightCom />
-                    </Context.Provider>
-                </div>
+                {
+                    <div className='rule-configuration'>
+                        <Context.Provider value={{ state, dispatch, wholeScenceId }}>
+                            {
+                                <>
+                                    <LeftCom />
+                                    <MiddleCom />
+                                    <RightCom />
+                                </>
+                            }
+
+                        </Context.Provider>
+                    </div>
+                }
+
             </Spin>
         </div>
     )
