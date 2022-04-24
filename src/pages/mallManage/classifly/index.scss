@@ -1,4 +1,19 @@
 .classify-page{
+    .ant-tabs {
+        padding-left: 5px;
+    }
+
+    .top-flex {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        .ant-tabs-bar {
+            margin-top: 8px;
+        }
+        .ant-tabs-nav-container {
+            font-size: 16px;
+        }
+    }
     .classify-top{
         padding: 20px 0;
         text-align: right;
