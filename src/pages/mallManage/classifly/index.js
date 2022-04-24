@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
-import { getList,delData,addDataApi } from '../../../apis/mallClassify'
+import { Card, Input, Button, Tabs, Modal, Form, Tooltip, DatePicker, Upload, message, Table } from 'antd';
+import { getList, delData, addDataApi } from '../../../apis/mallClassify'
 import { DateTool } from '../../../util/utils';
 import './index.scss'
 const FormItem = Form.Item
+const { TabPane } = Tabs
 // const TitleOption = TitleTab.Option
 // const { RangePicker } = DatePicker;
 
@@ -16,20 +17,21 @@ function FirmwareMagement({ form }) {
     const [modelType, setModelType] = useState('add')
     const [actionData, setActionData] = useState({})
     const [loading, setLoading] = useState(false)
+    const [currentTab, setCurrentTab] = useState('0')
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
     };
     useEffect(() => {
         getTableData()
-    }, [pager.pageRows, pager.pageIndex])
+    }, [pager.pageRows, pager.pageIndex, currentTab])
     //列表
     const getTableData = () => {
         setLoading(true)
         getList(pager).then(res => {
             if (res.data.code == 0) {
-                res.data.data.records.forEach((item,index)=>{
-                    item.key=index+1
+                res.data.data.records.forEach((item, index) => {
+                    item.key = index + 1
                 })
                 setdataSource(res.data.data.records)
                 setTotalRows(res.data.data.total)
@@ -109,8 +111,8 @@ function FirmwareMagement({ form }) {
     const handleOk = () => {
         validateFields().then(val => {
             let params = { ...val }
-            if(modelType === 'edit'){
-                params.id=actionData.id
+            if (modelType === 'edit') {
+                params.id = actionData.id
             }
             addDataApi(params).then(res => {
                 if (res.data.code == 0) {
@@ -140,10 +142,29 @@ function FirmwareMagement({ form }) {
         }
 
     }
+
+    // 切换tab
+    const tabChange = (val) => {
+        console.log(val)
+        setCurrentTab(val)
+        // 拉列表数据
+        setPager({ pageIndex: 1, pageRows: 10 })
+    }
+
+    const classifiyTypeMap = ['硬件产品', '通信模组']
     return (
         <div className="classify-page">
             <Card>
-                <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                <div className='top-flex'>
+                    <Tabs activeKey={currentTab} onChange={val => tabChange(val)}>
+                        {
+                            classifiyTypeMap.map((item, index) => {
+                                return <TabPane tab={`${item}`} key={index + ""}></TabPane>
+                            })
+                        }
+                    </Tabs>
+                    <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                </div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
                     bordered
@@ -152,9 +173,9 @@ function FirmwareMagement({ form }) {
                         current: pager.pageIndex,
                         onChange: pagerChange,
                         pageSize: pager.pageRows,
-                        total: totalRows,
+                        total: dataSource.length,
                         showQuickJumper: true,
-                        showTotal: () => <span>共 <a>{totalRows}</a> 条</span>
+                        showTotal: () => <span>共 <a>{dataSource.length}</a> 条</span>
                     }}
                 />
             </Card>
@@ -167,16 +188,20 @@ function FirmwareMagement({ form }) {
                 >
                     <Form {...formItemLayout} >
                         <FormItem label="分类名称">
-                            {getFieldDecorator('classifyName', { initialValue:modelType === 'add' ? '' : actionData.classifyName
-                            ,rules: [{ required: true, message: '请输入分类名称' }] })(
+                            {getFieldDecorator('classifyName', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyName
+                                , rules: [{ required: true, message: '请输入分类名称' }]
+                            })(
                                 <Input  ></Input>
                             )}
                         </FormItem>
                         <FormItem label="排序值">
-                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue,getValueFromEvent: (e) => {
+                            {getFieldDecorator('classifyValue', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyValue, getValueFromEvent: (e) => {
                                     const val = e.target.value;
                                     return val.replace(/[^\d]/g, '');
-                                }})(
+                                }
+                            })(
                                 <Input  ></Input>
                             )}
                         </FormItem>
