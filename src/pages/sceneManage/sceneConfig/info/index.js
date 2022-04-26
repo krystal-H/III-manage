@@ -32,6 +32,12 @@ function loginReducer(state2, action) {
     let state = cloneDeep(state2)
     switch (action.type) {
         //显示规则
+        case 'subLogic':
+            return {
+                ...state,
+                currentEvent: "refreshLogic"
+            }
+        //显示规则
         case 'overViewRule':
             return {
                 ...state,

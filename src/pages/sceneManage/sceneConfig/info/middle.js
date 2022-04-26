@@ -60,8 +60,8 @@ export default function MiddleCom() {
                 dispatch({ type: "reRule", payload: res.data.data })
                 if (res.data.data.length) {
                     dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
-                }else{
-                    setRightData([]) 
+                } else {
+                    setRightData([])
                     setLeftData([])
                 }
             }
@@ -130,6 +130,10 @@ export default function MiddleCom() {
                         {item.conditionExpression}
                         {/* {
                             item.conditionName+item.operatorName+item.conditionValue
+                        } */}
+                        {/* {
+                            item.conditionTypeId === 1 ? item.conditionName + item.operatorName + item.queryParamName : 
+                            item.conditionName + item.operatorName + item.queryParamName
                         } */}
                         {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
@@ -236,7 +240,10 @@ export default function MiddleCom() {
     }
     useEffect(() => {
         setRightData([])
-        // setMiddleData([])
+        setMiddleData([{
+            title: 'AND',
+            key: '2-and',
+        }])
         setLeftData([])
         if (state.currentRule > 0) {
             let value
@@ -300,22 +307,15 @@ export default function MiddleCom() {
 
         } else if (state.currentEvent === 'saveNode') {
             if (state.formDom.nodeType == 1) {
-                // console.log(leftData,'===')
-                // leftData.find((item,index)=>{
-                //     if(index===state.formDom.index) return false
-                //     if(item.conditionOptionId === state.formDom.conditionOptionId ){
-                //         return true
-                //     }
-                // })
                 subFactorData()
-                // setLeftData(pre => {
-                //     let arr = cloneDeep(pre)
-                //     arr.splice(state.formDom.index, 1, state.formDom.data)
-                //     return arr
-                // })
             }
         } else if (state.currentEvent === 'reFreshNode') {
             getActive()
+        }else if(state.currentEvent === 'refreshLogic') {
+            if(leftData.length !==0){
+                saveData(leftData)
+            }
+            
         }
         dispatch({ type: "callBackEvent" })
     }, [state.currentEvent])
@@ -323,19 +323,34 @@ export default function MiddleCom() {
     const subFactorData = () => {
         let arr = cloneDeep(leftData)
         arr.splice(state.formDom.index, 1, state.formDom.data)
+        let isCover = leftData.find((item, index) => {
+            if (index === state.formDom.index) return false
+            if (item.conditionId === state.formDom.data.conditionId && item.conditionOptionId === state.formDom.data.conditionOptionId) {
+                return true
+            }
+            return false
+        })
+        if (isCover) {
+            notification.info({
+                message: '提示',
+                description: '配置条件有重复',
+            });
+            return
+        }
         saveData(arr)
     }
     //刷新动作卡片
     const getActive = (index) => {
-        if (typeof index != 'number') {
+        if (typeof index !== 'number') {
             index = subSceneIndex
         }
         let params = {
             sceneId: wholeScenceId,
             subSceneIndex: index
         }
+        dispatch({ type: "overViewRule" })
         getActiveInfo(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setRightData(res.data.data)
             }
         })
@@ -375,15 +390,15 @@ export default function MiddleCom() {
                     return
                 }
             }
-            if (leftData.length === 1) {
-                if (middleData[0].title == 'OR') {
-                    notification.info({
-                        message: '提示',
-                        description: '触发条件只有一个时，逻辑符只能是且',
-                    });
-                    return
-                }
-            }
+            // if (leftData.length === 1) {
+            //     if (middleData[0].title == 'OR') {
+            //         notification.info({
+            //             message: '提示',
+            //             description: '触发条件只有一个时，逻辑符只能是且',
+            //         });
+            //         return
+            //     }
+            // }
             let equivalentConditionId = new Date().getTime()
             let unikeyT = 0
             leftData.forEach((item, index) => {
