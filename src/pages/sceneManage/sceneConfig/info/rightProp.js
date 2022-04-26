@@ -59,7 +59,7 @@ function RightCom({ form }) {
                 }
             })
         } else {
-            setAiPropsList([])
+            setAiPropsList([{ key: '无' }])
         }
     }, [state.wholeInfo.aiId])
     const getImg = info => {

@@ -127,7 +127,11 @@ export default function MiddleCom() {
                         <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
                     </div>
                     <div>
-                        {item.conditionExpression}
+                        {/* {item.conditionExpression} */}
+                        {
+                            item.conditionInstanceId ?  item.paramStyleId === 1 ? <span>{item.conditionName+item.operatorName +item.conditionValue}</span> : 
+                            <span>{item.conditionName+item.operatorName +item.queryParamName}</span> : ''
+                        }
                         {/* {
                             item.conditionName+item.operatorName+item.conditionValue
                         } */}
@@ -278,13 +282,30 @@ export default function MiddleCom() {
         }
         return true
     }
+    const isHasFist=()=>{
+        if(leftData.length){
+            if(state.nodeInfo.nodeInfo.conditionId === 26 || leftData[0].conditionId === 26 ){
+                return false
+            }
+        }
+        return true
+    }
     useEffect(() => {
         if (state.currentEvent === 'addNode') {
             let isTrue = checkIsContinue()
+            let isContinue=isHasFist()
             if (!isTrue) {
                 notification.info({
                     message: '提示',
                     description: '有未完善数据',
+                });
+                dispatch({ type: "callBackEvent" })
+                return
+            }
+            if(!isContinue){
+                notification.info({
+                    message: '提示',
+                    description: '条件不合理',
                 });
                 dispatch({ type: "callBackEvent" })
                 return

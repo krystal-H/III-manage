@@ -37,7 +37,7 @@ function RightComH({ form }) {
             }
             val.sceneId = wholeScenceId
             saveGloalInfo(val).then(res => {
-                if (res.data.code == 0) {
+                if (res.data.code === 0) {
                     notification.success({
                         message: '提示',
                         description: '修改成功',
@@ -53,27 +53,31 @@ function RightComH({ form }) {
     // }, [state.showTab])
     useEffect(() => {
         getAIList().then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setAiList(res.data.data.list)
             }
         })
         let pamams = { paged: false }
         getAppList(pamams).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 let data = res.data.data.map(item => {
                     return { label: item.appName, value: item.appId }
                 })
                 setAppList(data)
             }
         })
-        getSceneInfo()
+        // getSceneInfo()
     }, [])
+    useEffect(() => {
+        if (wholeScenceId) {
+            getSceneInfo()
+        }
+    }, [wholeScenceId])
     //获取详情
     const getSceneInfo = () => {
         getsceneDetail(wholeScenceId).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 let data = res.data.data.scene
-                // setOriginData(res.data.data.scene)
                 let relSceneApps = data.relSceneApps.map(item => {
                     return item.appId
                 })

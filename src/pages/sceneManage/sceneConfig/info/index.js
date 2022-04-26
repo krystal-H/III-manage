@@ -168,6 +168,7 @@ function loginReducer(state2, action) {
             return {
                 ...state,
                 wholeInfo: action.payload,
+                showTab: '1',
             }
         //新增规则tab=====
         case 'newTab':

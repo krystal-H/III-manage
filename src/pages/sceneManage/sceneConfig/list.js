@@ -22,7 +22,7 @@ class List extends Component {
       addVisable: false
     };
     this.column = [
-      { title: '标题', dataIndex: 'sceneName', width: 250 },
+      { title: '标题', dataIndex: 'sceneName', width: 250 ,render: text => <span title={text}>{text}</span>},
       { title: '规则数', dataIndex: 'ruleNum' },
       { title: '订阅app数', dataIndex: 'bindAppNum', },
       { title: '历史活跃度', dataIndex: 'vigorIndex' },
