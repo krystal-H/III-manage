@@ -6,7 +6,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
     const sundata = () => {
         validateFields().then(val => {
-            sentREset({ id: actionData.id, phoneNumber: val.phoneNumber }).then(res => {
+            sentREset({ accountName: actionData.accountName, phone: val.phone }).then(res => {
                 if (res.data.code === 0) {
                     message.success('提交成功')
                     handleOk()
@@ -28,7 +28,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
     useEffect(() => {
         if (type !== 'info') {
             setFieldsValue({
-                phoneNumber: actionData.phoneNumber
+                phone: actionData.phone
             })
         }
 
@@ -46,11 +46,11 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
                 <div className='system-modal-edit'>
                     <Form {...formItemLayout}>
                         <FormItem label="账户名">
-                            <span className='item-text'>{actionData.accountName}</span>
+                            <span className='item-text'>{actionData.userName}</span>
                             {/* <span>@clife.cn</span> */}
                         </FormItem>
                         <FormItem label="厂商名称">
-                            <span>{actionData.manufacturerName}</span>
+                            <span>{actionData.nickName}</span>
                         </FormItem>
                         <FormItem label="初始密码">
                             <span className='item-text'>Het@2&</span>
@@ -58,7 +58,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
                         </FormItem>
                         <FormItem label="密码发送手机号" >
                             {
-                                type === 'info' ? <span>{actionData.phoneNumber}</span> : getFieldDecorator('phoneNumber', {
+                                type === 'info' ? <span>{actionData.phone}</span> : getFieldDecorator('phone', {
                                     rules: [{ required: true, message: '请输入banner名称' }
                                         , { pattern: /^(((\d{3,4}-)?\d{7,8})|(1\d{10}))$/, message: '请输入正确的联系人手机号码', }]
                                 })(

@@ -43,34 +43,39 @@ function FirmwareMagement({ form }) {
     const column = [
         {
             title: '账户名',
-            dataIndex: 'accountName',
-            key: 'accountName',
+            dataIndex: 'userName',
+            key: 'userName',
         },
         {
             title: '厂商名称',
-            dataIndex: 'manufacturerName',
-            key: 'manufacturerName'
+            dataIndex: 'nickName',
+            key: 'nickName'
         },
-        {
-            title: '账号类型',
-            dataIndex: 'accountType',
-            key: 'accountType'
-        },
+        // {
+        //     title: '账号类型',
+        //     dataIndex: 'userType',
+        //     key: 'userType'
+        // },
         {
             title: '创建时间',
-            dataIndex: 'createTime',
-            key: 'createTime',
-            render(createTime) {
-                return createTime && DateTool.utcToDev(createTime);
+            dataIndex: 'regTime',
+            key: 'regTime',
+            render(regTime) {
+                return regTime && DateTool.utcToDev(regTime);
             }
         },
         {
             title: '更新时间',
-            dataIndex: 'updateTime',
-            key: 'updateTime',
-            render(updateTime) {
-                return updateTime && DateTool.utcToDev(updateTime);
+            dataIndex: 'modifyTime',
+            key: 'modifyTime',
+            render(modifyTime) {
+                return modifyTime && DateTool.utcToDev(modifyTime);
             }
+        },
+        {
+            title: '备注',
+            dataIndex: 'remark',
+            key: 'remark'
         },
         {
             title: '操作',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Input, message, Select, Icon, Divider, Modal, Form, Tooltip, DatePicker, Upload } from 'antd';
 import { addAccount } from '../../../apis/accountMn'
 const FormItem = Form.Item
+const { TextArea } = Input;
 function Addmodal({ form, addVis, handleCancel, handleOk }) {
     const { getFieldDecorator, validateFields } = form;
     const sundata = () => {
