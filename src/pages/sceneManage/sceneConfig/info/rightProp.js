@@ -119,7 +119,7 @@ function RightCom({ form }) {
             return
         }
         for (let key in params) {
-            if (typeof params[key] == 'undefined') {
+            if (typeof params[key] === 'undefined') {
                 delete params[key]
             }
         }
@@ -538,7 +538,6 @@ function RightCom({ form }) {
                 </div>
                 <Form.Item
                     label='功能字段'
-
                 >
                     {getFieldDecorator(`names[${k.unlkey}].deviceFunctionId`, {
                         initialValue: k.deviceFunctionId ? k.deviceFunctionId + '' : ''
@@ -589,8 +588,9 @@ function RightCom({ form }) {
                                     if (data.paramStyleId === 1) {
                                         return <InputNumber min={getCriticalVal2('min', data.functionParams)}
                                             max={getCriticalVal2('max', data.functionParams)} style={{ width: "100%" }}
-                                            formatter={value => data.unit ? `${value}${data.unit.unitCode}` : value}
-                                            parser={value => data.unit ? value.replace(data.unit.unitCode, '') : value} />
+                                        // formatter={value => data.unit ? `${value}${data.unit.unitCode}` : value}
+                                        // parser={value => data.unit ? value.replace(data.unit.unitCode, '') : value} 
+                                        />
                                     } else {
                                         return <Select>
                                             {data.functionParams.map((item, index) => (

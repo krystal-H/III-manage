@@ -47,7 +47,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
                     <Form {...formItemLayout}>
                         <FormItem label="账户名">
                             <span className='item-text'>{actionData.accountName}</span>
-                            <span>@clife.cn</span>
+                            {/* <span>@clife.cn</span> */}
                         </FormItem>
                         <FormItem label="厂商名称">
                             <span>{actionData.manufacturerName}</span>

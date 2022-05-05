@@ -31,8 +31,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                     <Form {...formItemLayout}>
                         <FormItem label="账户名">
                             {getFieldDecorator('accountName', { rules: [{ required: true, message: '请输入账户名称' }] })(
-                                <div><Input style={{ width: '220px' }} ></Input>
-                                    <span style={{ marginLeft: '10px' }}>@clife.cn</span></div>
+                                <div><Input style={{ width: '220px' }} ></Input></div>
 
                             )}
                         </FormItem>
@@ -45,8 +44,10 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                             <span>Het@2&</span>
                         </FormItem>
                         <FormItem label="密码发送手机号">
-                            {getFieldDecorator('phoneNumber', { rules: [{ required: true, message: '请输入手机号' },
-                            { pattern: /^(((\d{3,4}-)?\d{7,8})|(1\d{10}))$/, message: '请输入正确的联系人手机号码', }] })(
+                            {getFieldDecorator('phoneNumber', {
+                                rules: [{ required: true, message: '请输入手机号' },
+                                { pattern: /^(((\d{3,4}-)?\d{7,8})|(1\d{10}))$/, message: '请输入正确的联系人手机号码', }]
+                            })(
                                 <Input style={{ width: '100%' }} ></Input>
                             )}
                         </FormItem>

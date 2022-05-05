@@ -22,7 +22,7 @@ class List extends Component {
       addVisable: false
     };
     this.column = [
-      { title: '标题', dataIndex: 'sceneName', width: 250 ,render: text => <span title={text}>{text}</span>},
+      { title: '标题', dataIndex: 'sceneName', width: 250, render: text => <span title={text}>{text}</span> },
       { title: '规则数', dataIndex: 'ruleNum' },
       { title: '订阅app数', dataIndex: 'bindAppNum', },
       { title: '历史活跃度', dataIndex: 'vigorIndex' },
@@ -30,7 +30,7 @@ class List extends Component {
       {
         title: '操作', dataIndex: 'sceneId', width: 200,
         render: (sceneId, { enable }) => <span className='comman-table-margin'>
-          <Link  target="_black" to={{ pathname: "/sceneMgt/sceneConfig/detail/"+sceneId }}>详情</Link>
+          <Link target="_black" to={{ pathname: "/sceneMgt/sceneConfig/detail/" + sceneId }}>详情</Link>
           {/* <a onClick={() => this.goDetail(sceneId)} >详情</a> */}
           <a onClick={() => this.enableH(sceneId, enable ? 0 : 1)} >{enable == 1 ? '禁用' : '启用'}</a>
           <a onClick={() => this.deleteH(sceneId)} >删除</a>
@@ -54,7 +54,7 @@ class List extends Component {
   goDetail = (id) => {
     // this.props.history.push(`/sceneMgt/sceneConfig/detail/${id}`)
     // window.open
-    window.open(window.location.origin + window.location.pathname + '#/sceneMgt/sceneConfig/detail/' + id) ;
+    window.open(window.location.origin + window.location.pathname + '#/sceneMgt/sceneConfig/detail/' + id);
   }
   getList = (index) => {
     if (index) {
@@ -93,8 +93,11 @@ class List extends Component {
       content: `是否确认${t}?`,
       onOk: () => {
         axios.Post('expert/scene/enable/v2.0', { sceneId, enable }).then(r => {
-          notification.success({ message: `${t}成功` });
-          this.getList(this.state.pageIndex)
+          if(r.data.code===0){
+            notification.success({ message: `${t}成功` });
+            this.getList(this.state.pageIndex)
+          }
+          
         });
       }
     });
@@ -135,49 +138,52 @@ class List extends Component {
         <div className="comm-contont-card">
           <Table rowKey="sceneId" columns={this.column} dataSource={list} pager={{ ...pager, pageIndex }} onPageChange={this.getList} />
         </div>
-        <Modal
-          title="新建场景"
-          visible={addVisable}
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-        >
-          <Form  {...formItemLayout}>
-            <Form.Item
-              label="场景名称"
-            >
-              {getFieldDecorator('sceneName', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入场景名称',
-                  },
-                  {
-                    max: 20,
-                    message: '场景名称不能超过20个字符',
-                  },
-                ],
-              })
-                (<Input placeholder='请输入场景名称' />)}
-            </Form.Item>
-            <Form.Item
-              label="场景描述"
-            >
-              {getFieldDecorator('summary', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入场景描述',
-                  },
-                  {
-                    max: 100,
-                    message: '场景描述不能超过100个字符',
-                  },
-                ],
-              })
-                (<TextArea placeholder='请输入场景描述' />)}
-            </Form.Item>
-          </Form>
-        </Modal>
+        {
+          addVisable && <Modal
+            title="新建场景"
+            visible={addVisable}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
+            <Form  {...formItemLayout}>
+              <Form.Item
+                label="场景名称"
+              >
+                {getFieldDecorator('sceneName', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请输入场景名称',
+                    },
+                    {
+                      max: 12,
+                      message: '场景名称不能超过12个字符',
+                    },
+                  ],
+                })
+                  (<Input placeholder='请输入场景名称' />)}
+              </Form.Item>
+              <Form.Item
+                label="场景描述"
+              >
+                {getFieldDecorator('summary', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '请输入场景描述',
+                    },
+                    {
+                      max: 100,
+                      message: '场景描述不能超过100个字符',
+                    },
+                  ],
+                })
+                  (<TextArea placeholder='请输入场景描述' />)}
+              </Form.Item>
+            </Form>
+          </Modal>
+        }
+
       </div>
     )
   }

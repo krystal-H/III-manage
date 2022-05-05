@@ -102,6 +102,14 @@ export default function MiddleCom() {
     //点击节点
     const clickNode = (data, nodeType, index, e) => {
         e.stopPropagation()
+        if (state.currentRule === -1) {
+            notification.info({
+                message: '提示',
+                description:
+                    '先完善规则',
+            });
+            return
+        }
         if (state.activePropsId == data.conditionId + '_' + index && nodeType == 1) {
             return
         }
@@ -127,22 +135,14 @@ export default function MiddleCom() {
                         <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
                     </div>
                     <div>
-                        {/* {item.conditionExpression} */}
                         {
-                            item.conditionInstanceId ?  item.paramStyleId === 1 ? <span>{item.conditionName+item.operatorName +item.conditionValue}</span> : 
-                            <span>{item.conditionName+item.operatorName +item.queryParamName}</span> : ''
+                            item.conditionInstanceId ? item.conditionId === 26 ? '立即执行:是' :
+                                item.paramStyleId === 1 ? <span>{item.conditionName + item.operatorName + item.conditionValue}</span> :
+                                    <span>{item.conditionName + item.operatorName + item.queryParamName}</span> : ''
                         }
-                        {/* {
-                            item.conditionName+item.operatorName+item.conditionValue
-                        } */}
-                        {/* {
-                            item.conditionTypeId === 1 ? item.conditionName + item.operatorName + item.queryParamName : 
-                            item.conditionName + item.operatorName + item.queryParamName
-                        } */}
                         {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
                 </div>
-                {/* <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} /> */}
                 <img src={closeImg} className='del-btn' onClick={(e) => { delFactor(index, e) }} />
             </div>
         })
@@ -189,7 +189,7 @@ export default function MiddleCom() {
                         text += item.deviceFunctionName + ':' + '关联AI' + ';'
                     } else {
                         if (item.paramStyleId == 1) {
-                            text += item.deviceFunctionName + ':' + item.actionParamValue + item.unitCode + ';'
+                            text += item.deviceFunctionName + ':' + item.actionParamValue + (item.unitCode !== '无' ? item.unitCode : '') + ';'
                         } else {
                             text += item.deviceFunctionName + ':' + item.functionParamName + ';'
                         }
@@ -263,12 +263,12 @@ export default function MiddleCom() {
     }, [state.currentRule])
     const checkIsContinue = () => {
         let check1 = leftData.findIndex(item => {
-            if (typeof item.operatorId == 'undefined') {
+            if (typeof item.operatorId === 'undefined') {
                 return true
             }
         })
         let check2 = rightData.findIndex(item => {
-            if (typeof item.actionsId == 'undefined') {
+            if (typeof item.actionsId === 'undefined') {
                 return true
             }
         })
@@ -282,9 +282,9 @@ export default function MiddleCom() {
         }
         return true
     }
-    const isHasFist=()=>{
-        if(leftData.length){
-            if(state.nodeInfo.nodeInfo.conditionId === 26 || leftData[0].conditionId === 26 ){
+    const isHasFist = () => {
+        if (leftData.length) {
+            if (state.nodeInfo.nodeInfo.conditionId === 26 || leftData[0].conditionId === 26) {
                 return false
             }
         }
@@ -293,7 +293,7 @@ export default function MiddleCom() {
     useEffect(() => {
         if (state.currentEvent === 'addNode') {
             let isTrue = checkIsContinue()
-            let isContinue=isHasFist()
+            let isContinue = isHasFist()
             if (!isTrue) {
                 notification.info({
                     message: '提示',
@@ -302,7 +302,7 @@ export default function MiddleCom() {
                 dispatch({ type: "callBackEvent" })
                 return
             }
-            if(!isContinue){
+            if (!isContinue) {
                 notification.info({
                     message: '提示',
                     description: '条件不合理',
@@ -317,6 +317,14 @@ export default function MiddleCom() {
                     return arr
                 })
             } else if (state.nodeInfo.nodeType == 2) {
+                if (leftData.length < 2 && state.nodeInfo.nodeInfo.title === 'OR') {
+                    notification.info({
+                        message: '提示',
+                        description: '至少需要两个条件才能切换or逻辑',
+                    });
+                    dispatch({ type: "callBackEvent" })
+                    return
+                }
                 setMiddleData([state.nodeInfo.nodeInfo])
             } else if (state.nodeInfo.nodeType == 3) {
                 setRightData(pre => {
@@ -332,11 +340,11 @@ export default function MiddleCom() {
             }
         } else if (state.currentEvent === 'reFreshNode') {
             getActive()
-        }else if(state.currentEvent === 'refreshLogic') {
-            if(leftData.length !==0){
+        } else if (state.currentEvent === 'refreshLogic') {
+            if (leftData.length !== 0) {
                 saveData(leftData)
             }
-            
+
         }
         dispatch({ type: "callBackEvent" })
     }, [state.currentEvent])

@@ -108,12 +108,12 @@ function RightComH({ form }) {
                     <Form colon={false}>
                         <FormItem label="场景名称">
                             {getFieldDecorator('sceneName', { rules: [{ required: true, message: '请输入场景名称' }] })(
-                                <Input style={{ width: '100%' }} placeholder='未命名规则'></Input>
+                                <Input style={{ width: '100%' }} placeholder='未命名规则' maxLength={12}></Input>
                             )}
                         </FormItem>
                         <FormItem label="场景描述">
                             {getFieldDecorator('summary', {})(
-                                <TextArea style={{ width: '100%' }} ></TextArea>
+                                <TextArea style={{ width: '100%',height:'100px' }} maxLength={100}></TextArea>
                             )}
                         </FormItem>
                         <FormItem label="场景图片" >
@@ -125,7 +125,6 @@ function RightComH({ form }) {
                                     preferSize={'750px*550px'}
                                     isNotImg={false}
                                     maxSize={10} />
-
                             )}
                         </FormItem>
                         <FormItem label="关联AI能力">

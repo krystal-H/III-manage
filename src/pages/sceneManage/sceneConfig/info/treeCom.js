@@ -9,7 +9,15 @@ const myDemo = ({ treeData = [], tabType }) => {
     const [autoExpandParent, setAutoExpandParent] = useState(false)
     const [expandedKeys, setExpandedKeys] = useState([])
     const sentData = dataSource => {
-        if (!state.pannelTab.length || state.currentRule <1) {
+        if (state.currentRule === -1) {
+            notification.info({
+                message: '提示',
+                description:
+                    '先完善规则',
+            });
+            return
+        }
+        if (!state.pannelTab.length || state.currentRule < 1) {
             notification.info({
                 message: '提示',
                 description:
