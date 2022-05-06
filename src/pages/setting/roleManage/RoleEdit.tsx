@@ -7,7 +7,7 @@ import { actionCreators } from './store';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 import { getAppAuth, subAppAuth, getAppAuthOwn } from '../../../apis/roleManage'
-
+const { Search } = Input;
 const FormItem = Form.Item;
 const TabPane = Tabs.TabPane;
 
@@ -44,7 +44,8 @@ class RoleEdit extends React.Component<IProps, any> {
         super(props);
         this.state = {
             applist: [],
-            checkedList: []
+            checkedList: [],
+            showAppList: []
         };
     }
     // 保存
@@ -85,8 +86,9 @@ class RoleEdit extends React.Component<IProps, any> {
 
     componentWillReceiveProps(nextProps: IProps) {
         const { visible, roleItem } = nextProps;
+        const { applist} = this.state
         if (!visible) {
-            this.setState({ checkedList: [] })
+            this.setState({ checkedList: [], showAppList:applist})
         }
 
         // 打开弹窗
@@ -108,32 +110,62 @@ class RoleEdit extends React.Component<IProps, any> {
                         value: item.appId
                     }
                 })
-                this.setState({ applist: arr })
+                this.setState({ applist: arr, showAppList: arr })
             }
         })
     }
     //==获取app详情
     getAppInfo = (id: number) => {
-        getAppAuthOwn({roleId: id }).then(res => {
+        getAppAuthOwn({ roleId: id }).then(res => {
             if (res.data.code === 0) {
-                // let data = res.data.data.formDataString
-                // data = data || JSON.stringify({ appInfoList: [] })
-
-                // let arr = JSON.parse(data).appInfoList.map((item: any) => {
-                //     return item.appId
-                // })
-                let arr=res.data.data.appIds.split(',').map((item:any)=>Number(item))
+                let arr = res.data.data.appIds.split(',').map((item: any) => Number(item))
                 this.setState({ checkedList: arr })
             }
         })
     }
     //勾选
-    oncheckChange = (checkedList: CheckDataKey) => {
-        this.setState({ checkedList: checkedList })
+    oncheckChange = (checkedList2: CheckDataKey) => {
+        const { applist, checkedList, showAppList } = this.state
+        if(applist.length===showAppList.length){
+            this.setState({ checkedList: checkedList2 })
+        }else{
+            let arr:any=[]
+            let coverArr=applist.filter((item:any)=>{
+                return showAppList.find((item2:any)=>{
+                    return item2.value===item.value
+                })
+            })
+            checkedList.forEach((item:any)=>{
+                let ishas=coverArr.find((item2:any)=>{
+                    return item2.value===item
+                })
+                if(!ishas){
+                    arr.push(item)
+                }
+            })
+            this.setState({ checkedList: arr.concat(checkedList2) })
+        }
+        
+    }
+    goFilter = (val: string) => {
+        let originArr = JSON.parse(JSON.stringify(this.state.applist))
+        let arr: any[]=[]
+        if (!val || !val.trim()) {
+            this.setState({ showAppList: originArr })
+            return
+        }
+
+        originArr.forEach((item: any) => {
+            console.log(item, 99)
+            if (item.label.indexOf(val) > -1 || item.value == val) {
+                arr.push(item)
+            }
+        })
+        this.setState({ showAppList: arr })
     }
     render() {
         const { visible, form, authList, target, roleItem } = this.props;
-        const { applist, checkedList } = this.state
+        const { applist, checkedList, showAppList } = this.state
         const { getFieldDecorator } = form;
         const formItemLayout = {
             labelCol: { span: 6 },
@@ -187,9 +219,14 @@ class RoleEdit extends React.Component<IProps, any> {
                     </div>
                     {
                         <div className="account-auth" style={{ marginTop: '10px' }}>
-                            <h3>适配平台：</h3>
+                            <div className='account-app-wrap'>
+                                <h3>适配平台：</h3>
+                                <Search placeholder="输入app名称或id" onSearch={this.goFilter} enterButton style={{ width: '300px' }} />
+                            </div>
+
+
                             <div className="account-auth-tab app-list-tab">
-                                <Checkbox.Group options={applist} value={checkedList} onChange={this.oncheckChange.bind(this)} />
+                                <Checkbox.Group options={showAppList} value={checkedList} onChange={this.oncheckChange.bind(this)} />
                             </div>
                         </div>
                     }
