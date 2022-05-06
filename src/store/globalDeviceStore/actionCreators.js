@@ -99,7 +99,7 @@ export const getAuthModule = () => {
           }
           return authList.includes(item.path) || checkSystemRoute(item.path);
         });
-        // console.log(111,authRoutes);
+        // console.log(data, 111,authRoutes);
         dispatch(setAuthModule(data, authRoutes));
       }
     });

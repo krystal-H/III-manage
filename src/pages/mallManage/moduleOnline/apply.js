@@ -33,9 +33,9 @@ function FirmwareMagement({ form, supplyVis, confirmSupply, cancelSupply, action
         onCancel={cancelSupply}
     >
         <Form {...formItemLayout} >
-            <FormItem label="产品名称">
+            <FormItem label="模组型号">
                 <div>
-                    <span style={{ marginRight: '30px' }}>{actionData.commodityName}</span>
+                    <span style={{ marginRight: '30px' }}>{actionData.hetModuleTypeName}</span>
                     <span style={{ marginRight: '10px' }}>现有库存</span>
                     <span>{actionData.currentStock}</span>
                 </div>
@@ -48,7 +48,7 @@ function FirmwareMagement({ form, supplyVis, confirmSupply, cancelSupply, action
                         return val.replace(/[^\d]/g, '');
                     }
                 })(
-                    <Input  ></Input>
+                    <Input></Input>
                 )}
             </FormItem>
         </Form>

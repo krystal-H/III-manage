@@ -42,14 +42,14 @@ function Addmodal({ form, history, editData = {} }) {
     const [moduleClassify, setModuleClassify] = useState([]) // 模组分类列表
 
     useEffect(() => {
-        getParentIdRequest({ classifyLevel: 1 }).then(res => {
-            console.log(res, '23333')
-            const temp = res.data.data.filter(item => item.classifyName == "通信模组")
-            getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
-                console.log(res, '模组分类')
-                setModuleClassify(res.data.data.list || [])
-            })
-        })
+        // getParentIdRequest({ classifyLevel: 1 }).then(res => {
+        //     console.log(res, '23333')
+        //     const temp = res.data.data.filter(item => item.classifyName == "通信模组")
+        //     getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
+        //         console.log(res, '模组分类')
+        //         setModuleClassify(res.data.data.list || [])
+        //     })
+        // })
 
         if (pageInfo.id) {
             renderDom()
@@ -63,7 +63,7 @@ function Addmodal({ form, history, editData = {} }) {
     //             setOriginData(res.data.data)
     //             let obj = {}
     //             let arr = ['salesPolicy', 'commodityStandard']
-    //             let fileArr = ['commodityInstructions', 'commodityPicture']
+    //             let fileArr = ['technicalDoc', 'commodityPicture']
     //             Object.keys(getFieldsValue()).map(item => {
     //                 if (arr.indexOf(item) > -1) {
 
@@ -84,8 +84,8 @@ function Addmodal({ form, history, editData = {} }) {
     //             if (obj.commodityPicture) {
     //                 $el1.current.setFileList(obj.commodityPicture)
     //             }
-    //             if (obj.commodityInstructions) {
-    //                 $el2.current.setFileList(obj.commodityInstructions)
+    //             if (obj.technicalDoc) {
+    //                 $el2.current.setFileList(obj.technicalDoc)
     //             }
     //            
     //             $el4.current.renderText(res.data.data.commodityStandard || '')
@@ -96,7 +96,7 @@ function Addmodal({ form, history, editData = {} }) {
     const sundata = () => {
         validateFields().then(val => {
             console.log('验证后---------------', val)
-            let fileArr = ['commodityInstructions', 'commodityPicture']
+            let fileArr = ['technicalDoc', 'commodityPicture']
             fileArr.forEach(item => {
                 if (val[item] && val[item].length) {
                     val[item] = val[item].reduce((total, currentValue) => {
@@ -367,7 +367,7 @@ function Addmodal({ form, history, editData = {} }) {
                         <Wangeditor divId={'wangedit-product-detail'} ref={$el4} />
                     </FormItem>
                     <FormItem label="技术文档">
-                        {getFieldDecorator('commodityInstructions', { rules: [{ required: true, message: '请上传文件' }] })(
+                        {getFieldDecorator('technicalDoc', { rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el2}
                                 maxCount={3}
@@ -503,7 +503,7 @@ function ProductInfo({ id }) {
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>技术文档：</div>
-                <div className='item-text item-img'>{getFile(dataInfo.commodityInstructions)}</div>
+                <div className='item-text item-img'>{getFile(dataInfo.technicalDoc)}</div>
             </div>
         </div>
         <div className='item-wrap'>
