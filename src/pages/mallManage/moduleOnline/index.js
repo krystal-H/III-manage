@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Input, Button, Select, notification, Table, Modal, Form, Tooltip, DatePicker, Upload, message } from 'antd';
-import { getListApi, publicCommodityApi, offCommodityApi, editStock } from '../../../apis/mallProduct'
 // import PreviewModal from './previewInfo'
 import ApplyGoods from './apply'
 import './index.scss'
+import {
+  getListRequest
+} from '../../../apis/mallManage'
+
 const FormItem = Form.Item
 
 function FirmwareMagement({ form, match, history }) {
@@ -11,13 +14,15 @@ function FirmwareMagement({ form, match, history }) {
   const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
   const { getFieldDecorator, validateFields, getFieldsValue, resetFields } = form;
   const [totalRows, setTotalRows] = useState(0)
-  const [dataSource, setdataSource] = useState([])
+  const [dataSource, setdataSource] = useState([{}])
   const [supplyVis, setSupplyVis] = useState(false)
   const [actionData, setActionData] = useState({})
   const [loading, setLoading] = useState(false)
+
   useEffect(() => {
-    // getTableData()
+    getTableData()
   }, [pager.pageRows, pager.pageIndex])
+
   //列表
   const getTableData = () => {
     let data = getFieldsValue()
@@ -26,7 +31,7 @@ function FirmwareMagement({ form, match, history }) {
     }
     let params = { ...data, ...pager }
     setLoading(true)
-    getListApi(params).then(res => {
+    getListRequest(params).then(res => {
       if (res.data.code === 0) {
         setdataSource(res.data.data.records)
         setTotalRows(res.data.data.total)

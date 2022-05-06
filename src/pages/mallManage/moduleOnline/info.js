@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Input, message, Select, Form, Button, InputNumber } from 'antd';
+import { Input, message, Select, Form, Button, InputNumber, Spin } from 'antd';
 import Wangeditor from '../../../components/WangEdit';
 import { getDetailByIdApi, publicCommodityApi, getDetailApi } from '../../../apis/mallProduct'
+import { searchModuleRequest, getParentIdRequest, getModuleListRequest, saveModuleInfoRequest } from '../../../apis/mallManage'
 import { getList } from '../../../apis/mallClassify'
 import UploadCom from '../../../components/uploadCom/index'
+import debounce from 'lodash/debounce'
 import './index.scss'
 const FormItem = Form.Item
+const Option = Select.Option
 
 function Addmodal({ form, history, editData = {} }) {
     let pageInfo = useMemo(() => {
@@ -34,60 +37,66 @@ function Addmodal({ form, history, editData = {} }) {
     const $el5 = useRef(null)
     const $el6 = useRef(null)
 
+    const [resData, setResData] = useState([]) // 接口返回下拉查询数据
+    const [fetching, setFetching] = useState(false)
+    const [moduleClassify, setModuleClassify] = useState([]) // 模组分类列表
+
     useEffect(() => {
-        getList({ pageIndex: 1, pageRows: 1000 }).then(res => {
-            if (res.data.code == 0) {
-                setOptionList(res.data.data.records)
-            }
+        getParentIdRequest({ classifyLevel: 1 }).then(res => {
+            console.log(res, '23333')
+            const temp = res.data.data.filter(item => item.classifyName == "通信模组")
+            getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
+                console.log(res, '模组分类')
+                setModuleClassify(res.data.data.list || [])
+            })
         })
+
         if (pageInfo.id) {
             renderDom()
         }
 
     }, [])
 
-    const renderDom = () => {
-        getDetailApi(pageInfo.id).then(res => {
-            if (res.data.code == 0) {
-                setOriginData(res.data.data)
-                let obj = {}
-                let arr = ['salesPolicy', 'commodityStandard', 'commodityDetail']
-                let fileArr = ['testReport', 'commodityInstructions', 'commodityPicture']
-                Object.keys(getFieldsValue()).map(item => {
-                    if (arr.indexOf(item) > -1) {
+    // const renderDom = () => {
+    //     getDetailApi(pageInfo.id).then(res => {
+    //         if (res.data.code == 0) {
+    //             setOriginData(res.data.data)
+    //             let obj = {}
+    //             let arr = ['salesPolicy', 'commodityStandard']
+    //             let fileArr = ['commodityInstructions', 'commodityPicture']
+    //             Object.keys(getFieldsValue()).map(item => {
+    //                 if (arr.indexOf(item) > -1) {
 
-                    } else if (fileArr.indexOf(item) > -1) {
-                        if (res.data.data[item]) {
-                            obj[item] = res.data.data[item].split(',').map((url, index) => {
-                                return { url, uid: index + 1, name: url }
-                            })
-                        }
+    //                 } else if (fileArr.indexOf(item) > -1) {
+    //                     if (res.data.data[item]) {
+    //                         obj[item] = res.data.data[item].split(',').map((url, index) => {
+    //                             return { url, uid: index + 1, name: url }
+    //                         })
+    //                     }
 
-                    } else {
-                        obj[item] = res.data.data[item]
-                    }
-                })
-                obj.commodityPrice = obj.commodityPrice / 100
-                obj.commodityRealPrice = obj.commodityRealPrice / 100
-                setFieldsValue(obj)
-                if (obj.commodityPicture) {
-                    $el1.current.setFileList(obj.commodityPicture)
-                }
-                if (obj.commodityInstructions) {
-                    $el2.current.setFileList(obj.commodityInstructions)
-                }
-                if (obj.testReport) {
-                    $el3.current.setFileList(obj.testReport)
-                }
-                $el4.current.renderText(res.data.data.commodityDetail || '')
-                $el5.current.renderText(res.data.data.commodityStandard || '')
-                $el6.current.renderText(res.data.data.salesPolicy || '')
-            }
-        })
-    }
+    //                 } else {
+    //                     obj[item] = res.data.data[item]
+    //                 }
+    //             })
+    //             obj.commodityPrice = obj.commodityPrice / 100
+    //             obj.commodityRealPrice = obj.commodityRealPrice / 100
+    //             setFieldsValue(obj)
+    //             if (obj.commodityPicture) {
+    //                 $el1.current.setFileList(obj.commodityPicture)
+    //             }
+    //             if (obj.commodityInstructions) {
+    //                 $el2.current.setFileList(obj.commodityInstructions)
+    //             }
+    //            
+    //             $el4.current.renderText(res.data.data.commodityStandard || '')
+    //             $el6.current.renderText(res.data.data.salesPolicy || '')
+    //         }
+    //     })
+    // }
     const sundata = () => {
         validateFields().then(val => {
-            let fileArr = ['testReport', 'commodityInstructions', 'commodityPicture']
+            console.log('验证后---------------', val)
+            let fileArr = ['commodityInstructions', 'commodityPicture']
             fileArr.forEach(item => {
                 if (val[item] && val[item].length) {
                     val[item] = val[item].reduce((total, currentValue) => {
@@ -98,15 +107,15 @@ function Addmodal({ form, history, editData = {} }) {
                     val[item] = ''
                 }
             })
-            val.commodityDetail = $el4.current.getText()
-            val.commodityStandard = $el5.current.getText()
+            val.commodityStandard = $el4.current.getText()
             val.salesPolicy = $el6.current.getText()
-            if (!val.salesPolicy || !val.commodityStandard || !val.commodityDetail) {
+            if (!val.salesPolicy || !val.commodityStandard) {
                 message.info('商品详情或规格参数或售后政策未输入内容')
                 return
             }
-            if (val.productId) {
-                val.productId = Number(val.productId)
+            if (val.hetModuleTypeName && val.hetModuleTypeName.key) {
+                val.moduleId = Number(val.hetModuleTypeName.key)
+                val.hetModuleTypeName = val.hetModuleTypeName.label
             }
             if (val.commodityOrderValue) {
                 val.commodityOrderValue = Number(val.commodityOrderValue)
@@ -114,20 +123,21 @@ function Addmodal({ form, history, editData = {} }) {
             val.commodityPrice = val.commodityPrice * 100
             val.commodityRealPrice = val.commodityRealPrice * 100
             val.status = 3
-            if (Object.keys(originData).length) {
-                val.status = originData.status
-                val.id = originData.id
-            }
-            let objGroup = optionList.find(item => {
+            // if (Object.keys(originData).length) {
+            //     val.status = originData.status
+            //     val.id = originData.id
+            // }
+            let objGroup = moduleClassify.find(item => {
                 return item.id == val.commodityClassifyId
             })
             if (!objGroup) {
                 setFieldsValue({ commodityClassifyId: '' })
-                message.info('商城分类未选择')
+                message.info('模组分类未选择')
                 return
             }
             val.commodityClassifyName = objGroup.classifyName
-            publicCommodityApi(val).then(res => {
+            console.log('提交得数据---', val)
+            saveModuleInfoRequest(val).then(res => {
                 if (res.data.code == 0) {
                     message.success('上传商品成功')
                     history.push(`/mall/moduleOnline`);
@@ -137,34 +147,19 @@ function Addmodal({ form, history, editData = {} }) {
         })
     }
     const goSubdata = () => {
-        let id = getFieldValue('productId')
-        if (!id) {
-            message.warn('输入模组型号')
+        let hetModuleTypeName = getFieldValue('hetModuleTypeName')
+        if (!hetModuleTypeName) {
+            message.warn('请选择模组型号')
             return
         }
-        getDetailByIdApi(id).then(res => {
-            if (res.data.code == 0) {
-                sundata()
-            }
-        })
+        sundata()
+        // searchModuleRequest({ hetModuleTypeName }).then(res => {
+        //     if (res.data.code == 0) {
+        //         sundata()
+        //     }
+        // })
     }
-    //搜索
-    const goSearch = () => {
-        let id = getFieldValue('productId')
-        if (!id) return
-        getDetailByIdApi(id).then(res => {
-            if (res.data.code == 0) {
-                setFieldsValue({
-                    commodityName: res.data.data.commodityName,
-                    commodityModel: res.data.data.commodityModel,
-                    commodityBrand: res.data.data.commodityBrand,
-                })
-
-            } else {
-                setFieldsValue({ productId: '' })
-            }
-        })
-    }
+    
     //去列表页
     const goList = () => {
         history.push(`/mall/moduleOnline`);
@@ -195,70 +190,108 @@ function Addmodal({ form, history, editData = {} }) {
         callback()
     }
 
+    // 搜索调用接口
+    let debounceFetcher = (value) => {
+        setFetching(true)
+        setResData([])
+        if (!value) return
+        searchModuleRequest({ hetModuleTypeName: value }).then(res => {
+            console.log('dededede', res)
+            setFetching(false)
+            setResData(res.data.data || [])
+        }).catch(() => {
+            setFetching(false)
+            setResData([])
+        })
+    }
+
+    debounceFetcher = debounce(debounceFetcher, 800)
+
+    const handleChange = moduleObj => {
+        console.log('sasdad', moduleObj)
+        const temp = resData.filter(item => item.moduleId == moduleObj.key)
+        console.log(temp, '------temp')
+        const obj = temp && temp.length > 0 ? temp[0] : {}
+        setFieldsValue({
+            originalModuleTypeName: obj.originalModuleTypeName,
+            sizeThickness: obj.sizeThickness,
+            sizeWidth: obj.sizeWidth,
+            sizeHeight: obj.sizeHeight,
+            brandName: obj.brandName,
+            applyScope: obj.applyScope
+        })
+    }
+
     return (
         <div>
             <div className='mall-detail-page'>
                 <Form autoComplete='off'>
-                    <FormItem label="模组型号">
-                        {getFieldDecorator('productId', {
-                            getValueFromEvent: (e) => {
-                                const val = e.target.value;
-                                return val.replace(/[^\d]/g, '');
-                            },
-                            rules: [{ required: true, message: '请输入' }]
-                        })(
-                            <Input style={{ width: '200px' }}></Input>
+                    <FormItem label="模组型号" className='need-warn-wrap'>
+                        {getFieldDecorator('hetModuleTypeName')(
+                            <Select style={{ width: 200, marginBottom: 0 }}
+                                showSearch
+                                labelInValue
+                                optionFilterProp="children"
+                                placeholder="请选择模组型号"
+                                notFoundContent={fetching ? <Spin size="small" /> : null}
+                                onSearch={val => debounceFetcher(val)}
+                                onChange={handleChange}>
+                                {
+                                    resData.length > 0 && resData.map(d => {
+                                        return <Option key={d.moduleId}>{`${d.hetModuleTypeName}`}</Option>
+                                    })
+                                }
+                            </Select>
                         )}
-                        <Button type='primary' onClick={goSearch}>搜索</Button>
                     </FormItem>
                     <div className='form-wrap'>
                         <FormItem label="模组IC型号">
-                            {getFieldDecorator('commodityName', { rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('originalModuleTypeName', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem>
-                        <Form.Item className="moduleSize need-warn-wrap" label="模组尺寸">
-                            <Form.Item style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }}>
+                        <FormItem className="moduleSize need-warn-wrap" label="模组尺寸">
+                            <FormItem className='size-style'>
                                 {getFieldDecorator("sizeThickness", {
                                     rules: [{ required: true, message: '请输入长' }, { validator: checkNumber }]
                                 })(
                                     <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
                                 )}
-                            </Form.Item>
+                            </FormItem>
                             <span>&nbsp;-&nbsp;</span>
-                            <Form.Item label="" style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }} >
+                            <FormItem className='size-style'>
                                 {getFieldDecorator("sizeWidth", {
                                     initialValue: editData.sizeWidth,
                                     rules: [{ required: true, message: '请输入宽' }, { validator: checkNumber }]
                                 })(
                                     <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
                                 )}
-                            </Form.Item>
+                            </FormItem>
                             <span>&nbsp;-&nbsp;</span>
-                            <Form.Item style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }} >
+                            <FormItem className='size-style'>
                                 {getFieldDecorator("sizeHeight", {
                                     initialValue: editData.sizeHeight,
                                     rules: [{ required: true, message: '请输入高' }, { validator: checkNumber }]
                                 })(
                                     <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
                                 )}
-                            </Form.Item>
+                            </FormItem>
                             <br />
                             <span>（长*宽*高 mm）</span>
-                        </Form.Item>
+                        </FormItem>
                         <FormItem label="生产厂商">
-                            {getFieldDecorator('commodityBrand', { rules: [{ required: true, message: '请输入' }] })(
+                            {getFieldDecorator('brandName', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem>
                     </div>
                     <div>
                         <FormItem label="适用范围">
-                            {getFieldDecorator('rang', {
+                            {getFieldDecorator('applyScope', {
                                 rules: [{ required: true, message: '请输入' },
                                 { type: 'string', max: 50, message: '上限50个字符长度' }]
                             })(
-                                <Input style={{ width: '600px' }}></Input>
+                                <Input style={{ width: '530px' }}></Input>
                             )}
                         </FormItem>
                     </div>
@@ -267,7 +300,7 @@ function Addmodal({ form, history, editData = {} }) {
                             {getFieldDecorator('commodityClassifyId', { rules: [{ required: true, message: '请输入' }] })(
                                 <Select style={{ width: '200px' }}>
                                     {
-                                        optionList.map((item, index) => (
+                                        moduleClassify.map((item, index) => (
                                             <Select.Option key={item.id} value={item.id} label={item.classifyName}>
                                                 {item.classifyName}
                                             </Select.Option>
@@ -352,7 +385,6 @@ function Addmodal({ form, history, editData = {} }) {
                     <Button type='primary' onClick={goSubdata}>保存</Button>
                     <Button onClick={goList}>取消</Button>
                 </div>
-
             </div>
         </div>
     )
@@ -409,13 +441,13 @@ function ProductInfo({ id }) {
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>模组型号</div>
-                <div className='item-text'>{dataInfo.productId}</div>
+                <div className='item-text'>{dataInfo.hetModuleTypeName}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>模组IC型号：</div>
-                <div className='item-text'>{dataInfo.commodityName}</div>
+                <div className='item-text'>{dataInfo.originalModuleTypeName}</div>
             </div>
             <div className='item'>
                 <div className='item-label'>模组尺寸：</div>
@@ -470,7 +502,7 @@ function ProductInfo({ id }) {
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'> 技术文档：</div>
+                <div className='item-label'>技术文档：</div>
                 <div className='item-text item-img'>{getFile(dataInfo.commodityInstructions)}</div>
             </div>
         </div>
