@@ -218,7 +218,7 @@ function OrderInfo({ actionData }) {
                     <img src={item.commodityPicture.split(',')[0]} />
                     <div className='name'>{item.name}</div>
                     <div className='code'>{item.commodityModel}</div>
-                    <div className='price'>￥{item.quantity}*{item.unitPrice/100}</div>
+                    <div className='price'>￥{item.unitPrice/100}*{item.quantity}</div>
                 </div>
             })
         }
