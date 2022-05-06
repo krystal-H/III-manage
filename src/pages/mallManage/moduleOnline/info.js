@@ -7,7 +7,7 @@ import UploadCom from '../../../components/uploadCom/index'
 import './index.scss'
 const FormItem = Form.Item
 
-function Addmodal({ form, history }) {
+function Addmodal({ form, history, editData = {} }) {
     let pageInfo = useMemo(() => {
         let obj = {}
         let urlinfo = history.location.search
@@ -19,9 +19,11 @@ function Addmodal({ form, history }) {
         }
         return obj
     }, [])
+
     if (pageInfo.id && pageInfo.isEdit === 'false') {
         return <ProductInfo id={pageInfo.id} />
     }
+
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, getFieldsValue } = form;
     const [optionList, setOptionList] = useState([])
     const [originData, setOriginData] = useState({})
@@ -31,6 +33,7 @@ function Addmodal({ form, history }) {
     const $el4 = useRef(null)
     const $el5 = useRef(null)
     const $el6 = useRef(null)
+
     useEffect(() => {
         getList({ pageIndex: 1, pageRows: 1000 }).then(res => {
             if (res.data.code == 0) {
@@ -42,6 +45,7 @@ function Addmodal({ form, history }) {
         }
 
     }, [])
+
     const renderDom = () => {
         getDetailApi(pageInfo.id).then(res => {
             if (res.data.code == 0) {
@@ -126,7 +130,7 @@ function Addmodal({ form, history }) {
             publicCommodityApi(val).then(res => {
                 if (res.data.code == 0) {
                     message.success('上传商品成功')
-                    history.push(`/mall/productMn`);
+                    history.push(`/mall/moduleOnline`);
                 }
             })
 
@@ -135,7 +139,7 @@ function Addmodal({ form, history }) {
     const goSubdata = () => {
         let id = getFieldValue('productId')
         if (!id) {
-            message.info('输入产品id')
+            message.warn('输入模组型号')
             return
         }
         getDetailByIdApi(id).then(res => {
@@ -163,7 +167,7 @@ function Addmodal({ form, history }) {
     }
     //去列表页
     const goList = () => {
-        history.push(`/mall/productMn`);
+        history.push(`/mall/moduleOnline`);
     }
     // 大于0，且最多2个小数
     // 处理输入框小数点两位问题
@@ -183,11 +187,19 @@ function Addmodal({ form, history }) {
         return obj;
     }
 
+    const checkNumber = (rule, value, callback) => {
+        if (value < 0) {
+            callback("仅允许输入正整数");
+            return;
+        }
+        callback()
+    }
+
     return (
         <div>
             <div className='mall-detail-page'>
-                <Form >
-                    <FormItem label="平台产品ID">
+                <Form autoComplete='off'>
+                    <FormItem label="模组型号">
                         {getFieldDecorator('productId', {
                             getValueFromEvent: (e) => {
                                 const val = e.target.value;
@@ -200,22 +212,58 @@ function Addmodal({ form, history }) {
                         <Button type='primary' onClick={goSearch}>搜索</Button>
                     </FormItem>
                     <div className='form-wrap'>
-                        <FormItem label="商品名称">
+                        <FormItem label="模组IC型号">
                             {getFieldDecorator('commodityName', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
-                        </FormItem><FormItem label="商品型号">
-                            {getFieldDecorator('commodityModel', { rules: [{ required: true, message: '请输入' }] })(
-                                <Input style={{ width: '200px' }} maxLength={100}></Input>
-                            )}
-                        </FormItem><FormItem label="品牌">
+                        </FormItem>
+                        <Form.Item className="moduleSize need-warn-wrap" label="模组尺寸">
+                            <Form.Item style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }}>
+                                {getFieldDecorator("sizeThickness", {
+                                    rules: [{ required: true, message: '请输入长' }, { validator: checkNumber }]
+                                })(
+                                    <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
+                                )}
+                            </Form.Item>
+                            <span>&nbsp;-&nbsp;</span>
+                            <Form.Item label="" style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }} >
+                                {getFieldDecorator("sizeWidth", {
+                                    initialValue: editData.sizeWidth,
+                                    rules: [{ required: true, message: '请输入宽' }, { validator: checkNumber }]
+                                })(
+                                    <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
+                                )}
+                            </Form.Item>
+                            <span>&nbsp;-&nbsp;</span>
+                            <Form.Item style={{ display: 'inline-block', width: '70px', marginBottom: 0, marginRight: 0 }} >
+                                {getFieldDecorator("sizeHeight", {
+                                    initialValue: editData.sizeHeight,
+                                    rules: [{ required: true, message: '请输入高' }, { validator: checkNumber }]
+                                })(
+                                    <InputNumber maxLength={3} max={999} style={{ width: '70px' }} />
+                                )}
+                            </Form.Item>
+                            <br />
+                            <span>（长*宽*高 mm）</span>
+                        </Form.Item>
+                        <FormItem label="生产厂商">
                             {getFieldDecorator('commodityBrand', { rules: [{ required: true, message: '请输入' }] })(
                                 <Input style={{ width: '200px' }} maxLength={100}></Input>
                             )}
                         </FormItem>
                     </div>
+                    <div>
+                        <FormItem label="适用范围">
+                            {getFieldDecorator('rang', {
+                                rules: [{ required: true, message: '请输入' },
+                                { type: 'string', max: 50, message: '上限50个字符长度' }]
+                            })(
+                                <Input style={{ width: '600px' }}></Input>
+                            )}
+                        </FormItem>
+                    </div>
                     <div className='form-wrap'>
-                        <FormItem label="商品分类">
+                        <FormItem label="模组分类">
                             {getFieldDecorator('commodityClassifyId', { rules: [{ required: true, message: '请输入' }] })(
                                 <Select style={{ width: '200px' }}>
                                     {
@@ -227,7 +275,7 @@ function Addmodal({ form, history }) {
                                     }
                                 </Select>
                             )}
-                        </FormItem><FormItem label="商品价格">
+                        </FormItem><FormItem label="模组价格">
                             {getFieldDecorator('commodityPrice', {
                                 rules: [{ required: true, message: '请输入' }],
                                 getValueFromEvent: (e) => {
@@ -238,7 +286,7 @@ function Addmodal({ form, history }) {
                                 <Input style={{ width: '200px' }}></Input >
                             )}
                         </FormItem>
-                        <FormItem label="实时价格">
+                        <FormItem label="实时价格" style={{ marginLeft: 37 }}>
                             {getFieldDecorator('commodityRealPrice', {
                                 rules: [{ required: true, message: '请输入' }],
                                 getValueFromEvent: (e) => {
@@ -267,55 +315,37 @@ function Addmodal({ form, history }) {
                                 <Input style={{ width: '200px' }} maxLength={20}></Input>
                             )}
                         </FormItem>
-                        {/* <FormItem label="物料编号">
-                            {getFieldDecorator('materialNo', {})(
-                                <Input style={{ width: '200px' }} maxLength={20}></Input>
-                            )}
-                        </FormItem> */}
                     </div>
-                    <FormItem label="商品简述">
+                    <FormItem label="模组简述">
                         {getFieldDecorator('commodityDescription', {})(
                             <Input style={{ width: '600px' }}></Input>
                         )}
                     </FormItem>
-                    <FormItem label="商品照片">
-                        {getFieldDecorator('commodityPicture', { rules: [{ required: true, message: '请上传文件' }] })(
+                    <FormItem label="模组照片">
+                        {getFieldDecorator('commodityPicture', { rules: [{ required: true, message: '请上传模组图片' }] })(
                             <UploadCom
                                 ref={$el1}
                                 listType="picture-card"
-                                maxCount={6}
                                 isNotImg={false}
                                 maxSize={10} />
                         )}
                     </FormItem>
-                    <FormItem label="商品详情" className='need-warn-wrap'>
+                    <FormItem label="模组规格书" className='need-warn-wrap'>
                         <Wangeditor divId={'wangedit-product-detail'} ref={$el4} />
                     </FormItem>
-                    <FormItem label="规格参数" className='need-warn-wrap'>
-                        <Wangeditor divId={'wangedit-product-config'} ref={$el5} />
-                    </FormItem>
-                    <FormItem label="售后政策" className='need-warn-wrap'>
-                        <Wangeditor divId={'wangedit-product-rule'} ref={$el6} />
-                    </FormItem>
-                    <FormItem label="说明书">
+                    <FormItem label="技术文档">
                         {getFieldDecorator('commodityInstructions', { rules: [{ required: true, message: '请上传文件' }] })(
                             <UploadCom
                                 ref={$el2}
-                                maxCount={1}
+                                maxCount={3}
                                 format='.pdf'
                                 isNotImg={true}
-                                maxSize={10} />
+                                maxSize={20}
+                            />
                         )}
                     </FormItem>
-                    <FormItem label="测试报告">
-                        {getFieldDecorator('testReport', { rules: [{ required: true, message: '请上传文件' }] })(
-                            <UploadCom
-                                ref={$el3}
-                                maxCount={1}
-                                format='.xls,.xlsx'
-                                isNotImg={true}
-                                maxSize={10} />
-                        )}
+                    <FormItem label="售后政策" className='need-warn-wrap'>
+                        <Wangeditor divId={'wangedit-product-rule'} ref={$el6} />
                     </FormItem>
                 </Form>
                 <div className='mall-info-footer'>
@@ -378,31 +408,31 @@ function ProductInfo({ id }) {
     return <div className='productInfo-content-page'>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>平台产品ID：</div>
+                <div className='item-label'>模组型号</div>
                 <div className='item-text'>{dataInfo.productId}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>商品名称：</div>
+                <div className='item-label'>模组IC型号：</div>
                 <div className='item-text'>{dataInfo.commodityName}</div>
             </div>
             <div className='item'>
-                <div className='item-label'>商品型号：</div>
+                <div className='item-label'>模组尺寸：</div>
                 <div className='item-text'>{dataInfo.commodityModel}</div>
             </div>
             <div className='item'>
-                <div className='item-label'>品牌：</div>
+                <div className='item-label'>生产厂商：</div>
                 <div className='item-text'>{dataInfo.commodityBrand}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>商品分类：</div>
+                <div className='item-label'>模组分类：</div>
                 <div className='item-text'>{dataInfo.commodityClassifyName}</div>
             </div>
             <div className='item'>
-                <div className='item-label'>商品价格：</div>
+                <div className='item-label'>模组价格：</div>
                 <div className='item-text'>{dataInfo.commodityPrice / 100}</div>
             </div>
             <div className='item'>
@@ -422,44 +452,32 @@ function ProductInfo({ id }) {
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>商品简述：</div>
+                <div className='item-label'>模组描述：：</div>
                 <div className='item-text'>{dataInfo.commodityDescription}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>商品照片：</div>
+                <div className='item-label'>模组照片：</div>
                 <div className='item-text item-img'>{getImg(dataInfo.commodityPicture)}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>商品详情：</div>
-                <div className='item-text item-wang-text'>{showhtml(dataInfo.commodityDetail)}</div>
+                <div className='item-label'>模组规格书：</div>
+                <div className='item-text item-wang-text'>{showhtml(dataInfo.commodityStandard)}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>规格参数：</div>
-                <div className='item-text item-wang-text'>{showhtml(dataInfo.commodityStandard)}</div>
+                <div className='item-label'> 技术文档：</div>
+                <div className='item-text item-img'>{getFile(dataInfo.commodityInstructions)}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>售后政策：</div>
                 <div className='item-text item-wang-text'>{showhtml(dataInfo.salesPolicy)}</div>
-            </div>
-        </div>
-        <div className='item-wrap'>
-            <div className='item'>
-                <div className='item-label'>说明书：</div>
-                <div className='item-text item-img'>{getFile(dataInfo.commodityInstructions)}</div>
-            </div>
-        </div>
-        <div className='item-wrap'>
-            <div className='item'>
-                <div className='item-label'>测试报告：</div>
-                <div className='item-text item-img'>{getFile(dataInfo.testReport)}</div>
             </div>
         </div>
     </div>
