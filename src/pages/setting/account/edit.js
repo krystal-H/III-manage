@@ -6,7 +6,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
     const sundata = () => {
         validateFields().then(val => {
-            sentREset({ accountName: actionData.accountName, phone: val.phone }).then(res => {
+            sentREset({ accountName: actionData.userName, phone: val.phone }).then(res => {
                 if (res.data.code === 0) {
                     message.success('提交成功')
                     handleOk()
@@ -19,7 +19,7 @@ function Addmodal({ form, editVis, handleCancel, handleOk, type, actionData }) {
         wrapperCol: { span: 14 },
     };
     const resetPS = () => {
-        resetAccount({ id: actionData.id }).then(res => {
+        resetAccount({ id: actionData.userId }).then(res => {
             if (res.data.code === 0) {
                 message.success('重置成功')
             }
