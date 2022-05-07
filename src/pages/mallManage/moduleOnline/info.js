@@ -40,6 +40,7 @@ function Addmodal({ form, history, editData = {} }) {
     const [resData, setResData] = useState([]) // 接口返回下拉查询数据
     const [fetching, setFetching] = useState(false)
     const [moduleClassify, setModuleClassify] = useState([]) // 模组分类列表
+    const [selectValue, setSelectValue] = useState()
 
     useEffect(() => {
         // getParentIdRequest({ classifyLevel: 1 }).then(res => {
@@ -57,42 +58,48 @@ function Addmodal({ form, history, editData = {} }) {
 
     }, [])
 
-    // const renderDom = () => {
-    //     getDetailApi(pageInfo.id).then(res => {
-    //         if (res.data.code == 0) {
-    //             setOriginData(res.data.data)
-    //             let obj = {}
-    //             let arr = ['salesPolicy', 'commodityStandard']
-    //             let fileArr = ['technicalDoc', 'commodityPicture']
-    //             Object.keys(getFieldsValue()).map(item => {
-    //                 if (arr.indexOf(item) > -1) {
+    const renderDom = () => {
+        getDetailApi(pageInfo.id).then(res => {
+            if (res.data.code == 0) {
+                setOriginData(res.data.data)
+                let obj = {}
+                let arr = ['salesPolicy', 'commodityStandard']
+                let fileArr = ['technicalDoc', 'commodityPicture']
+                Object.keys(getFieldsValue()).map(item => {
+                    if (item == 'hetModuleTypeName') {
+                        console.log(res.data.data, '---------------------------')
+                        setSelectValue(res.data.data)
+                        // setSelectValue({ key: res.data.data.moduleId.toString(), label: res.data.data.hetModuleTypeName })
+                        // debounceFetcher(res.data.data.hetModuleTypeName)
+                    }
+                    if (arr.indexOf(item) > -1) {
 
-    //                 } else if (fileArr.indexOf(item) > -1) {
-    //                     if (res.data.data[item]) {
-    //                         obj[item] = res.data.data[item].split(',').map((url, index) => {
-    //                             return { url, uid: index + 1, name: url }
-    //                         })
-    //                     }
+                    } else if (fileArr.indexOf(item) > -1) {
+                        if (res.data.data[item]) {
+                            obj[item] = res.data.data[item].split(',').map((url, index) => {
+                                return { url, uid: index + 1, name: url }
+                            })
+                        }
 
-    //                 } else {
-    //                     obj[item] = res.data.data[item]
-    //                 }
-    //             })
-    //             obj.commodityPrice = obj.commodityPrice / 100
-    //             obj.commodityRealPrice = obj.commodityRealPrice / 100
-    //             setFieldsValue(obj)
-    //             if (obj.commodityPicture) {
-    //                 $el1.current.setFileList(obj.commodityPicture)
-    //             }
-    //             if (obj.technicalDoc) {
-    //                 $el2.current.setFileList(obj.technicalDoc)
-    //             }
-    //            
-    //             $el4.current.renderText(res.data.data.commodityStandard || '')
-    //             $el6.current.renderText(res.data.data.salesPolicy || '')
-    //         }
-    //     })
-    // }
+                    } else {
+                        obj[item] = res.data.data[item]
+                    }
+                })
+                obj.commodityPrice = obj.commodityPrice / 100
+                obj.commodityRealPrice = obj.commodityRealPrice / 100
+                setFieldsValue(obj)
+                if (obj.commodityPicture) {
+                    $el1.current.setFileList(obj.commodityPicture)
+                }
+                if (obj.technicalDoc) {
+                    $el2.current.setFileList(obj.technicalDoc)
+                }
+
+                $el4.current.renderText(res.data.data.commodityStandard || '')
+                $el6.current.renderText(res.data.data.salesPolicy || '')
+            }
+        })
+    }
     const sundata = () => {
         validateFields().then(val => {
             console.log('验证后---------------', val)
@@ -159,7 +166,7 @@ function Addmodal({ form, history, editData = {} }) {
         //     }
         // })
     }
-    
+
     //去列表页
     const goList = () => {
         history.push(`/mall/moduleOnline`);
@@ -212,6 +219,10 @@ function Addmodal({ form, history, editData = {} }) {
         const temp = resData.filter(item => item.moduleId == moduleObj.key)
         console.log(temp, '------temp')
         const obj = temp && temp.length > 0 ? temp[0] : {}
+        // setSelectValue({
+        //     key: moduleObj.key,
+        //     label: moduleObj.label
+        // })
         setFieldsValue({
             originalModuleTypeName: obj.originalModuleTypeName,
             sizeThickness: obj.sizeThickness,
@@ -227,7 +238,14 @@ function Addmodal({ form, history, editData = {} }) {
             <div className='mall-detail-page'>
                 <Form autoComplete='off'>
                     <FormItem label="模组型号" className='need-warn-wrap'>
-                        {getFieldDecorator('hetModuleTypeName')(
+                        {getFieldDecorator('hetModuleTypeName', {
+                            initialValue: {
+                                // key: selectValue.moduleId && selectValue.moduleId.toString() || '', 
+                                // label: selectValue.hetModuleTypeName && selectValue.hetModuleTypeName|| '' 
+                                // key: '1',
+                                // label: 'abc'
+                            },
+                        })(
                             <Select style={{ width: 200, marginBottom: 0 }}
                                 showSearch
                                 labelInValue
@@ -235,12 +253,24 @@ function Addmodal({ form, history, editData = {} }) {
                                 placeholder="请选择模组型号"
                                 notFoundContent={fetching ? <Spin size="small" /> : null}
                                 onSearch={val => debounceFetcher(val)}
-                                onChange={handleChange}>
-                                {
+                                onChange={handleChange}
+                                // value={{
+                                //     key: selectValue.moduleId && selectValue.moduleId || '',
+                                //     label: selectValue.hetModuleTypeName && selectValue.hetModuleTypeName || ''
+                                // }}
+                                value={{
+                                    key: '1',
+                                    label: 'abc'
+                                }}
+                            >
+                                <Option key={'1'}>abc</Option>
+                                <Option key={'2'}>bbb</Option>
+                                <Option key={'3'}>ccc</Option>
+                                {/* {
                                     resData.length > 0 && resData.map(d => {
                                         return <Option key={d.moduleId}>{`${d.hetModuleTypeName}`}</Option>
                                     })
-                                }
+                                } */}
                             </Select>
                         )}
                     </FormItem>
