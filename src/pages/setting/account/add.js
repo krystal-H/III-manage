@@ -7,7 +7,11 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
     const { getFieldDecorator, validateFields } = form;
     const sundata = () => {
         validateFields().then(val => {
-            addAccount(val).then(res => {
+            let parmas = {
+                ...val,
+                accountName: val.accountName + '@clife.cn'
+            }
+            addAccount(parmas).then(res => {
                 if (res.data.code == 0) {
                     message.success('新增成功')
                     handleOk()
@@ -32,7 +36,9 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                     <Form {...formItemLayout}>
                         <FormItem label="账户名">
                             {getFieldDecorator('accountName', { rules: [{ required: true, message: '请输入账户名称' }] })(
-                                <div><Input style={{ width: '220px' }} ></Input></div>
+                                <div><Input style={{ width: '220px' }} ></Input>
+                                    <span style={{ marginLeft: '10px' }}>@clife.cn</span>
+                                </div>
 
                             )}
                         </FormItem>
