@@ -41,8 +41,10 @@ function Addmodal({ form, history, editData = {} }) {
     const [moduleClassify, setModuleClassify] = useState([]) // 模组分类列表
 
     useEffect(() => {
+        // 获取一级分类
         getParentIdRequest({ classifyLevel: 1 }).then(res => {
             const temp = res.data.data.filter(item => item.classifyName == "通信模组")
+            // 获取模组分类列表
             getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
                 setModuleClassify(res.data.data.list || [])
             })
@@ -390,8 +392,11 @@ function Addmodal({ form, history, editData = {} }) {
 
 }
 export default Form.create()(Addmodal)
+
+// 查看详情展示
 function ProductInfo({ id }) {
     const [dataInfo, setDataInfo] = useState({})
+
     useEffect(() => {
         getDetailApi(id).then(res => {
             if (res.data.code == 0) {
@@ -399,6 +404,7 @@ function ProductInfo({ id }) {
             }
         })
     }, [])
+
     const getImg = (data) => {
         if (data) {
             return data.split(',').map((item, index) => {
@@ -407,6 +413,7 @@ function ProductInfo({ id }) {
         }
         return ''
     }
+
     const downFile = (item) => {
         const a = document.createElement('a')
         const url = item.replace('http', 'https') // 完整的url则直接使用
@@ -424,22 +431,25 @@ function ProductInfo({ id }) {
         })
         // window.open(item)
     }
+
     const getFile = data => {
         if (data) {
             return data.split(',').map((item, index) => {
-                return <a src={item} onClick={() => { downFile(item) }} key={index}>{item}</a>
+                return <><a src={item} onClick={() => { downFile(item) }} key={index}>{item}</a><br /></>
             })
         }
         return ''
     }
+
     function showhtml(htmlString) {
         var html = { __html: htmlString };
-        return <div dangerouslySetInnerHTML={html}></div>;
+        return <div className='noreset' dangerouslySetInnerHTML={html}></div>;
     }
+
     return <div className='productInfo-content-page'>
         <div className='item-wrap'>
             <div className='item'>
-                <div className='item-label'>模组型号</div>
+                <div className='item-label'>模组型号：</div>
                 <div className='item-text'>{dataInfo.hetModuleTypeName}</div>
             </div>
         </div>
@@ -450,7 +460,7 @@ function ProductInfo({ id }) {
             </div>
             <div className='item'>
                 <div className='item-label'>模组尺寸：</div>
-                <div className='item-text'>{dataInfo.commodityModel}</div>
+                <div className='item-text'>{`${dataInfo.sizeThickness} * ${dataInfo.sizeWidth} * ${dataInfo.sizeHeight}mm`}</div>
             </div>
             <div className='item'>
                 <div className='item-label'>生产厂商：</div>
@@ -496,19 +506,19 @@ function ProductInfo({ id }) {
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>模组规格书：</div>
-                <div className='item-text item-wang-text'>{showhtml(dataInfo.commodityStandard)}</div>
+                <div className='item-text item-wang-text noreset'>{showhtml(dataInfo.commodityStandard)}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>技术文档：</div>
-                <div className='item-text item-img'>{getFile(dataInfo.technicalDoc)}</div>
+                <div>{getFile(dataInfo.technicalDoc)}</div>
             </div>
         </div>
         <div className='item-wrap'>
             <div className='item'>
                 <div className='item-label'>售后政策：</div>
-                <div className='item-text item-wang-text'>{showhtml(dataInfo.salesPolicy)}</div>
+                <div className='item-text item-wang-text noreset'>{showhtml(dataInfo.salesPolicy)}</div>
             </div>
         </div>
     </div>
