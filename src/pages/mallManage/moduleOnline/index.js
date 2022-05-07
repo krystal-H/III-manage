@@ -42,7 +42,7 @@ function FirmwareMagement({ form, match, history }) {
 
   //上下线
   const offData = (id, status) => {
-    let tip = status == 1 ? '是否上架商品' : '是否下架商品'
+    let tip = status == 1 ? '是否上架模组' : '是否下架模组'
     Modal.confirm({
       title: '确认',
       okText: '确定',
@@ -107,14 +107,14 @@ function FirmwareMagement({ form, match, history }) {
         {
           [0, 3].indexOf(row.status) == -1 && <>
             <a onClick={() => { goDetail(row, false) }} style={{ marginRight: '10px' }}>查看</a>
-            <a onClick={() => { offData(row.id, 0) }} style={{ marginRight: '10px' }}>下架商品</a>
+            <a onClick={() => { offData(row.id, 0) }} style={{ marginRight: '10px' }}>下架模组</a>
             <a onClick={() => { addSupply(row) }}>补充库存</a>
           </>
         }
         {
           [0, 3].indexOf(row.status) != -1 && <>
             <a onClick={() => { goDetail(row, true) }} style={{ marginRight: '10px' }}>编辑</a>
-            <a onClick={() => { offData(row.id, 1) }}>上架商品</a>
+            <a onClick={() => { offData(row.id, 1) }}>上架模组</a>
           </>
         }
 
