@@ -28,7 +28,6 @@ function Addmodal({ form, history, editData = {} }) {
     }
 
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue, getFieldsValue } = form;
-    const [optionList, setOptionList] = useState([])
     const [originData, setOriginData] = useState({})
     const $el1 = useRef(null)
     const $el2 = useRef(null)
@@ -40,17 +39,14 @@ function Addmodal({ form, history, editData = {} }) {
     const [resData, setResData] = useState([]) // 接口返回下拉查询数据
     const [fetching, setFetching] = useState(false)
     const [moduleClassify, setModuleClassify] = useState([]) // 模组分类列表
-    const [selectValue, setSelectValue] = useState()
 
     useEffect(() => {
-        // getParentIdRequest({ classifyLevel: 1 }).then(res => {
-        //     console.log(res, '23333')
-        //     const temp = res.data.data.filter(item => item.classifyName == "通信模组")
-        //     getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
-        //         console.log(res, '模组分类')
-        //         setModuleClassify(res.data.data.list || [])
-        //     })
-        // })
+        getParentIdRequest({ classifyLevel: 1 }).then(res => {
+            const temp = res.data.data.filter(item => item.classifyName == "通信模组")
+            getModuleListRequest({ parentId: temp && temp.length > 0 ? temp[0].id : '' }).then(res => {
+                setModuleClassify(res.data.data.list || [])
+            })
+        })
 
         if (pageInfo.id) {
             renderDom()
@@ -58,6 +54,7 @@ function Addmodal({ form, history, editData = {} }) {
 
     }, [])
 
+    // 编辑数据回显
     const renderDom = () => {
         getDetailApi(pageInfo.id).then(res => {
             if (res.data.code == 0) {
@@ -66,27 +63,23 @@ function Addmodal({ form, history, editData = {} }) {
                 let arr = ['salesPolicy', 'commodityStandard']
                 let fileArr = ['technicalDoc', 'commodityPicture']
                 Object.keys(getFieldsValue()).map(item => {
-                    if (item == 'hetModuleTypeName') {
-                        console.log(res.data.data, '---------------------------')
-                        setSelectValue(res.data.data)
-                        // setSelectValue({ key: res.data.data.moduleId.toString(), label: res.data.data.hetModuleTypeName })
-                        // debounceFetcher(res.data.data.hetModuleTypeName)
-                    }
                     if (arr.indexOf(item) > -1) {
-
                     } else if (fileArr.indexOf(item) > -1) {
                         if (res.data.data[item]) {
                             obj[item] = res.data.data[item].split(',').map((url, index) => {
                                 return { url, uid: index + 1, name: url }
                             })
                         }
-
                     } else {
                         obj[item] = res.data.data[item]
                     }
                 })
                 obj.commodityPrice = obj.commodityPrice / 100
                 obj.commodityRealPrice = obj.commodityRealPrice / 100
+                obj.hetModuleTypeName = {
+                    key: res.data.data.moduleId,
+                    label: obj.hetModuleTypeName
+                }
                 setFieldsValue(obj)
                 if (obj.commodityPicture) {
                     $el1.current.setFileList(obj.commodityPicture)
@@ -100,9 +93,10 @@ function Addmodal({ form, history, editData = {} }) {
             }
         })
     }
-    const sundata = () => {
+
+    // 提交保存
+    const submitData = () => {
         validateFields().then(val => {
-            console.log('验证后---------------', val)
             let fileArr = ['technicalDoc', 'commodityPicture']
             fileArr.forEach(item => {
                 if (val[item] && val[item].length) {
@@ -117,7 +111,7 @@ function Addmodal({ form, history, editData = {} }) {
             val.commodityStandard = $el4.current.getText()
             val.salesPolicy = $el6.current.getText()
             if (!val.salesPolicy || !val.commodityStandard) {
-                message.info('商品详情或规格参数或售后政策未输入内容')
+                message.info('模组规格书或售后政策未输入内容')
                 return
             }
             if (val.hetModuleTypeName && val.hetModuleTypeName.key) {
@@ -130,10 +124,10 @@ function Addmodal({ form, history, editData = {} }) {
             val.commodityPrice = val.commodityPrice * 100
             val.commodityRealPrice = val.commodityRealPrice * 100
             val.status = 3
-            // if (Object.keys(originData).length) {
-            //     val.status = originData.status
-            //     val.id = originData.id
-            // }
+            if (Object.keys(originData).length) {
+                val.status = originData.status
+                val.id = originData.id
+            }
             let objGroup = moduleClassify.find(item => {
                 return item.id == val.commodityClassifyId
             })
@@ -143,34 +137,32 @@ function Addmodal({ form, history, editData = {} }) {
                 return
             }
             val.commodityClassifyName = objGroup.classifyName
-            console.log('提交得数据---', val)
+            console.log('submitdata---', val)
             saveModuleInfoRequest(val).then(res => {
                 if (res.data.code == 0) {
-                    message.success('上传商品成功')
+                    message.success('保存成功')
                     history.push(`/mall/moduleOnline`);
                 }
             })
 
         })
     }
+
+    // 
     const goSubdata = () => {
         let hetModuleTypeName = getFieldValue('hetModuleTypeName')
         if (!hetModuleTypeName) {
             message.warn('请选择模组型号')
             return
         }
-        sundata()
-        // searchModuleRequest({ hetModuleTypeName }).then(res => {
-        //     if (res.data.code == 0) {
-        //         sundata()
-        //     }
-        // })
+        submitData()
     }
 
     //去列表页
     const goList = () => {
         history.push(`/mall/moduleOnline`);
     }
+
     // 大于0，且最多2个小数
     // 处理输入框小数点两位问题
     const clearNoNumTwo = (obj) => {
@@ -214,15 +206,10 @@ function Addmodal({ form, history, editData = {} }) {
 
     debounceFetcher = debounce(debounceFetcher, 800)
 
+    // 选择模组
     const handleChange = moduleObj => {
-        console.log('sasdad', moduleObj)
         const temp = resData.filter(item => item.moduleId == moduleObj.key)
-        console.log(temp, '------temp')
         const obj = temp && temp.length > 0 ? temp[0] : {}
-        // setSelectValue({
-        //     key: moduleObj.key,
-        //     label: moduleObj.label
-        // })
         setFieldsValue({
             originalModuleTypeName: obj.originalModuleTypeName,
             sizeThickness: obj.sizeThickness,
@@ -238,14 +225,7 @@ function Addmodal({ form, history, editData = {} }) {
             <div className='mall-detail-page'>
                 <Form autoComplete='off'>
                     <FormItem label="模组型号" className='need-warn-wrap'>
-                        {getFieldDecorator('hetModuleTypeName', {
-                            initialValue: {
-                                // key: selectValue.moduleId && selectValue.moduleId.toString() || '', 
-                                // label: selectValue.hetModuleTypeName && selectValue.hetModuleTypeName|| '' 
-                                // key: '1',
-                                // label: 'abc'
-                            },
-                        })(
+                        {getFieldDecorator('hetModuleTypeName',)(
                             <Select style={{ width: 200, marginBottom: 0 }}
                                 showSearch
                                 labelInValue
@@ -254,23 +234,12 @@ function Addmodal({ form, history, editData = {} }) {
                                 notFoundContent={fetching ? <Spin size="small" /> : null}
                                 onSearch={val => debounceFetcher(val)}
                                 onChange={handleChange}
-                                // value={{
-                                //     key: selectValue.moduleId && selectValue.moduleId || '',
-                                //     label: selectValue.hetModuleTypeName && selectValue.hetModuleTypeName || ''
-                                // }}
-                                value={{
-                                    key: '1',
-                                    label: 'abc'
-                                }}
                             >
-                                <Option key={'1'}>abc</Option>
-                                <Option key={'2'}>bbb</Option>
-                                <Option key={'3'}>ccc</Option>
-                                {/* {
+                                {
                                     resData.length > 0 && resData.map(d => {
                                         return <Option key={d.moduleId}>{`${d.hetModuleTypeName}`}</Option>
                                     })
-                                } */}
+                                }
                             </Select>
                         )}
                     </FormItem>
