@@ -4,7 +4,7 @@ import axios from '../util/api.request'
 // 获取列表
 export const getListApi = (data={}) => {
     return axios.request({
-        url: '/manage-open/manage/commodity/getCommodityList',
+        url: '/manage-open/manage/commodity/getCommodityListByPage',
         method: 'post',
         data,
         headers: {}
