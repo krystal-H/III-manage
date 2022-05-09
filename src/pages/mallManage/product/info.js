@@ -3,9 +3,9 @@ import { Input, message, Select, Form, Button, InputNumber } from 'antd';
 import Wangeditor from '../../../components/WangEdit';
 import { getDetailByIdApi, publicCommodityApi, getDetailApi } from '../../../apis/mallProduct'
 import { getList } from '../../../apis/mallClassify'
+import { getParentIdRequest } from '../../../apis/mallManage'
 import UploadCom from '../../../components/uploadCom/index'
 import './index.scss'
-import axios from '../../../util/api.request';
 const FormItem = Form.Item
 
 function Addmodal({ form, history }) {
@@ -33,16 +33,29 @@ function Addmodal({ form, history }) {
     const $el5 = useRef(null)
     const $el6 = useRef(null)
     useEffect(() => {
-        getList({ pageIndex: 1, pageRows: 1000 }).then(res => {
-            if (res.data.code == 0) {
-                setOptionList(res.data.data.records)
-            }
-        })
+        getClassifyFn()
         if (pageInfo.id) {
             renderDom()
         }
 
     }, [])
+    const getClassifyFn = () => {
+        // 获取一级分类
+        getParentIdRequest({ classifyLevel: 1 }).then(res => {
+            let classifiyTypeMap = res.data.data
+            let temp = classifiyTypeMap.filter(item => item.classifyName === "硬件产品")
+            if (temp.length === 0) return
+            const params = { parentId: temp[0].id }
+            getList(params).then(res => {
+                if (res.data.code === 0) {
+                    res.data.data.list.forEach((item, index) => {
+                        item.key = index + 1
+                    })
+                    setOptionList(res.data.data.list)
+                }
+            })
+        })
+    }
     const renderDom = () => {
         getDetailApi(pageInfo.id).then(res => {
             if (res.data.code == 0) {
@@ -349,7 +362,7 @@ function ProductInfo({ id }) {
     }
     const downFile = (item) => {
         const a = document.createElement('a')
-        const url = item.replace('http', 'https') // 完整的url则直接使用
+        const url = item.replace(/^http:\/\//i, 'https://')
         // 这里是将url转成blob地址，
         fetch(url).then(res => res.blob()).then(blob => { // 将链接地址字符内容转变成blob地址
             a.href = URL.createObjectURL(blob)
