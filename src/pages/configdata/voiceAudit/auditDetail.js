@@ -33,7 +33,12 @@ function AuditDetail({ visible, handleOk, handleCancel, productId, opeType }) {
       dataIndex: 'abilityDesc',
       key: 'abilityDesc',
       render: (text) => {
-        return <span title={text}>{text}</span>
+        let abilityDesc = text && JSON.parse(text)
+        let html = <div title={abilityDesc.desc}>{abilityDesc.desc}</div>
+        const arr = abilityDesc.examples.map((item, index) => {
+          return <span key={index} title={item}>{item}<br /></span>
+        })
+        return [html, arr]
       }
     },
     {
@@ -144,7 +149,7 @@ function AuditDetail({ visible, handleOk, handleCancel, productId, opeType }) {
             rowKey="approveId"
             loading={loading}
             columns={columns}
-            dataSource={opeType== 'approve' ? dataSource : detailList}
+            dataSource={opeType == 'approve' ? dataSource : detailList}
             pagination={false}
             scroll={{ y: 340 }} />
         </div>
