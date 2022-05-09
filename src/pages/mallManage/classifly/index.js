@@ -168,6 +168,7 @@ function FirmwareMagement({ form }) {
     const tabChange = (val) => {
         console.log(val)
         setCurrentTab(val)
+        setdataSource([])
         // 拉列表数据
         setPager({ pageIndex: 1, pageRows: 10 })
     }
