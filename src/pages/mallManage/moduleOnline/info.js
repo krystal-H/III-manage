@@ -350,7 +350,7 @@ function Addmodal({ form, history, editData = {} }) {
                             )}
                         </FormItem>
                     </div>
-                    <FormItem label="模组简述">
+                    <FormItem label="模组描述">
                         {getFieldDecorator('commodityDescription', {})(
                             <Input style={{ width: '600px' }}></Input>
                         )}
