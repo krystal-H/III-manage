@@ -283,7 +283,7 @@ export default function MiddleCom() {
         return true
     }
     const isHasFist = () => {
-        if (leftData.length) {
+        if (leftData.length && state.nodeInfo.nodeType === 1) {
             if (state.nodeInfo.nodeInfo.conditionId === 26 || leftData[0].conditionId === 26) {
                 return false
             }
