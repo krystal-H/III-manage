@@ -350,7 +350,7 @@ function Addmodal({ form, history, editData = {} }) {
                             )}
                         </FormItem>
                     </div>
-                    <FormItem label="模组简述">
+                    <FormItem label="模组描述">
                         {getFieldDecorator('commodityDescription', {})(
                             <Input style={{ width: '600px' }}></Input>
                         )}
@@ -361,6 +361,7 @@ function Addmodal({ form, history, editData = {} }) {
                                 ref={$el1}
                                 listType="picture-card"
                                 isNotImg={false}
+                                maxCount={6}
                                 maxSize={10} />
                         )}
                     </FormItem>
@@ -464,7 +465,7 @@ function ProductInfo({ id }) {
             </div>
             <div className='item'>
                 <div className='item-label'>生产厂商：</div>
-                <div className='item-text'>{dataInfo.commodityBrand}</div>
+                <div className='item-text'>{dataInfo.brandName}</div>
             </div>
         </div>
         <div className='item-wrap'>
