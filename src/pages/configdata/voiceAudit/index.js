@@ -107,7 +107,7 @@ function VoiceAudit({ form }) {
     let { productId, mode } = getFieldsValue()
     const params = {
       productId: productId ? Number(productId) : '',
-      mode: mode || '',
+      mode: mode,
       ...pager
     }
     getVoiceListRequest({ ...params }).then(res => {
@@ -123,7 +123,7 @@ function VoiceAudit({ form }) {
   return (
     <div>
       <TitleTab title="语音方案审核">
-        <Form layout="inline">
+        <Form layout="inline" autoComplete='off'>
           <Form.Item label="产品ID">
             {getFieldDecorator('productId', {
               getValueFromEvent: (e) => {

@@ -140,7 +140,7 @@ function AuditDetail({ visible, handleOk, handleCancel, productId, opeType }) {
         ]
       }>
       <div className='audit-detail-modal'>
-        <div className='title'>睡眠监测器
+        <div className='title'>{productDetail.productName}
           <span className='tag'>免开发方案</span>
         </div>
         <div>{titleCom}</div>

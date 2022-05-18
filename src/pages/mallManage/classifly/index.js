@@ -215,7 +215,7 @@ function FirmwareMagement({ form }) {
                                 initialValue: modelType === 'add' ? '' : actionData.parentId + '',
                                 rules: [{ required: true, message: '请选择分类类别' }]
                             })(
-                                <Select style={{ width: 275 }}>
+                                <Select style={{ width: 275 }} disabled={modelType === 'edit'}>
                                     {
                                         classifiyTypeMap.length > 0 && classifiyTypeMap.map(d => {
                                             return <Option key={d.id}>{`${d.classifyName}`}</Option>
