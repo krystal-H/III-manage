@@ -29,6 +29,7 @@ function ConditionDicModal({
 
   // 提交数据
   const confirmSubmit = () => {
+    
     form.validateFields((err, values) => {
       if (!err) {
         setConfirmLoading(true)
@@ -44,7 +45,9 @@ function ConditionDicModal({
           delete params.rangArr1
           delete params.rangArr2
           if (Object.keys(conditionDicDetailData).length) { // 编辑
-            params.queryParams[0].queryParamId = conditionDicDetailData.queryParams[0].queryParamId
+            if (conditionDicDetailData.queryParams.length > 0) { //存在是之前的值，不是切换的
+              params.queryParams[0].queryParamId = conditionDicDetailData.queryParams[0].queryParamId || ''
+            }
             params.statusQueryId = conditionDicDetailData.statusQueryId
             params.conditionId = conditionDicDetailData.conditionId
           }
