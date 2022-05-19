@@ -35,7 +35,12 @@ function ConditionDicModal({
         console.log('values', values)
         let params = { ...values }
         if (paramStyle === '1') {// 范围
-          params.queryParams = [{ queryParamName: values.rangArr1, queryParamValue: values.rangArr2 }]
+          params.queryParams = [
+            {
+              queryParamName: values.rangArr1,
+              queryParamValue: `[${Number(values.rangArr1)}, ${Number(values.rangArr2)}]`
+            }
+          ]
           delete params.rangArr1
           delete params.rangArr2
           if (Object.keys(conditionDicDetailData).length) { // 编辑
