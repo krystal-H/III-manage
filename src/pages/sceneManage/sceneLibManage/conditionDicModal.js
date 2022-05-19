@@ -12,19 +12,20 @@ function ConditionDicModal({
   visible,
   handleOk,
   handleCancel,
-  conditionDicDetailData = {},
+  conditionDicDetailData1 = {},
   dicConditionType = [],
   unitList = []
 }) {
   const { getFieldDecorator, getFieldValue } = form
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [paramStyle, setParamStyle] = useState('') // 类型
+  const [conditionDicDetailData, setConditionDicDetailData] = useState(cloneDeep(conditionDicDetailData1))
 
   useEffect(() => {
-    if (Object.keys(conditionDicDetailData).length) { // 编辑
-      setParamStyle(conditionDicDetailData.paramStyleId + '')
+    if (Object.keys(conditionDicDetailData1).length) { // 编辑
+      setParamStyle(conditionDicDetailData1.paramStyleId + '')
     }
-  }, [Object.keys(conditionDicDetailData).length])
+  }, [Object.keys(conditionDicDetailData1).length])
 
   // 提交数据
   const confirmSubmit = () => {
@@ -72,6 +73,11 @@ function ConditionDicModal({
   // 选择类型
   const changeType = (val) => {
     console.log('change')
+    setConditionDicDetailData((pre) => {
+      let obj = cloneDeep(pre)
+      obj.queryParams = []
+      return obj
+    })
     setParamStyle(val)
   }
 
@@ -97,7 +103,7 @@ function ConditionDicModal({
 
   if (Object.keys(conditionDicDetailData).length && paramStyle === '2') {
     // 为了兼容老数据
-    if (conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
+    if (conditionDicDetailData.queryParams.length && conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
       newData = []
     } else {
       newData = cloneDeep(conditionDicDetailData.queryParams)
@@ -269,7 +275,7 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr1', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ?
+                  initialValue: conditionDicDetailData.queryParams.length ?
                     Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[0] + '' :
                       conditionDicDetailData.queryParams[0].queryParamName : '',
@@ -296,7 +302,7 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr2', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ?
+                  initialValue: conditionDicDetailData.queryParams.length ?
                     Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
                       JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[1] + '' :
                       conditionDicDetailData.queryParams[0].queryParamValue : '',

@@ -410,11 +410,11 @@ function SceneLibList({ form }) {
           }
         })
     } else if (selectVal === '3') {
-      setConditionDicVisible(true)
       setConditionDicDetailData({})
       getConditionDicDetailRequest({ conditionId: record.conditionId }).then(res => {
         if (res.data.code === 0) {
           setConditionDicDetailData(res.data.data)
+          setConditionDicVisible(true)
         }
       })
     } else if (selectVal === '4') {
@@ -657,7 +657,7 @@ function SceneLibList({ form }) {
             visible={conditionDicVisible}
             dicConditionType={dicConditionType}
             unitList={unitList}
-            conditionDicDetailData={conditionDicDetailData}
+            conditionDicDetailData1={conditionDicDetailData}
             handleOk={() => {
               setConditionDicVisible(false)
               getTableData()
