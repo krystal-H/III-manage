@@ -39,7 +39,7 @@ function ConditionDicModal({
           params.queryParams = [
             {
               queryParamName: values.rangArr1,
-              queryParamValue: `[${Number(values.rangArr1)}, ${Number(values.rangArr2)}]`
+              queryParamValue: `[${Number(values.rangArr1)},${Number(values.rangArr2)}]`
             }
           ]
           delete params.rangArr1
