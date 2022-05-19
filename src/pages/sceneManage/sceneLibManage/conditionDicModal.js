@@ -270,8 +270,8 @@ function ConditionDicModal({
                 getFieldDecorator('rangArr1', {
                   // 后端返回的数据格式，将就看吧
                   initialValue: conditionDicDetailData.queryParams ?
-                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
-                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[0] + '' :
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[0] + '' :
                       conditionDicDetailData.queryParams[0].queryParamName : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [
@@ -297,8 +297,8 @@ function ConditionDicModal({
                 getFieldDecorator('rangArr2', {
                   // 后端返回的数据格式，将就看吧
                   initialValue: conditionDicDetailData.queryParams ?
-                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
-                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[1] + '' :
                       conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [
