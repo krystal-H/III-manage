@@ -503,7 +503,7 @@ function SceneLibList({ form }) {
   const handleAdd = () => {
     const addMap = {
       '2': () => { setConditionTypeVisible(true); setConditionTypeDetailData({}) },
-      '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}) },
+      '3': () => { setConditionDicVisible(true); setConditionDicDetailData({}); getCheckType() },
       '4': () => { setAiAbilityVisible(true); setAiAbilityDetail({}) }
     }
     addMap[selectVal]()
