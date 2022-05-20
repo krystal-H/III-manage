@@ -169,7 +169,6 @@ function FirmwareMagement({ form }) {
                         placeholder='请输入用户名/手机号/订单号进行搜索'
                         onChange={(e) => { setsearchData(e.target.value) }}
                         onSearch={getTableData}
-                        allowClear
                     />
                 </div>
                 <Table rowKey={"orderId"} columns={column} dataSource={dataSource}
