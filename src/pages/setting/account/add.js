@@ -38,7 +38,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                             {getFieldDecorator('accountName', { rules: [{ required: true, message: '请输入账户名称' },
                             {
                                 max: 30,
-                                message: '场景名称不能超过30个字符',
+                                message: '不能超过30个字符',
                             }] })(
                                 <div><Input style={{ width: '220px' }} ></Input>
                                     <span style={{ marginLeft: '10px' }}>@clife.cn</span>
@@ -51,7 +51,7 @@ function Addmodal({ form, addVis, handleCancel, handleOk }) {
                                 rules: [{ required: true, message: '请输入厂商名称' },
                                 {
                                     max: 30,
-                                    message: '场景名称不能超过30个字符',
+                                    message: '不能超过30个字符',
                                 },]
                             })(
                                 <Input style={{ width: '220px' }} ></Input>
