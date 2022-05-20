@@ -522,7 +522,7 @@ function StepThird({ form, commitAll, opeType, editData = {} }, ref) {
                 版本号：
                 {getFieldDecorator("burnFileVersion", {
                   initialValue: editInfo.burnFileVersion,
-                  rules: [{ required: true, message: "请输入模组固件版本号" }]
+                  rules: [{ required: false, message: "请输入模组固件版本号" }]
                 })(<Input style={{ width: 162 }} type="text" maxLength={10} placeholder="v1.1.1" />)}
               </div>
             </Form.Item>

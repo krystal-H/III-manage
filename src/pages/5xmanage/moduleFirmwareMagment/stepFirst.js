@@ -32,7 +32,7 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
 
   const { getFieldDecorator } = form
   return (
-    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
+    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} className="basic-params">
       <Form.Item label="模组名称">
         {getFieldDecorator('moduleName', {
           initialValue: editData.moduleName,
