@@ -45,11 +45,17 @@ function FirmwareMagement({ form }) {
             title: '账户名',
             dataIndex: 'userName',
             key: 'userName',
+            render:(text)=>{
+                return <span title={text}>{text}</span>
+            }
         },
         {
             title: '厂商名称',
             dataIndex: 'nickName',
-            key: 'nickName'
+            key: 'nickName',
+            render:(text)=>{
+                return <span title={text}>{text}</span>
+            }
         },
         // {
         //     title: '账号类型',
