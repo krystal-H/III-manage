@@ -52,11 +52,16 @@ function FirmwareMagement({ form }) {
         const params = { parentId: temp[0].id, ...pager }
         getList(params).then(res => {
             if (res.data.code == 0) {
-                res.data.data.list.forEach((item, index) => {
-                    item.key = index + 1
-                })
-                setdataSource(res.data.data.list)
-                setTotalRows(res.data.data.pager.totalRows)
+                if (res.data.data) {
+                    res.data.data.list.forEach((item, index) => {
+                        item.key = index + 1
+                    })
+                    setdataSource(res.data.data.list)
+                    setTotalRows(res.data.data.pager.totalRows)
+                } else {
+                    setdataSource([])
+                    setTotalRows(0)
+                }
             }
         }).finally(() => { setLoading(false) })
     }
