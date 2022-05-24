@@ -206,7 +206,7 @@ export default function MiddleCom() {
                         <span>设备动作：</span>
                         <span>{item.deviceTypeName}</span>
                     </div>
-                    <div>
+                    <div className='action-text' title={text}>
                         {text}
                     </div>
                 </div>
