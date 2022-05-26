@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Form, Input, Button,Modal } from 'antd'
+import { Form, Input, Button,Modal,notification } from 'antd'
 import { Link } from 'react-router-dom';
 import { DateTool } from "../../../util/utils";
 import TitleTab from '../../../components/TitleTab';
@@ -46,6 +46,7 @@ class List extends Component {
       userSceneId:undefined,
       userId:undefined,
       sceneName:undefined,
+      pageIndex:1
     }, () => {
       this.getList();
     })
@@ -55,10 +56,18 @@ class List extends Component {
   }
 
 getList=(index)=>{
+  
+  let {pageIndex,userSceneId,userId,sceneName} = this.state;
+  if( userSceneId && isNaN(userSceneId) || userId && isNaN(userId)){
+    notification.warning({
+      message:'用户ID和场景ID须为数字'
+    })
+    return
+
+  }
   if(index){
     this.setState({pageIndex:index})
   }
-  let {pageIndex,userSceneId,userId,sceneName} = this.state;
   let param = {
       paged:true,
       pageIndex:index||pageIndex,
@@ -105,15 +114,15 @@ alarmOk=()=>{
           <div className="comm-title-search-box">
 
             <span className="labeknam">用户ID：</span>
-            <Input value={userId} placeholder="请输入用户ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("userId",e.target.value || undefined)}}/>
+            <Input value={userId} placeholder="请输入用户ID" maxLength={30} onPressEnter={()=>{this.getList(1)} } onChange={e=>{ this.changeSearch("userId",e.target.value || undefined)}}/>
 
             <span className="labeknam">场景ID：</span>
-            <Input value={userSceneId} placeholder="请输入场景ID" maxLength={30} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("userSceneId",e.target.value || undefined)}}/>
+            <Input value={userSceneId} placeholder="请输入场景ID" maxLength={30} onPressEnter={()=>{this.getList(1)} } onChange={e=>{ this.changeSearch("userSceneId",e.target.value || undefined)}}/>
             
             <span className="labeknam">场景名称：</span>
-            <Input value={sceneName} placeholder="请输入场景名称" maxLength={20} onPressEnter={()=>{this.getList()} } onChange={e=>{ this.changeSearch("sceneName",e.target.value || undefined)}}/>
+            <Input value={sceneName} placeholder="请输入场景名称" maxLength={20} onPressEnter={()=>{this.getList(1)} } onChange={e=>{ this.changeSearch("sceneName",e.target.value || undefined)}}/>
 
-            <Button className='btn' type="primary" onClick={ ()=>{this.getList()} } >查询</Button>
+            <Button className='btn' type="primary" onClick={ ()=>{this.getList(1)} } >查询</Button>
             <Button className='btn' onClick={this.onReset}>重置</Button>
 
             {/* <Link to={{ pathname: "/sceneMgt/sceneList/log", search: `?userSceneId=${123}` }}>详情</Link> */}
