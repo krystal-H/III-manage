@@ -28,7 +28,7 @@ export default function MiddleCom() {
     const [subSceneIndex, setSubSceneIndex] = useState(0)
     const [loadingPage, setLoadingPage] = useState(false)
     const getImg = info => {
-        if (info.conditionTypeId == 1) {
+        if ([1,9].includes(Number(info.conditionTypeId))) {
             return touchImg
         }
         if (info.conditionTypeName === '用户事件') {
