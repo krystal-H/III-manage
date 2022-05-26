@@ -132,7 +132,7 @@ export default function MiddleCom() {
                 <div className='right'>
                     <div>
                         <span>{item.conditionTypeName}：</span>
-                        <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
+                        <span>{[1,9].includes(item.conditionTypeId) ? item.conditionOptionName : item.conditionName}</span>
                     </div>
                     <div>
                         {
