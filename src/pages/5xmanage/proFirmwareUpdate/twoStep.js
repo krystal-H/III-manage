@@ -27,8 +27,9 @@ const columns = [
 function StepSecond({ setStepCur, actionData, subObj }, ref) {
     const [data, setData] = useState([])
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [selectRow,setSelectRow]= useState([])
     useEffect(() => {
-        getProductList({ moduleId: 198 }).then(res => {
+        getProductList({ moduleId: actionData.moduleId }).then(res => {
             if (res.data.code === 0) {
                 setData(res.data.data.list)
             }
@@ -38,6 +39,7 @@ function StepSecond({ setStepCur, actionData, subObj }, ref) {
         onChange: (key, selectedRows) => {
             console.log(key, '勾选的数据')
             setSelectedRowKeys(key)
+            setSelectRow(selectedRows)
         },
         selectedRowKeys
     };
@@ -49,12 +51,12 @@ function StepSecond({ setStepCur, actionData, subObj }, ref) {
                 productIdList: selectedRowKeys
             }
             addOneData(params).then(res => {
-                if (res.data.coder === 0) {
+                if (res.data.code === 0) {
                     message.success('升级成功')
-                    setStepCur(2, selectedRowKeys)
+                    setStepCur(2, selectRow)
                 } else {
-
-                } message.error('升级失败')
+                    message.error('升级失败')
+                } 
             })
         } else {
             message.info('请勾选数据')

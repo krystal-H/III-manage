@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Tabs, Modal, Button, Steps } from 'antd';
+import { Tabs, Modal, Button, Steps, message } from 'antd';
 import { subFinishData } from '../../../apis/upNotice'
 import StepFirst from './oneStep'
 import StepSecond from './twoStep'
@@ -8,16 +8,13 @@ import { cloneDeep } from "lodash"
 const { TabPane } = Tabs
 const { Step } = Steps
 const stepList = ['更新模组固件', '选择产品对象', '发送升级通知']
-function Addmodal({ noticeVis, handleCancel, handleOk,actionData }) {
+function Addmodal({ noticeVis, handleCancel, handleOk, actionData }) {
     const [stepcurrent, setStepcurrent] = useState(0) // 编辑从0开始   更新直接跳到第三步
     const ref1 = useRef()
     const ref2 = useRef()
     const ref3 = useRef()
     const sundata = () => {
     }
-    useEffect(()=>{
-        console.log(actionData,'=====actionData')
-    },[])
     const [subObj, setSubObj] = useState({ one: {}, two: {}, three: {} }) // 最后提交的数据
     // 上一步
     const clickPrevious = () => {
@@ -43,7 +40,6 @@ function Addmodal({ noticeVis, handleCancel, handleOk,actionData }) {
                 obj.one = cloneDeep(val)
                 return obj
             })
-            console.log(val,'======')
         } else if (stepcurrent === 1) {
             setSubObj(pre => {
                 let obj = cloneDeep(pre)
@@ -53,8 +49,27 @@ function Addmodal({ noticeVis, handleCancel, handleOk,actionData }) {
         }
         setStepcurrent(num)
     }
-    const commitAll=val=>{
-        console.log(val,subObj,666)
+    const commitAll = val => {
+        let productDTOList = subObj.two.map(item => {
+            return {
+                productId: item.productId,
+                productName: item.productName,
+                contact: item.contact,
+                tel: item.tel
+            }
+        })
+        let params = {
+            textTemplate: '尊敬的客户您好：clife平台已升级通信模组 {模组名称} ，您关联使用的产品 {产品名称}，可进行设备模组固件升级，敬请留意~',
+            version: subObj.one.deviceVersionType,
+            hetModuleTypeName: actionData.moduleName,
+            productDTOList
+        }
+        subFinishData(params).then(res => {
+            if (res.data.code === 0) {
+                message.success('操作成功')
+                handleCancel()
+            }
+        })
     }
     return (
         <Modal
@@ -80,7 +95,7 @@ function Addmodal({ noticeVis, handleCancel, handleOk,actionData }) {
                         <TabPane tab="基本参数" key={'0'}>
                             <StepFirst
                                 setStepCur={setStepCur}
-                                wrappedComponentRef={ref1} actionData={actionData}/>
+                                wrappedComponentRef={ref1} actionData={actionData} />
                         </TabPane>
                         <TabPane tab="功能参数" key={'1'}>
                             <StepSecond
@@ -92,7 +107,7 @@ function Addmodal({ noticeVis, handleCancel, handleOk,actionData }) {
                         </TabPane>
                         <TabPane tab="功能参数" key={'2'}>
                             <StepThird
-                                wrappedComponentRef={ref3} actionData={actionData} commitAll={commitAll}/>
+                                wrappedComponentRef={ref3} actionData={actionData} commitAll={commitAll} />
                         </TabPane>
                     </Tabs>
                 </div>

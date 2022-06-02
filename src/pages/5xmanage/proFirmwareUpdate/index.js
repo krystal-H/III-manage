@@ -63,7 +63,7 @@ function PanelMn({ form }) {
       render: (_, row) => {
         return <>
           {/* <a style={{ marginRight: '10px' }} onClick={() => openUp(row)} >升级</a> */}
-          <a style={{ marginRight: '10px' }}>通知历史</a>
+          {/* <a style={{ marginRight: '10px' }}>通知历史</a> */}
           <a onClick={() => { openNotice(row) }}>更新通知</a>
         </>
       }

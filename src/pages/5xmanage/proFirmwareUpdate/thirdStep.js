@@ -8,7 +8,7 @@ function StepFirst({ form, commitAll }, ref) {
     const validData = () => {
         form.validateFields((err, values) => {
             if (!err) {
-                commitAll(values)
+                commitAll(values.textTemplate)
             }
         })
     }
@@ -28,7 +28,7 @@ function StepFirst({ form, commitAll }, ref) {
                     <span>短信通知</span>
                 </Form.Item>
                 <Form.Item label="短信文案">
-                    {getFieldDecorator('moduleName', {})(<TextArea  rows={4}
+                    {getFieldDecorator('textTemplate', {})(<TextArea  rows={4} readOnly
                     placeholder='尊敬的客户您好：clife平台已升级通信模组 {模组名称} ，您关联使用的产品 {产品名称}，可进行设备模组固件升级，敬请留意~'/>)}
                 </Form.Item>
             </Form>

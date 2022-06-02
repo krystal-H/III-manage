@@ -4,7 +4,6 @@ import UploadCom from '../../../components/uploadCom/index'
 
 function StepFirst({ form, setStepCur, actionData }, ref) {
     const { getFieldDecorator, validateFields } = form
-    const [radioType, setRadioType] = useState(1)
     const $el1 = useRef(null)
     // 表单提交
     const validData = () => {
@@ -34,12 +33,9 @@ function StepFirst({ form, setStepCur, actionData }, ref) {
             onFinish: validData
         }
     }, [])
-
-    const onChange = (e) => {
-        setRadioType(e.target.value)
-    }
     const cbFn=()=>{
-
+        console.log(form.getFieldValue('filePath2'))
+        form.setFieldsValue({filePath:form.getFieldValue('filePath2')[0].url})
     }
     return (
         <div style={{ padding: '0 100px' }}>
@@ -75,30 +71,6 @@ function StepFirst({ form, setStepCur, actionData }, ref) {
                             maxSize={200} />
                     )}
                 </Form.Item>
-                {/* <Form.Item label="固件程序：">
-                    {getFieldDecorator('selectTYpe', {initialValue:1})(
-                        <Radio.Group onChange={onChange} >
-                            <Radio value={1}>输入url</Radio>
-                            <Radio value={2}>文件上传</Radio>
-
-                        </Radio.Group>
-                    )}
-                </Form.Item>
-                {
-                    radioType == 1 ? <Form.Item label=" ">
-                        {getFieldDecorator('filePath1', {})(<Input placeholder="请输入下载URL或者上传附件" />)}
-                    </Form.Item> : <Form.Item label=" ">
-                        {getFieldDecorator('filePath2', {})(
-                            <UploadCom
-                                ref={$el1}
-                                maxCount={1}
-                                format='.bin,.hex,.zip,.cyacd,.apk,.dpkg'
-                                isNotImg={true}
-                                maxSize={200} />
-                        )}
-                    </Form.Item>
-                } */}
-
             </Form>
         </div>
 
