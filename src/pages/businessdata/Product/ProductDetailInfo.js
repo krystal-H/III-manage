@@ -55,7 +55,8 @@ class ProductAuditDetail extends Component {
             this.setState({
                 showProductDetail: res.data.data
             })
-            this.state.sessionListItem.physicalModelId && this.getPhysicalData(this.state.sessionListItem.physicalModelId)
+            JSON.parse(sessionStorage.getItem('listItem')).isOldProduct == 0 &&  this.getPhysicalData(productId)
+            // this.state.sessionListItem.physicalModelId && this.getPhysicalData(this.state.sessionListItem.physicalModelId)
         })
 
 
@@ -119,9 +120,9 @@ class ProductAuditDetail extends Component {
     }
 
     // 拉取物模型数据
-    getPhysicalData = (id) => {
+    getPhysicalData = (productId) => {
         this.setState({ tableComloading: true })
-        getDetailTable({ id }).then(res => {
+        getDetailTable({ productId }).then(res => {
             if (res.data.code == 0) {
                 let data = this.delaData(res.data.data.standard || [])
                 this.setState({ showPhysicalList: data })
