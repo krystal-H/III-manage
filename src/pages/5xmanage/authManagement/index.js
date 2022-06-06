@@ -105,6 +105,7 @@ function AuthManage({ form }) {
             <Select placeholder="请选择操作类型" onChange={clearAll}>
               <Option value="open">open</Option>
               <Option value="dmp">dmp</Option>
+              <Option value="bms">bms</Option>
             </Select>
           )}
         </Form.Item>

@@ -28,7 +28,7 @@ export default function MiddleCom() {
     const [subSceneIndex, setSubSceneIndex] = useState(0)
     const [loadingPage, setLoadingPage] = useState(false)
     const getImg = info => {
-        if (info.conditionTypeId == 1) {
+        if ([1,9].includes(Number(info.conditionTypeId))) {
             return touchImg
         }
         if (info.conditionTypeName === '用户事件') {
@@ -132,7 +132,7 @@ export default function MiddleCom() {
                 <div className='right'>
                     <div>
                         <span>{item.conditionTypeName}：</span>
-                        <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
+                        <span>{[1,9].includes(item.conditionTypeId) ? item.conditionOptionName : item.conditionName}</span>
                     </div>
                     <div>
                         {
@@ -206,7 +206,7 @@ export default function MiddleCom() {
                         <span>设备动作：</span>
                         <span>{item.deviceTypeName}</span>
                     </div>
-                    <div>
+                    <div className='action-text' title={text}>
                         {text}
                     </div>
                 </div>

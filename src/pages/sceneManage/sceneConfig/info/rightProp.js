@@ -63,7 +63,7 @@ function RightCom({ form }) {
         }
     }, [state.wholeInfo.aiId])
     const getImg = info => {
-        if (info.conditionTypeId == 1) {
+        if ([1,9].includes(Number(info.conditionTypeId))) {
             return touchImg
         }
         if (info.conditionTypeName === '用户事件') {
@@ -167,7 +167,7 @@ function RightCom({ form }) {
     //保存提交节点
     const saveFactor = () => {
         let data = getFieldsValue()
-        if (state.formDom.data.conditionTypeId == 1) {
+        if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) > -1) {
             let productItem = productList.find(item => {
                 return item.conditionOptionId === data.conditionOptionId
             })
@@ -299,7 +299,7 @@ function RightCom({ form }) {
         unlkey = 0
         if (state.currentRule && state.theme === 'Node') {
             if (state.formDom.nodeType === 1) {
-                if (state.formDom.data.conditionTypeId != 1) {
+                if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) === -1) {
                     getfactor(state.formDom.data.conditionOptionId).then(val => {
                         let data = val.data.data.find(item => {
                             return item.conditionId === state.formDom.data.conditionId
@@ -795,7 +795,7 @@ function RightCom({ form }) {
             return ruleDom()
         } else if (state.theme === 'Node') {
             if (state.formDom.nodeType === 1) {
-                if (state.formDom.data.conditionTypeId != 1) {
+                if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) === -1) {
                     return factorNoDeviceDom()
                 } else {
                     return factorDeviceDom()
