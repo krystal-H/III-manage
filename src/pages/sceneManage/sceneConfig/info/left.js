@@ -42,8 +42,6 @@ const myDemo = (props) => {
         return arr
     }, [])
     const [searchData, setsearchData] = useState('')  //搜索
-
-
     const searchValue = (val) => { //更新input值
         let originData2 = cloneDeep(originData)
         if (!val || !val.trim()) {

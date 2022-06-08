@@ -6,6 +6,9 @@ const ProductMn = asyncComponent(() => import('../pages/mallManage/product'))
 const UserMn = asyncComponent(() => import('../pages/mallManage/user'))
 const OrderMn = asyncComponent(() => import('../pages/mallManage/order'))
 const ProductMnInfo = asyncComponent(() => import('../pages/mallManage/product/info'))
+const ModuleOnline = asyncComponent(() => import('../pages/mallManage/moduleOnline'))
+const ModuleOnlineInfo = asyncComponent(() => import('../pages/mallManage/moduleOnline/info'))
+
 const route = {
     icon: "apartment",
     name: '产品中心',
@@ -40,6 +43,19 @@ const route = {
                 hideInMenu: true,
             }
         },
+        {
+            name: '模组上架',
+            path: '/mall/moduleOnline',
+            component: ModuleOnline,
+        },
+        {
+            name: '模组信息',
+            path: '/mall/moduleOnlineInfo',
+            component: ModuleOnlineInfo,
+            meta: {
+                hideInMenu: true,
+            }
+        }
     ]
 }
 

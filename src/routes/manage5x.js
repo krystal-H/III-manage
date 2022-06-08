@@ -26,7 +26,7 @@ const authManagement = asyncComponent(() => import('../pages/5xmanage/authManage
 const proFirmwareUpdate = asyncComponent(() => import('../pages/5xmanage/proFirmwareUpdate'))
 
 //网关子设备管理
-const gatewayMagement =asyncComponent(() => import( '../pages/5xmanage/gatewayMagement'))
+const gatewayMagement = asyncComponent(() => import('../pages/5xmanage/gatewayMagement'))
 
 // 设备日志
 const deviceLog = asyncComponent(() => import('../pages/5xmanage/deviceLog'))
@@ -86,12 +86,12 @@ const route = {
       name: '在线客服',
       path: '/5xmanage/customerService',
       component: CustomerService,
-    }, 
+    },
     {
       name: '权限管理',
       path: '/5xmanage/authManagement',
       component: authManagement
-    } ,
+    },
     {
       name: '网关子设备管理',
       path: '/5xmanage/gatewayMagement',
@@ -101,7 +101,7 @@ const route = {
       name: '设备日志',
       path: '/5xmanage/deviceLog',
       component: deviceLog
-    }  
+    }
   ]
 
 }

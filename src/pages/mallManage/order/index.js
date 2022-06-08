@@ -169,7 +169,6 @@ function FirmwareMagement({ form }) {
                         placeholder='请输入用户名/手机号/订单号进行搜索'
                         onChange={(e) => { setsearchData(e.target.value) }}
                         onSearch={getTableData}
-                        allowClear
                     />
                 </div>
                 <Table rowKey={"orderId"} columns={column} dataSource={dataSource}
@@ -218,7 +217,7 @@ function OrderInfo({ actionData }) {
                     <img src={item.commodityPicture.split(',')[0]} />
                     <div className='name'>{item.name}</div>
                     <div className='code'>{item.commodityModel}</div>
-                    <div className='price'>￥{item.quantity}*{item.unitPrice/100}</div>
+                    <div className='price'>￥{item.unitPrice/100}*{item.quantity}</div>
                 </div>
             })
         }

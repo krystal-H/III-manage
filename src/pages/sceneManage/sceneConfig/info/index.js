@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useLayoutEffect,useMemo } from 'react';
+import React, { useState, useEffect, useReducer, useLayoutEffect, useMemo } from 'react';
 import RightCom from './right'
 import LeftCom from './left'
 import MiddleCom from './middle'
@@ -31,6 +31,12 @@ const initState = {
 function loginReducer(state2, action) {
     let state = cloneDeep(state2)
     switch (action.type) {
+        //显示规则
+        case 'subLogic':
+            return {
+                ...state,
+                currentEvent: "refreshLogic"
+            }
         //显示规则
         case 'overViewRule':
             return {
@@ -84,7 +90,7 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: action.payload,
                 showTab: '2',
-                activePropsId:0
+                activePropsId: 0
             }
         //更换节点
         case 'changeNode':
@@ -162,6 +168,7 @@ function loginReducer(state2, action) {
             return {
                 ...state,
                 wholeInfo: action.payload,
+                showTab: '1',
             }
         //新增规则tab=====
         case 'newTab':
@@ -172,14 +179,6 @@ function loginReducer(state2, action) {
                 theme: 'Tab',
                 currentRule: -1
             }
-        // state.pannelTab.push({ content: [[], [], []], tabIndex: action.payload, info: {} })
-        // return {
-        //     ...state,
-        //     theme: 'Tab',
-        //     currentRule: action.payload,
-        //     showTab: 2,
-        //     propsId: 0
-        // }
         //编辑规则tab
         case 'saveTab':
             let index = state.pannelTab.findIndex(item => {
@@ -189,7 +188,6 @@ function loginReducer(state2, action) {
             return {
                 ...state,
             }
-
         //获取最新form数据
         case 'saveCheck':
             return {
@@ -206,25 +204,29 @@ export const Context = React.createContext();
 export default function FirmwareMagement(math) {
     const [state, dispatch] = useReducer(loginReducer, initState);
     const [loadingPage, setLoadingPage] = useState(false)
-    const wholeScenceId=useMemo(()=>{
-        return math.location.pathname.split('/').slice(-1)[0]
-    },[])
-    if(!wholeScenceId){
+    const [isShowDom, setIsShowDom] = useState(false)
+    const wholeScenceId = math.location.pathname.split('/').slice(-1)[0]
+    if (!wholeScenceId) {
         return '无内容'
     }
     // useLayoutEffect(()=>{
     //     dispatch({ type: "getSceneID", payload: 931 })
     //   },[])
-    useEffect(() => {
-        getRuleList(wholeScenceId).then(res => {
-            if (res.data.code == 0) {
-                dispatch({ type: "reRule", payload: res.data.data })
-                if(res.data.data.length){
-                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
-                }
-            }
-        })
-    }, [])
+    // useEffect(() => {
+    //     getRuleList(wholeScenceId).then(res => {
+    //         if (res.data.code == 0) {
+    //             dispatch({ type: "reRule", payload: res.data.data })
+    //             if (res.data.data.length) {
+    //                 dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+    //             }
+    //         }
+    //     })
+    //     dispatch({ type: "callBackEvent" })
+    //     // setIsShowDom(false)
+    //     // setTimeout(() => {
+    //     //     setIsShowDom(true)
+    //     // }, 1000)
+    // }, [wholeScenceId])
     useEffect(() => {
         if (state.activePropsId || state.currentRule) {
             setLoadingPage(true)
@@ -234,15 +236,23 @@ export default function FirmwareMagement(math) {
         }
     }, [state.activePropsId, state.currentRule])
     return (
-        <div>
+        <div className='scence-wrapS'>
             <Spin spinning={loadingPage}>
-                <div className='rule-configuration'>
-                    <Context.Provider value={{ state, dispatch,wholeScenceId }}>
-                        <LeftCom />
-                        <MiddleCom />
-                        <RightCom />
-                    </Context.Provider>
-                </div>
+                {
+                    <div className='rule-configuration'>
+                        <Context.Provider value={{ state, dispatch, wholeScenceId }}>
+                            {
+                                <>
+                                    <LeftCom />
+                                    <MiddleCom />
+                                    <RightCom />
+                                </>
+                            }
+
+                        </Context.Provider>
+                    </div>
+                }
+
             </Spin>
         </div>
     )

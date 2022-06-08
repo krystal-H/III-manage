@@ -12,33 +12,42 @@ function ConditionDicModal({
   visible,
   handleOk,
   handleCancel,
-  conditionDicDetailData = {},
+  conditionDicDetailData1 = {},
   dicConditionType = [],
   unitList = []
 }) {
   const { getFieldDecorator, getFieldValue } = form
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [paramStyle, setParamStyle] = useState('') // 类型
+  const [conditionDicDetailData, setConditionDicDetailData] = useState(cloneDeep(conditionDicDetailData1))
 
   useEffect(() => {
-    if (Object.keys(conditionDicDetailData).length) { // 编辑
-      setParamStyle(conditionDicDetailData.paramStyleId + '')
+    if (Object.keys(conditionDicDetailData1).length) { // 编辑
+      setParamStyle(conditionDicDetailData1.paramStyleId + '')
     }
-  }, [Object.keys(conditionDicDetailData).length])
+  }, [Object.keys(conditionDicDetailData1).length])
 
   // 提交数据
   const confirmSubmit = () => {
+    
     form.validateFields((err, values) => {
       if (!err) {
         setConfirmLoading(true)
         console.log('values', values)
         let params = { ...values }
         if (paramStyle === '1') {// 范围
-          params.queryParams = [{ queryParamName: values.rangArr1, queryParamValue: values.rangArr2 }]
+          params.queryParams = [
+            {
+              queryParamName: values.rangArr1,
+              queryParamValue: `[${Number(values.rangArr1)},${Number(values.rangArr2)}]`
+            }
+          ]
           delete params.rangArr1
           delete params.rangArr2
           if (Object.keys(conditionDicDetailData).length) { // 编辑
-            params.queryParams[0].queryParamId = conditionDicDetailData.queryParams[0].queryParamId
+            if (conditionDicDetailData.queryParams.length > 0) { //存在是之前的值，不是切换的
+              params.queryParams[0].queryParamId = conditionDicDetailData.queryParams[0].queryParamId || ''
+            }
             params.statusQueryId = conditionDicDetailData.statusQueryId
             params.conditionId = conditionDicDetailData.conditionId
           }
@@ -72,6 +81,11 @@ function ConditionDicModal({
   // 选择类型
   const changeType = (val) => {
     console.log('change')
+    setConditionDicDetailData((pre) => {
+      let obj = cloneDeep(pre)
+      obj.queryParams = []
+      return obj
+    })
     setParamStyle(val)
   }
 
@@ -97,7 +111,7 @@ function ConditionDicModal({
 
   if (Object.keys(conditionDicDetailData).length && paramStyle === '2') {
     // 为了兼容老数据
-    if (conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
+    if (conditionDicDetailData.queryParams.length && conditionDicDetailData.queryParams[0].queryParamName.indexOf('[') !== -1) {
       newData = []
     } else {
       newData = cloneDeep(conditionDicDetailData.queryParams)
@@ -269,9 +283,9 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr1', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ?
-                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
-                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[0] + '' :
+                  initialValue: conditionDicDetailData.queryParams.length ?
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[0] + '' :
                       conditionDicDetailData.queryParams[0].queryParamName : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [
@@ -296,9 +310,9 @@ function ConditionDicModal({
               {
                 getFieldDecorator('rangArr2', {
                   // 后端返回的数据格式，将就看吧
-                  initialValue: conditionDicDetailData.queryParams ?
-                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)) ?
-                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamName)[1] + '' :
+                  initialValue: conditionDicDetailData.queryParams.length ?
+                    Array.isArray(JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)) ?
+                      JSON.parse(conditionDicDetailData.queryParams[0].queryParamValue)[1] + '' :
                       conditionDicDetailData.queryParams[0].queryParamValue : '',
                   validateTrigger: ['onChange', 'onBlur'],
                   rules: [

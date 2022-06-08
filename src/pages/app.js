@@ -5,6 +5,7 @@ import Login from './login/Login'
 import { Provider } from 'react-redux';
 import store from '../store';
 import Loading from '../components/loading/Loading';
+import InfoDetail from './sceneManage/sceneConfig/info'
 
 export default class App extends Component {
   render() {
@@ -14,6 +15,7 @@ export default class App extends Component {
           <Loading />
           <Switch>
             <Route path='/login' exact component={Login}></Route>
+            <Route path="/sceneMgt/sceneConfig/detail/:id"   component={InfoDetail}></Route>
             <Route path='/' component={BaseLayout}></Route>
           </Switch>
         </Router>

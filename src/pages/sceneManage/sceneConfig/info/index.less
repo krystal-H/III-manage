@@ -1,6 +1,10 @@
+.scence-wrapS {
+  padding: 0 20px;
+}
+
 .rule-configuration {
   display: flex;
-  min-height: calc(100vh - 117px);
+  min-height: 100vh;
   // border: 1px solid #888;
   // min-height: 400px;
   margin: 0 -20px;
@@ -15,9 +19,11 @@
     padding: 0 20px;
     min-width: 220px;
     background-color: #F6F7F8;
-    .ant-tree li span.ant-tree-iconEle{
-      width: 10px;
+
+    .ant-tree li span.ant-tree-iconEle {
+      width: 3px;
     }
+
     h1 {
       font-size: 18px;
       font-weight: 600;
@@ -27,6 +33,10 @@
     .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
       background-color: transparent;
       user-select: none
+    }
+
+    .ant-tree-node-content-wrapper {
+      padding: 0;
     }
 
     .ant-tree-node-content-wrapper:hover {
@@ -42,12 +52,20 @@
     flex: 1;
     // border-left: 1px solid #666;
     // border-right: 1px solid #666;
-    background-color: #FFFFFF ;
+    background-color: #FFFFFF;
     min-width: 1000px;
 
     .tab-item-active {
       background-color: #008DFF;
       color: aliceblue;
+    }
+
+    .ant-dropdown-menu-item {
+
+      // padding: 10px 20px;
+      span {
+        padding: 5px 10px;
+      }
     }
 
     .rule-title-middle {
@@ -72,6 +90,7 @@
           // border-top: none;
           // border-left: none;
           cursor: pointer;
+
           // overflow: hidden;
           .del-title-btn {
             position: absolute;
@@ -135,7 +154,7 @@
       display: flex;
       padding: 20px;
       justify-content: center;
-      min-height: 300px;
+      min-height: calc(100% - 60px);
 
       .item {
         position: relative;
@@ -150,7 +169,7 @@
           height: 18px;
           position: relative;
           top: -1px;
-            right: -1px;
+          right: -1px;
         }
 
         .left {
@@ -179,6 +198,7 @@
           color: #001529;
           line-height: 20px;
           font-size: 14px;
+
           div {
             width: 100%;
           }
@@ -192,6 +212,9 @@
       .conditions {
         margin-right: 60px;
         width: 300px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
 
         .item {
           width: 100%;
@@ -203,6 +226,9 @@
       .logic {
         width: 200px;
         margin-right: 60px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
 
         .item {
           width: 100%;
@@ -212,6 +238,9 @@
 
       .action {
         width: 300px;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
 
         .item {
           width: 100%;
@@ -224,7 +253,12 @@
   .rule-right {
     width: 350px;
     min-width: 350px;
-    background-color: #F6F7F8 ;
+    background-color: #F6F7F8;
+
+    .ant-tabs {
+      height: 100%;
+    }
+
     .rule-title-right {
       background-color: #EEEFF1;
       padding: 0 20px;
@@ -312,5 +346,12 @@
     height: 46px;
     display: flex;
     align-items: center;
+  }
+
+  .action-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 200px !important;
   }
 }

@@ -28,7 +28,7 @@ export default function MiddleCom() {
     const [subSceneIndex, setSubSceneIndex] = useState(0)
     const [loadingPage, setLoadingPage] = useState(false)
     const getImg = info => {
-        if (info.conditionTypeId == 1) {
+        if ([1,9].includes(Number(info.conditionTypeId))) {
             return touchImg
         }
         if (info.conditionTypeName === '用户事件') {
@@ -54,6 +54,20 @@ export default function MiddleCom() {
         }
         return defaultImg
     }
+    useEffect(() => {
+        getRuleList(wholeScenceId).then(res => {
+            if (res.data.code === 0) {
+                dispatch({ type: "reRule", payload: res.data.data })
+                if (res.data.data.length) {
+                    dispatch({ type: "translateTab", payload: res.data.data[0].ruleId })
+                } else {
+                    setRightData([])
+                    setLeftData([])
+                }
+            }
+        })
+        dispatch({ type: "callBackEvent" })
+    }, [wholeScenceId])
     //改变tab
     const changeCurrent = (val, e) => {
         e.stopPropagation()
@@ -65,11 +79,11 @@ export default function MiddleCom() {
         if (index > -1) {
             notification.info({
                 message: '提示',
-                description: '先完成当前新增规则',
+                description: '请先配置规则基本信息',
             });
             return
         }
-        if (val == state.currentRule) {
+        if (val === state.currentRule) {
             return
         }
         dispatch({ type: "translateTab", payload: val })
@@ -88,6 +102,14 @@ export default function MiddleCom() {
     //点击节点
     const clickNode = (data, nodeType, index, e) => {
         e.stopPropagation()
+        if (state.currentRule === -1) {
+            notification.info({
+                message: '提示',
+                description:
+                    '先完善规则',
+            });
+            return
+        }
         if (state.activePropsId == data.conditionId + '_' + index && nodeType == 1) {
             return
         }
@@ -110,14 +132,17 @@ export default function MiddleCom() {
                 <div className='right'>
                     <div>
                         <span>{item.conditionTypeName}：</span>
-                        <span>{item.conditionTypeId === 1 ? item.conditionOptionName : item.conditionName}</span>
+                        <span>{[1,9].includes(item.conditionTypeId) ? item.conditionOptionName : item.conditionName}</span>
                     </div>
                     <div>
-                        {item.conditionExpression}
+                        {
+                            item.conditionInstanceId ? item.conditionId === 26 ? '立即执行:是' :
+                                item.paramStyleId === 1 ? <span>{item.conditionName + item.operatorName + item.conditionValue}</span> :
+                                    <span>{item.conditionName + item.operatorName + item.queryParamName}</span> : ''
+                        }
                         {item.unitCode === '无' ? '' : item.unitCode}
                     </div>
                 </div>
-                {/* <Icon type="close" className='del-btn' onClick={(e) => { delFactor(index, e) }} /> */}
                 <img src={closeImg} className='del-btn' onClick={(e) => { delFactor(index, e) }} />
             </div>
         })
@@ -126,12 +151,10 @@ export default function MiddleCom() {
     //删除条件
     const delFactor = (index, e) => {
         e.stopPropagation()
-        setLeftData(pre => {
-            let arr = cloneDeep(pre)
-            arr.splice(index, 1)
-            return arr
-        })
-        dispatch({ type: "overViewRule" })
+        let arr = cloneDeep(leftData)
+        arr.splice(index, 1)
+        saveData(arr)
+        // dispatch({ type: "overViewRule" })
     }
     //渲染中间
     const renderDomM = () => {
@@ -166,7 +189,7 @@ export default function MiddleCom() {
                         text += item.deviceFunctionName + ':' + '关联AI' + ';'
                     } else {
                         if (item.paramStyleId == 1) {
-                            text += item.deviceFunctionName + ':' + item.actionParamValue + item.unitCode + ';'
+                            text += item.deviceFunctionName + ':' + item.actionParamValue + (item.unitCode !== '无' ? item.unitCode : '') + ';'
                         } else {
                             text += item.deviceFunctionName + ':' + item.functionParamName + ';'
                         }
@@ -183,7 +206,7 @@ export default function MiddleCom() {
                         <span>设备动作：</span>
                         <span>{item.deviceTypeName}</span>
                     </div>
-                    <div>
+                    <div className='action-text' title={text}>
                         {text}
                     </div>
                 </div>
@@ -221,7 +244,10 @@ export default function MiddleCom() {
     }
     useEffect(() => {
         setRightData([])
-        // setMiddleData([])
+        setMiddleData([{
+            title: 'AND',
+            key: '2-and',
+        }])
         setLeftData([])
         if (state.currentRule > 0) {
             let value
@@ -237,12 +263,12 @@ export default function MiddleCom() {
     }, [state.currentRule])
     const checkIsContinue = () => {
         let check1 = leftData.findIndex(item => {
-            if (typeof item.operatorId == 'undefined') {
+            if (typeof item.operatorId === 'undefined') {
                 return true
             }
         })
         let check2 = rightData.findIndex(item => {
-            if (typeof item.actionsId == 'undefined') {
+            if (typeof item.actionsId === 'undefined') {
                 return true
             }
         })
@@ -256,13 +282,30 @@ export default function MiddleCom() {
         }
         return true
     }
+    const isHasFist = () => {
+        if (leftData.length && state.nodeInfo.nodeType === 1) {
+            if (state.nodeInfo.nodeInfo.conditionId === 26 || leftData[0].conditionId === 26) {
+                return false
+            }
+        }
+        return true
+    }
     useEffect(() => {
         if (state.currentEvent === 'addNode') {
             let isTrue = checkIsContinue()
+            let isContinue = isHasFist()
             if (!isTrue) {
                 notification.info({
                     message: '提示',
                     description: '有未完善数据',
+                });
+                dispatch({ type: "callBackEvent" })
+                return
+            }
+            if (!isContinue) {
+                notification.info({
+                    message: '提示',
+                    description: '条件不合理',
                 });
                 dispatch({ type: "callBackEvent" })
                 return
@@ -274,6 +317,14 @@ export default function MiddleCom() {
                     return arr
                 })
             } else if (state.nodeInfo.nodeType == 2) {
+                if (leftData.length < 2 && state.nodeInfo.nodeInfo.title === 'OR') {
+                    notification.info({
+                        message: '提示',
+                        description: '至少需要两个条件才能切换or逻辑',
+                    });
+                    dispatch({ type: "callBackEvent" })
+                    return
+                }
                 setMiddleData([state.nodeInfo.nodeInfo])
             } else if (state.nodeInfo.nodeType == 3) {
                 setRightData(pre => {
@@ -285,41 +336,57 @@ export default function MiddleCom() {
 
         } else if (state.currentEvent === 'saveNode') {
             if (state.formDom.nodeType == 1) {
-                setLeftData(pre => {
-                    let arr = cloneDeep(pre)
-                    arr.splice(state.formDom.index, 1, state.formDom.data)
-                    return arr
-                })
+                subFactorData()
             }
         } else if (state.currentEvent === 'reFreshNode') {
             getActive()
+        } else if (state.currentEvent === 'refreshLogic') {
+            if (leftData.length !== 0) {
+                saveData(leftData)
+            }
+
         }
         dispatch({ type: "callBackEvent" })
     }, [state.currentEvent])
-    // useEffect(() => {
-    //     setLoadingPage(true)
-    //     setTimeout(() => {
-    //         setLoadingPage(false)
-    //     }, 2000)
-    // }, [state.activePropsId])
+    //提交触发条件
+    const subFactorData = () => {
+        let arr = cloneDeep(leftData)
+        arr.splice(state.formDom.index, 1, state.formDom.data)
+        let isCover = leftData.find((item, index) => {
+            if (index === state.formDom.index) return false
+            if (item.conditionId === state.formDom.data.conditionId && item.conditionOptionId === state.formDom.data.conditionOptionId) {
+                return true
+            }
+            return false
+        })
+        if (isCover) {
+            notification.info({
+                message: '提示',
+                description: '配置条件有重复',
+            });
+            return
+        }
+        saveData(arr)
+    }
     //刷新动作卡片
     const getActive = (index) => {
-        if (typeof index != 'number') {
+        if (typeof index !== 'number') {
             index = subSceneIndex
         }
         let params = {
             sceneId: wholeScenceId,
             subSceneIndex: index
         }
+        dispatch({ type: "overViewRule" })
         getActiveInfo(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setRightData(res.data.data)
             }
         })
     }
     //获取条件卡片
     const getFactor = (index) => {
-        if (typeof index != 'number') {
+        if (typeof index !== 'number') {
             index = subSceneIndex
         }
         let params = {
@@ -327,7 +394,7 @@ export default function MiddleCom() {
             subSceneIndex: index
         }
         getFatcorInfo(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setLeftData(res.data.data)
                 if (res.data.data.length && res.data.data.length > 1) {
                     if (res.data.data[0].suffix === "&&") {
@@ -340,13 +407,7 @@ export default function MiddleCom() {
         })
     }
     //提交提交数据
-    const saveData = (e) => {
-        // alert(wholeScenceId)
-        // if(wholeScenceId){
-        //     return
-        // }
-        // return
-        e.stopPropagation()
+    const saveData = (leftData) => {
         if (leftData.length) {
             let arr = []
             if (leftData.length > 1 && middleData.length === 0) {
@@ -358,15 +419,15 @@ export default function MiddleCom() {
                     return
                 }
             }
-            if (leftData.length === 1) {
-                if (middleData[0].title == 'OR') {
-                    notification.info({
-                        message: '提示',
-                        description: '触发条件只有一个时，逻辑符只能是且',
-                    });
-                    return
-                }
-            }
+            // if (leftData.length === 1) {
+            //     if (middleData[0].title == 'OR') {
+            //         notification.info({
+            //             message: '提示',
+            //             description: '触发条件只有一个时，逻辑符只能是且',
+            //         });
+            //         return
+            //     }
+            // }
             let equivalentConditionId = new Date().getTime()
             let unikeyT = 0
             leftData.forEach((item, index) => {
@@ -390,32 +451,28 @@ export default function MiddleCom() {
                 arr.push(obj)
             })
             saveFactor(arr).then(res => {
-                if (res.data.code == 0) {
-                    notification.success({
-                        message: '提示',
-                        description: '保存成功',
-                    });
+                if (res.data.code === 0) {
+                    callBackFn()
                 }
+            }).finally(r => {
             })
         } else {
             clearRule({
                 sceneId: wholeScenceId,
-                subSceneIndex: subSceneIndex
+                subSceneIndex
             }).then(res => {
                 if (res.data.code === 0) {
-                    notification.success({
-                        message: '提示',
-                        description: '保存成功',
-                    });
+                    callBackFn()
                 }
             })
-            // if (middleData.length === 0) {
-            //     notification.info({
-            //         message: '提示',
-            //         description: '没有需要保存的数据',
-            //     });
-            //     return
-            // }
+        }
+        function callBackFn() {
+            notification.success({
+                message: '提示',
+                description: '提交成功',
+            });
+            getFactor()
+            dispatch({ type: "overViewRule" })
         }
     }
     //删除设备动作
@@ -482,7 +539,7 @@ export default function MiddleCom() {
                     </div>
                     <div className='rule-btn-wrap'>
                         <div className='btn-add' onClick={(e) => { newTab(e) }}></div>
-                        <div className='btn-save' onClick={e => { saveData(e) }}></div>
+                        {/* <div className='btn-save' onClick={e => { saveData(e) }}></div> */}
                         {/* <div className='btn-menu'></div> */}
                         <Dropdown overlay={menu} placement="bottomRight" trigger={['click']}>
                             <div className='btn-menu'></div>

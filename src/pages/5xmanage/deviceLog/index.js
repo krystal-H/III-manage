@@ -15,7 +15,8 @@ const deviceEvents = ['上线', '离线', '设备控制', '数据上报', '设�
 
 function disabledDate(current) {
   // Can not select days before today and today
-  return current && current > moment().endOf('day');
+  // return current && current > moment().endOf('day');
+  return current && current < moment().subtract(7, "days") || current > moment().subtract(0, "days")
 }
 
 function DeviceLog({ form }) {
@@ -94,10 +95,12 @@ function DeviceLog({ form }) {
     let params = {
       startTime,
       endTime,
-      [`${opeType}`]: msg,
       productName: productName || '',
       eventType: eventType || '',
       ...pager
+    }
+    if (opeType) {
+      params[`${opeType}`] =  msg
     }
     getDeviceLogRequest(params).then(res => {
       if (res.data.code === 0 && res.data.data) {
@@ -119,10 +122,9 @@ function DeviceLog({ form }) {
   // 搜索按钮触发,默认请求第一页的数据
   const searchClick = () => {
     if (pager.pageIndex === 1) {
-      if (!form.getFieldValue('productName') && !form.getFieldValue('opeType')) {
-        message.warning('产品名称、设备条件必选其一')
-      } else if (!form.getFieldValue('time')) {
-        message.warning('请选择时间')
+      // !form.getFieldValue('productName') && !form.getFieldValue('opeType')
+      if (!form.getFieldValue('time') || !form.getFieldValue('opeType') || !form.getFieldValue('msg')) {
+        message.warning('设备条件和时间为必选条件！')
       } else {
         getTableData()
       }

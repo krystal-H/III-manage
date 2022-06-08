@@ -37,7 +37,7 @@ function RightComH({ form }) {
             }
             val.sceneId = wholeScenceId
             saveGloalInfo(val).then(res => {
-                if (res.data.code == 0) {
+                if (res.data.code === 0) {
                     notification.success({
                         message: '提示',
                         description: '修改成功',
@@ -53,28 +53,31 @@ function RightComH({ form }) {
     // }, [state.showTab])
     useEffect(() => {
         getAIList().then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setAiList(res.data.data.list)
             }
         })
         let pamams = { paged: false }
         getAppList(pamams).then(res => {
-            if (res.data.code == 0) {
-                console.log(res.data.data, 9999)
+            if (res.data.code === 0) {
                 let data = res.data.data.map(item => {
                     return { label: item.appName, value: item.appId }
                 })
                 setAppList(data)
             }
         })
-        getSceneInfo()
+        // getSceneInfo()
     }, [])
+    useEffect(() => {
+        if (wholeScenceId) {
+            getSceneInfo()
+        }
+    }, [wholeScenceId])
     //获取详情
     const getSceneInfo = () => {
         getsceneDetail(wholeScenceId).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 let data = res.data.data.scene
-                // setOriginData(res.data.data.scene)
                 let relSceneApps = data.relSceneApps.map(item => {
                     return item.appId
                 })
@@ -105,12 +108,12 @@ function RightComH({ form }) {
                     <Form colon={false}>
                         <FormItem label="场景名称">
                             {getFieldDecorator('sceneName', { rules: [{ required: true, message: '请输入场景名称' }] })(
-                                <Input style={{ width: '100%' }} placeholder='未命名规则'></Input>
+                                <Input style={{ width: '100%' }} placeholder='未命名规则' maxLength={12}></Input>
                             )}
                         </FormItem>
                         <FormItem label="场景描述">
                             {getFieldDecorator('summary', {})(
-                                <TextArea style={{ width: '100%' }} ></TextArea>
+                                <TextArea style={{ width: '100%',height:'100px' }} maxLength={100}></TextArea>
                             )}
                         </FormItem>
                         <FormItem label="场景图片" >
@@ -119,9 +122,9 @@ function RightComH({ form }) {
                                     ref={$el1}
                                     listType="picture-card"
                                     maxCount={1}
+                                    preferSize={'750px*550px'}
                                     isNotImg={false}
                                     maxSize={10} />
-
                             )}
                         </FormItem>
                         <FormItem label="关联AI能力">

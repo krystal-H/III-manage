@@ -32,7 +32,7 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
 
   const { getFieldDecorator } = form
   return (
-    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }}>
+    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} className="basic-params">
       <Form.Item label="模组名称">
         {getFieldDecorator('moduleName', {
           initialValue: editData.moduleName,
@@ -74,7 +74,7 @@ function StepFirst({ form, setStepCur, brandList, editData = {} }, ref) {
           <Input type="text" placeholder="请输入模组适用范围，如：家电产品" maxLength={50} />
         )}
       </Form.Item>
-      <Form.Item className="moduleSize" label="模组尺寸" className="required-icon">
+      <Form.Item className="moduleSize required-icon" label="模组尺寸">
         <Form.Item style={{ display: 'inline-block', width: '100px', marginBottom: 0 }}>
           {getFieldDecorator("sizeThickness", {
             initialValue: editData.sizeThickness,

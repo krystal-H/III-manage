@@ -122,6 +122,12 @@ export class BasicParamsFrom extends Component {
 
                     <Form.Item className="moduleSize" label="模组尺寸">
                         {/* <div> */}
+                        <Form.Item style={{ display: 'inline-block', width: '100px', marginBottom: 0 }}>
+                            {getFieldDecorator("sizeThickness", { initialValue: moduleInfo.sizeThickness, rules: [{ required: true, message: '请输入厚' },{validator:this.checkNumber.bind(this)}] })(
+                                <InputNumber maxLength={3} max={999} />
+                            )}
+                        </Form.Item>
+                        <span>&nbsp;-&nbsp;&nbsp;&nbsp;</span>
                         <Form.Item label="" style={{ display: 'inline-block', width: '100px', marginBottom: 0 }} >
                             {getFieldDecorator("sizeWidth", { initialValue: moduleInfo.sizeWidth, rules: [{ required: true, message: '请输入宽' },{validator:this.checkNumber.bind(this)}]})(
                                 <InputNumber maxLength={3} max={999} />
@@ -137,13 +143,13 @@ export class BasicParamsFrom extends Component {
                             )}
                         </Form.Item>
 
-                        <span>&nbsp;-&nbsp;&nbsp;&nbsp;</span>
+                        {/* <span>&nbsp;-&nbsp;&nbsp;&nbsp;</span>
 
                         <Form.Item style={{ display: 'inline-block', width: '100px', marginBottom: 0 }}>
                             {getFieldDecorator("sizeThickness", { initialValue: moduleInfo.sizeThickness, rules: [{ required: true, message: '请输入厚' },{validator:this.checkNumber.bind(this)}] })(
                                 <InputNumber maxLength={3} max={999} />
                             )}
-                        </Form.Item>
+                        </Form.Item> */}
                         <br/>
                         <span>（长*宽*高 mm）</span>
 

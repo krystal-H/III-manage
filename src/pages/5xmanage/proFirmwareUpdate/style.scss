@@ -1,28 +1,34 @@
+.module-upgrade-notice {
+    .ant-modal-footer {
+        text-align: center;
 
+        .ant-btn {
+            padding: 4px 24px;
+        }
+    }
 
+    .add-scheme-modal {
+        .step-box {
+            width: 650px;
+            margin: 12px auto 36px auto;
+        }
 
-.ota_add_firmware_dialog{
-    .ant-form-item{ 
-        margin-bottom: 5px;
-    }
-    .upload-wrapper .upload .upload-desc{
-        margin-top: 4px;
-        line-height: 24px;
-    }
-    .filepathinpt{
-        display: block;
-        border-bottom: 1px solid #e8e8e8;
-        padding: 0 0 12px 138px;
-    }
-    .ant-upload-list{
-        display: none;
-    }
-    .noborderinpt{
-        border: none;
-        color: rgba(0, 0, 0, 0.85);
-        padding: 0;
-        background-color: #fff;
-        cursor:text
+        .ant-modal-body {
+            padding: 24px 40px 0;
 
+        }
+
+        .ant-tabs-bar {
+            margin: 0;
+            border: none;
+        }
+
+        .ant-tabs .ant-tabs-nav {
+            display: none;
+        }
+
+        .formbox {
+            margin-top: 40px;
+        }
     }
 }

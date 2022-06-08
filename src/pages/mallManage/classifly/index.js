@@ -1,38 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Button, Select, notification, Divider, Modal, Form, Tooltip, DatePicker, Upload, message,Table } from 'antd';
-import { getList,delData,addDataApi } from '../../../apis/mallClassify'
+import { Card, Input, Button, Tabs, Modal, Form, Select, message, Table } from 'antd';
+import { getList, delData, addDataApi } from '../../../apis/mallClassify'
+import { getParentIdRequest } from '../../../apis/mallManage'
 import { DateTool } from '../../../util/utils';
 import './index.scss'
+
 const FormItem = Form.Item
-// const TitleOption = TitleTab.Option
-// const { RangePicker } = DatePicker;
+const Option = Select.Option
+const { TabPane } = Tabs
 
 function FirmwareMagement({ form }) {
     const [pager, setPager] = useState({ pageIndex: 1, pageRows: 10 }) //分页
-    const { getFieldDecorator, validateFields, getFieldsValue } = form;
+    const { getFieldDecorator, validateFields, } = form;
     const [totalRows, setTotalRows] = useState(0)
     const [dataSource, setdataSource] = useState([])
     const [addVis, setAddVis] = useState(false)
     const [modelType, setModelType] = useState('add')
     const [actionData, setActionData] = useState({})
     const [loading, setLoading] = useState(false)
+    const [currentTab, setCurrentTab] = useState('0')
+    const [classifiyTypeMap, setClassifiyTypeMap] = useState([]) // tab
+
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
-    };
+    }
+
+    useEffect(() => {
+        // 获取一级分类
+        getParentIdRequest({ classifyLevel: 1 }).then(res => {
+            setClassifiyTypeMap(res.data.data)
+        })
+    }, [])
+
     useEffect(() => {
         getTableData()
-    }, [pager.pageRows, pager.pageIndex])
+    }, [pager.pageRows, pager.pageIndex, currentTab, classifiyTypeMap])
+
     //列表
     const getTableData = () => {
         setLoading(true)
-        getList(pager).then(res => {
+        let temp = []
+        if (currentTab == '0') {
+            temp = classifiyTypeMap.filter(item => item.classifyName == "硬件产品")
+        } else if (currentTab == '1') {
+            temp = classifiyTypeMap.filter(item => item.classifyName == "通信模组")
+        }
+
+        if (temp.length === 0) return
+
+        const params = { parentId: temp[0].id, ...pager }
+        getList(params).then(res => {
             if (res.data.code == 0) {
-                res.data.data.records.forEach((item,index)=>{
-                    item.key=index+1
-                })
-                setdataSource(res.data.data.records)
-                setTotalRows(res.data.data.total)
+                if (res.data.data) {
+                    res.data.data.list.forEach((item, index) => {
+                        item.key = index + 1
+                    })
+                    setdataSource(res.data.data.list)
+                    setTotalRows(res.data.data.pager.totalRows)
+                } else {
+                    setdataSource([])
+                    setTotalRows(0)
+                }
             }
         }).finally(() => { setLoading(false) })
     }
@@ -47,14 +76,14 @@ function FirmwareMagement({ form }) {
             onOk: () => {
                 delData(row.id).then(res => {
                     if (res.data.code == 0) {
-                        message.success('删除成功');
+                        message.success('删除成功')
                         getTableData()
                     }
                 })
             }
         })
-
     }
+
     const column = [
         {
             title: '编号',
@@ -100,17 +129,20 @@ function FirmwareMagement({ form }) {
         setActionData(row)
         setAddVis(true)
     }
+
     //新增
     const addData = () => {
         setModelType('add')
         setAddVis(true)
     }
+
     //提交
     const handleOk = () => {
         validateFields().then(val => {
             let params = { ...val }
-            if(modelType === 'edit'){
-                params.id=actionData.id
+            params.classifyLevel = 2
+            if (modelType === 'edit') {
+                params.id = actionData.id
             }
             addDataApi(params).then(res => {
                 if (res.data.code == 0) {
@@ -120,11 +152,8 @@ function FirmwareMagement({ form }) {
                 }
             })
         })
+    }
 
-    }
-    const handleCancel = () => {
-        setAddVis(false)
-    }
     //页码改变
     const pagerChange = (pageIndex, pageRows) => {
         if (pageRows === pager.pageRows) {
@@ -138,12 +167,33 @@ function FirmwareMagement({ form }) {
                 return Object.assign(obj, { pageIndex: 1, pageRows })
             })
         }
-
     }
+
+    // 切换tab
+    const tabChange = (val) => {
+        console.log(val)
+        setCurrentTab(val)
+        setdataSource([])
+        // 拉列表数据
+        setPager({ pageIndex: 1, pageRows: 10 })
+    }
+
     return (
         <div className="classify-page">
             <Card>
-                <div className='classify-top'><Button type='primary' onClick={addData}>新增分类</Button></div>
+                <div className='top-flex'>
+                    <Tabs activeKey={currentTab} onChange={val => tabChange(val)}>
+                        {
+                            classifiyTypeMap.length > 0 &&
+                            classifiyTypeMap.map((item, index) => {
+                                return <TabPane tab={`${item.classifyName}`} key={index + ''}></TabPane>
+                            })
+                        }
+                    </Tabs>
+                    <div className='classify-top'>
+                        <Button type='primary' onClick={addData}>新增分类</Button>
+                    </div>
+                </div>
                 <Table rowKey={"id"} columns={column} dataSource={dataSource}
                     loading={loading}
                     bordered
@@ -163,21 +213,40 @@ function FirmwareMagement({ form }) {
                     title={modelType === 'add' ? '新增分类' : '编辑分类'}
                     visible={addVis}
                     onOk={handleOk}
-                    onCancel={handleCancel}
-                >
-                    <Form {...formItemLayout} >
+                    onCancel={() => setAddVis(false)}>
+                    <Form {...formItemLayout} autoComplete="off">
+                        <FormItem label="分类类别">
+                            {getFieldDecorator('parentId', {
+                                initialValue: modelType === 'add' ? '' : actionData.parentId + '',
+                                rules: [{ required: true, message: '请选择分类类别' }]
+                            })(
+                                <Select style={{ width: 275 }} disabled={modelType === 'edit'}>
+                                    {
+                                        classifiyTypeMap.length > 0 && classifiyTypeMap.map(d => {
+                                            return <Option key={d.id}>{`${d.classifyName}`}</Option>
+                                        })
+                                    }
+                                </Select>
+                            )}
+                        </FormItem>
                         <FormItem label="分类名称">
-                            {getFieldDecorator('classifyName', { initialValue:modelType === 'add' ? '' : actionData.classifyName
-                            ,rules: [{ required: true, message: '请输入分类名称' }] })(
-                                <Input  ></Input>
+                            {getFieldDecorator('classifyName', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyName,
+                                rules: [{ required: true, message: '请输入分类名称' }]
+                            })(
+                                <Input></Input>
                             )}
                         </FormItem>
                         <FormItem label="排序值">
-                            {getFieldDecorator('classifyValue',{initialValue:modelType === 'add' ? '' : actionData.classifyValue,getValueFromEvent: (e) => {
+                            {getFieldDecorator('classifyValue', {
+                                initialValue: modelType === 'add' ? '' : actionData.classifyValue,
+                                getValueFromEvent: (e) => {
                                     const val = e.target.value;
                                     return val.replace(/[^\d]/g, '');
-                                }})(
-                                <Input  ></Input>
+                                },
+                                rules: [{ required: true, message: '请输入排序值' }]
+                            })(
+                                <Input></Input>
                             )}
                         </FormItem>
                     </Form>

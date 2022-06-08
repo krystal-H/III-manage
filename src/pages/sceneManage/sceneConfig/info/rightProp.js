@@ -58,12 +58,12 @@ function RightCom({ form }) {
                     setAiPropsList(arr)
                 }
             })
-        }else{
-            setAiPropsList([])
+        } else {
+            setAiPropsList([{ key: '无' }])
         }
     }, [state.wholeInfo.aiId])
     const getImg = info => {
-        if (info.conditionTypeId == 1) {
+        if ([1,9].includes(Number(info.conditionTypeId))) {
             return touchImg
         }
         if (info.conditionTypeName === '用户事件') {
@@ -119,17 +119,17 @@ function RightCom({ form }) {
             return
         }
         for (let key in params) {
-            if (typeof params[key] == 'undefined') {
+            if (typeof params[key] === 'undefined') {
                 delete params[key]
             }
         }
         params.sceneId = wholeScenceId
-        params.enableTime = params.times.join(',') + ';' + params.timer[0].format('HH:mm') + '-' + params.timer[1].format('HH:mm')
+        params.enableTime = params.times.join(',') + ';' + params.timer0.format('HH:mm') + '-' + params.timer1.format('HH:mm')
         if (state.currentRule > 0) {
             params.ruleId = state.currentRule
         }
         addRule(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 getRuleList(wholeScenceId).then(res2 => {
                     if (state.currentRule > 0) {
                         notification.success({
@@ -159,39 +159,20 @@ function RightCom({ form }) {
                 saveFactor()
             } else if (state.formDom.nodeType === 3) {
                 saveActiveData()
+            } else if (state.formDom.nodeType === 2) {
+                dispatch({ type: "subLogic" })
             }
         }
     }
     //保存提交节点
     const saveFactor = () => {
         let data = getFieldsValue()
-
-        if (state.formDom.data.conditionTypeId == 1) {
+        if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) > -1) {
             let productItem = productList.find(item => {
                 return item.conditionOptionId === data.conditionOptionId
             })
             data.conditionOptionName = productItem.deviceTypeName
             data.deviceTypeId = productItem.deviceTypeId
-            data.conditionExpression = ''
-            let factorSource = productDom.find(item => {
-                return item.conditionId === data.conditionId
-            })
-            data.conditionExpression = factorSource.conditionName
-            factorSource.operators.forEach(item => {
-                if (item.operatorId == data.operatorId) {
-                    data.conditionExpression += item.operatorCode
-                }
-            })
-            if (factorSource.paramStyleId == 1) {
-                data.conditionExpression += data.conditionValue
-                data.unitCode = factorSource.unitCode
-            } else {
-                factorSource.queryParams.forEach(item => {
-                    if (item.queryParamValue == data.conditionValue) {
-                        data.conditionExpression += item.queryParamName
-                    }
-                })
-            }
         } else {
             if (isNoting) {
                 let data2 = {
@@ -201,24 +182,6 @@ function RightCom({ form }) {
                 }
                 dispatch({ type: "saveItem", payload: data2 })
                 return
-            }
-            data.conditionExpression = ''
-            let factorSource = domData
-            data.conditionExpression = factorSource.conditionName
-            factorSource.operators.forEach(item => {
-                if (item.operatorId == data.operatorId) {
-                    data.conditionExpression += item.operatorCode
-                }
-            })
-            if (factorSource.paramStyleId == 1) {
-                data.conditionExpression += data.conditionValue
-                data.unitCode = factorSource.unitCode
-            } else {
-                factorSource.queryParams.forEach(item => {
-                    if (item.queryParamValue == data.conditionValue) {
-                        data.conditionExpression += item.queryParamName
-                    }
-                })
             }
         }
         dispatch({ type: "saveItem", payload: data })
@@ -284,15 +247,16 @@ function RightCom({ form }) {
             params.actionsId = state.formDom.data.actionsId
         }
         updateActive(params).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 notification.success({
                     message: '提示',
                     description: '更新设备动作成功',
                 });
-                if (!state.formDom.data.actionsId) {
-                    resetFields()
-                }
+                // if (!state.formDom.data.actionsId) {
+                //     resetFields()
+                // }
                 dispatch({ type: "saveActive" })
+
             }
         })
     }
@@ -335,7 +299,7 @@ function RightCom({ form }) {
         unlkey = 0
         if (state.currentRule && state.theme === 'Node') {
             if (state.formDom.nodeType === 1) {
-                if (state.formDom.data.conditionTypeId != 1) {
+                if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) === -1) {
                     getfactor(state.formDom.data.conditionOptionId).then(val => {
                         let data = val.data.data.find(item => {
                             return item.conditionId === state.formDom.data.conditionId
@@ -414,16 +378,21 @@ function RightCom({ form }) {
     //获取规则详情
     const getRuleInfo = () => {
         getRuleDetail(state.currentRule).then(res => {
-            if (res.data.code == 0) {
+            if (res.data.code === 0) {
                 setRuleInfo(res.data.data)
                 let data = res.data.data || {}
                 let times = data.enableTime.split(';')[0].split(',')
-                let timer = data.enableTime.split(';')[1]
+                let timer = data.enableTime.split(';')[1] && data.enableTime.split(';')[1].split('-')
+                if (timer) {
+                    setFieldsValue({
+                        timer1: moment(timer[1], 'HH:mm'),
+                        timer0: moment(timer[0], 'HH:mm')
+                    })
+                }
                 setFieldsValue({
                     ruleName: data.ruleName,
                     summary: data.summary,
                     times,
-                    timer,
                 })
             }
         })
@@ -569,7 +538,6 @@ function RightCom({ form }) {
                 </div>
                 <Form.Item
                     label='功能字段'
-
                 >
                     {getFieldDecorator(`names[${k.unlkey}].deviceFunctionId`, {
                         initialValue: k.deviceFunctionId ? k.deviceFunctionId + '' : ''
@@ -620,8 +588,9 @@ function RightCom({ form }) {
                                     if (data.paramStyleId === 1) {
                                         return <InputNumber min={getCriticalVal2('min', data.functionParams)}
                                             max={getCriticalVal2('max', data.functionParams)} style={{ width: "100%" }}
-                                            formatter={value => data.unit ? `${value}${data.unit.unitCode}` : value}
-                                            parser={value => data.unit ? value.replace(data.unit.unitCode, '') : value} />
+                                        // formatter={value => data.unit ? `${value}${data.unit.unitCode}` : value}
+                                        // parser={value => data.unit ? value.replace(data.unit.unitCode, '') : value} 
+                                        />
                                     } else {
                                         return <Select>
                                             {data.functionParams.map((item, index) => (
@@ -750,7 +719,7 @@ function RightCom({ form }) {
     const ruleDom = () => {
         return <>
             <FormItem label="规则名称">
-                {getFieldDecorator('ruleName', { rules: [{ required: true, message: '场景名称' }],initialValue:'未命名规则' })(
+                {getFieldDecorator('ruleName', { rules: [{ required: true, message: '场景名称' }], initialValue: '未命名规则' })(
                     <Input style={{ width: '100%' }} ></Input>
                 )}
             </FormItem>
@@ -773,11 +742,11 @@ function RightCom({ form }) {
                 <Form.Item
                     style={{ display: 'inline-block', width: 'calc(50% - 12px)' }}
                 >
-                    {getFieldDecorator('timer.0', { initialValue: moment('00:00', 'HH:mm') })(<TimePicker format='HH:mm' allowClear={false} />)}
+                    {getFieldDecorator('timer0', { initialValue: moment('00:00', 'HH:mm') })(<TimePicker format='HH:mm' allowClear={false} />)}
                 </Form.Item>
                 <span style={{ display: 'inline-block', width: '24px', textAlign: 'center' }}>-</span>
                 <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 12px)' }}>
-                    {getFieldDecorator('timer.1', { initialValue: moment('23:59', 'HH:mm') })(<TimePicker format='HH:mm' allowClear={false} />)}
+                    {getFieldDecorator('timer1', { initialValue: moment('23:59', 'HH:mm') })(<TimePicker format='HH:mm' allowClear={false} />)}
                 </Form.Item>
             </FormItem>
         </>
@@ -826,7 +795,7 @@ function RightCom({ form }) {
             return ruleDom()
         } else if (state.theme === 'Node') {
             if (state.formDom.nodeType === 1) {
-                if (state.formDom.data.conditionTypeId != 1) {
+                if ([1, 9].indexOf(Number(state.formDom.data.conditionTypeId)) === -1) {
                     return factorNoDeviceDom()
                 } else {
                     return factorDeviceDom()
@@ -847,6 +816,11 @@ function RightCom({ form }) {
                         {
                             getFormDom()
                         }
+                        {/* {
+                            state.formDom.nodeType !== 2 ? <div className='tab-btn'>
+                                <Button type="primary" onClick={saveData}>保存</Button>
+                            </div> : ''
+                        } */}
                         <div className='tab-btn'>
                             <Button type="primary" onClick={saveData}>保存</Button>
                         </div>
